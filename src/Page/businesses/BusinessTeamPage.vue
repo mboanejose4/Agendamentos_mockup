@@ -36,7 +36,7 @@ const {
           v-model="query"
           placeholder="Pesquisar na equipa"
           aria-label="Pesquisar na equipa"
-          class="w-full border-0 bg-transparent pl-0 text-caption focus-visible:outline-offset-0"
+          class="w-full border-0 bg-transparent pl-0 text-caption"
         />
       </label>
       <span class="text-caption text-muted">{{ team.length }} membros</span>

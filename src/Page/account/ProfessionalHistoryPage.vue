@@ -28,7 +28,7 @@ const {
           v-model="historySearch"
           placeholder="Pesquisar cliente ou serviço"
           aria-label="Pesquisar histórico"
-          class="border-0 bg-transparent pl-0 text-caption focus-visible:outline-offset-0"
+          class="border-0 bg-transparent pl-0 text-caption"
       /></label>
       <label class="field mb-0"
         >Desde<input

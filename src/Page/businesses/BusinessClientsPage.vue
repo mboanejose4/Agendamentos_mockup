@@ -38,7 +38,7 @@ const {
           v-model="query"
           placeholder="Pesquisar nome, telefone ou email"
           aria-label="Pesquisar clientes"
-          class="w-full border-0 bg-transparent pl-0 text-caption focus-visible:outline-offset-0"
+          class="w-full border-0 bg-transparent pl-0 text-caption"
         />
       </label>
       <button class="btn btn-secondary" @click="exportCsv('clients')">

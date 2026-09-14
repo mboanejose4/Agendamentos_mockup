@@ -77,7 +77,7 @@ const {
           v-model="search"
           placeholder="Pesquisar agendamentos"
           aria-label="Pesquisar agendamentos"
-          class="border-0 bg-transparent pl-0 text-caption focus-visible:outline-offset-0"
+          class="border-0 bg-transparent pl-0 text-caption"
       /></label>
     </div>
     <div

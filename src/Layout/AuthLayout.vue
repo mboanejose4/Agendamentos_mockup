@@ -14,7 +14,7 @@ import ThemeToggle from "@/Component/ui/ThemeToggle.vue";
 
     <main
       id="main-content"
-      class="w-full min-w-0 focus:outline-none"
+      class="w-full min-w-0"
       tabindex="-1"
     >
       <slot />

@@ -138,6 +138,14 @@ perde, um componente de cada vez.
 Abaixo de `sm`, os campos de formulário passam a 16&nbsp;px: com menos do que isso o Safari do
 iPhone amplia a página ao focar o campo e desalinha o ecrã inteiro.
 
+### Onde o logótipo aparece
+
+Uma vez por ecrã, e sempre na barra lateral — que no telefone é a gaveta. A barra superior
+nunca o carrega: num telefone fica para o botão de menu, o nome do ecrã e as acções.
+
+Largura de 186 px na barra lateral, com uma margem livre igual a metade da altura do símbolo
+de todos os lados. Abaixo de 120 px de largura usa-se só o símbolo.
+
 ## Iconografia
 
 Um único conjunto: `lucide-vue-next`, sempre através de `Component/ui/AppIcon.vue`.
@@ -162,6 +170,8 @@ A plataforma é desenhada a partir do telefone e sobe daí. Na prática:
 - A navegação é uma gaveta por omissão e só passa a coluna fixa sob a variante `desk`.
 - Diálogos centrados no ecrã, com 16 px de folga lateral e altura máxima de
   `100dvh − 48px`, rolando por dentro.
+- A página de autenticação mostra, abaixo de `sm`, só a saudação e o formulário: o título,
+  a frase e a fotografia ficam escondidos para o formulário caber no primeiro ecrã.
 
 ## Forma e espaço
 
@@ -191,6 +201,11 @@ primária (4,86:1) e o texto secundário sobre o fundo da página (5,18:1).
 - Texto 4,5:1; 3:1 a partir de 18,66 px a negrito ou 24 px normal.
 - Elementos de interface 3:1 — daí `--border-strong` nos contornos de campos.
 - Alvos de toque de 44 × 44 px com 8 px de folga.
-- Foco sempre visível: anel de 3 px em `--primary-text`, afastado 3 px. Nunca removido.
+- Foco sempre visível e igual em toda a plataforma: **anel de 1 px em `--primary`**, sem
+  contorno (`outline: none`). Os campos mostram-no com `:focus` — é o que se espera de uma
+  caixa de texto; tudo o resto só com `:focus-visible`, para não piscar a cada clique de rato.
+  Contraste do anel: 4,86:1 sobre branco e 7,16:1 no tema escuro, acima dos 3:1 exigidos.
+  Os botões cheios (`btn-primary`, `btn-danger`) levam o mesmo anel afastado 2 px, porque um
+  anel verde encostado a um fundo verde não se veria. Nunca removido.
 - Significado nunca só pela cor: um estado traz texto ou ícone.
 - Português europeu, `lang="pt"`.

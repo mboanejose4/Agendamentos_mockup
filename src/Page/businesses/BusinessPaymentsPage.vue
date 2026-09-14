@@ -88,7 +88,7 @@ const {
           v-model="query"
           placeholder="Pesquisar pagamentos"
           aria-label="Pesquisar pagamentos"
-          class="w-full border-0 bg-transparent pl-0 text-caption focus-visible:outline-offset-0"
+          class="w-full border-0 bg-transparent pl-0 text-caption"
         />
       </label>
     </div>

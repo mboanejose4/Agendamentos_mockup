@@ -62,12 +62,6 @@ const {
 
     <div class="flex min-h-dvh flex-col desk:ml-sidebar">
       <AppTopbar
-        :branding="
-          ['manager', 'professional'].includes(state.role)
-            ? state.db.businesses.find((b) => b.id === state.businessId)
-                ?.branding
-            : undefined
-        "
         :role="state.role"
         :current-label="currentLabel"
         :unread="unread"
@@ -79,7 +73,7 @@ const {
 
       <main
         id="main-content"
-        class="mx-auto w-full max-w-[1520px] min-w-0 flex-1 px-5 pt-7 pb-10 focus:outline-none sm:px-7 lg:px-10 lg:pt-9 lg:pb-12 2xl:pt-11"
+        class="mx-auto w-full max-w-[1520px] min-w-0 flex-1 px-5 pt-7 pb-10 sm:px-7 lg:px-10 lg:pt-9 lg:pb-12 2xl:pt-11"
         tabindex="-1"
       >
         <slot />

@@ -405,14 +405,19 @@
     accent-color: var(--primary);
   }
 
-  button:focus-visible,
-  a:focus-visible,
-  input:focus-visible,
-  select:focus-visible,
-  textarea:focus-visible,
-  [tabindex]:focus-visible {
-    outline: 3px solid var(--primary-text);
-    outline-offset: 3px;
+  /* Foco: um anel de 1px na cor de acção, igual em toda a plataforma.
+     Os campos mostram-no ao receberem foco de qualquer maneira (é o que se
+     espera de uma caixa de texto); tudo o resto só com foco de teclado. */
+  :where(input, select, textarea):focus {
+    @apply ring-1 ring-primary outline-none;
+  }
+
+  :where(button, a, summary, [tabindex]:not([tabindex="-1"])):focus-visible {
+    @apply ring-1 ring-primary outline-none;
+  }
+
+  :where(input, select, textarea, button, a, summary, [tabindex]):focus {
+    @apply outline-none;
   }
 }
 
@@ -451,6 +456,13 @@
 
   .btn-primary:hover:not(:disabled) {
     @apply bg-primary-hover;
+  }
+
+  /* Botões cheios: o anel é da mesma cor do fundo deles, por isso precisa de um
+     intervalo para se ver. Mesma cor e mesma espessura, apenas afastado. */
+  .btn-primary:focus-visible,
+  .btn-danger:focus-visible {
+    @apply ring-offset-2 ring-offset-surface;
   }
 
   .btn-secondary {
