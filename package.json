@@ -8,15 +8,24 @@
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
     "build:preview": "node scripts/build-preview.mjs",
-    "test": "node --test tests/state.test.js"
+    "test": "node --test tests/unit/*.test.js",
+    "test:ui": "node tests/e2e/application.test.mjs",
+    "format": "prettier --write \"src/**/*.{vue,js,css}\" \"tests/**/*.{js,mjs}\" \"docs/*.md\"",
+    "format:check": "prettier --check \"src/**/*.{vue,js,css}\" \"tests/**/*.{js,mjs}\" \"docs/*.md\"",
+    "test:appearance": "node tests/e2e/appearance.test.mjs",
+    "test:use-cases": "node tests/e2e/useCases.test.mjs"
   },
   "dependencies": {
+    "@emotion/css": "^11.13.5",
     "lucide-vue-next": "^1.0.0",
     "vue": "^3.5.13"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
+    "@tailwindcss/vite": "^4.1.14",
     "@vitejs/plugin-vue": "^5.2.1",
+    "prettier": "^3.9.6",
+    "tailwindcss": "^4.1.14",
     "vite": "^6.0.0"
   }
 }

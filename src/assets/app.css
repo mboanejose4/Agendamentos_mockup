@@ -1,0 +1,746 @@
+/*
+  MarcaFácil — folha de estilo única da aplicação (Tailwind CSS v4).
+
+  Estrutura:
+    1. Importação do Tailwind e variante de tema escuro
+    2. Tokens de cor (claro / escuro) — o `useAppearance` reescreve --primary,
+       --secondary e derivados em tempo de execução para a marca de cada empresa
+    3. @theme: liga os tokens às utilidades do Tailwind (bg-primary, text-muted, …)
+    4. @layer base: reposições e tipografia
+    5. @layer components: primitivas reutilizadas em toda a aplicação
+       (botões, campos, tabelas, diálogos). Tudo o resto — grelhas, cabeçalhos,
+       cartões, navegação — é escrito com utilidades directamente no markup.
+*/
+
+@import "tailwindcss";
+
+/* Tema escuro comandado pelo atributo data-theme na raiz. Raramente é preciso:
+   os tokens abaixo já trocam de valor. Existe para casos pontuais (sombras,
+   imagens, gradientes) em que a utilidade precisa de saber o tema. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* `desk:` — barra lateral fixa. Só em ecrãs largos que não sejam tácteis, ou
+   em ecrãs muito largos: assim um tablet ou iPad, em qualquer orientação,
+   continua a abrir a navegação em gaveta, como um telefone. */
+@custom-variant desk {
+  @media (min-width: 1025px) and (pointer: fine) {
+    @slot;
+  }
+  @media (min-width: 1367px) {
+    @slot;
+  }
+}
+
+/* ==========================================================================
+   1. Tokens — identidade MarcaFácil
+   Ver docs/identidade-visual.md. Os valores nascem do logótipo:
+   verde vivo #019E51 ("Fácil"), verde profundo #023627 ("Marca") e o
+   gradiente #02BE64 → #018A46 do símbolo.
+   ========================================================================== */
+
+:root {
+  /* --- Escala da marca ------------------------------------------------- */
+  --brand-50: #ebfaef;
+  --brand-100: #d6f4dd;
+  --brand-200: #b2e9c0;
+  --brand-300: #83d69b;
+  --brand-400: #4abe74;
+  --brand-500: #019e51; /* verde MarcaFácil — o do logótipo */
+  --brand-600: #008340;
+  --brand-700: #006937;
+  --brand-800: #00512e;
+  --brand-900: #003c26;
+  --brand-950: #00281a;
+  --brand-ink: #023627; /* verde profundo da palavra "Marca" */
+
+  /* --- Neutros (cinzentos com um toque de verde) ------------------------ */
+  --neutral-0: #ffffff;
+  --neutral-50: #f4faf7;
+  --neutral-100: #eaf3ed;
+  --neutral-200: #d9e5de;
+  --neutral-300: #c4d1c9;
+  --neutral-400: #9fada5;
+  --neutral-500: #7b8a82;
+  --neutral-600: #5d6d64;
+  --neutral-700: #44544b;
+  --neutral-800: #2d3e34;
+  --neutral-850: #213229;
+  --neutral-900: #192920;
+  --neutral-925: #112018;
+  --neutral-975: #06120c;
+  --neutral-1000: #030c07;
+
+  /* --- Papéis: tema claro ---------------------------------------------- */
+  --background: var(--neutral-50);
+  --surface: var(--neutral-0);
+  --surface-muted: var(--neutral-100);
+  --ink: var(--brand-ink);
+  --text: var(--ink);
+  --muted: var(--neutral-600);
+  --border: var(--neutral-200);
+  --border-strong: var(--neutral-500);
+
+  /* Identidade (nunca muda) vs. acção (a marca de cada empresa sobrescreve) */
+  --brand: var(--brand-500);
+  --primary: var(--brand-600);
+  --secondary: var(--brand-ink);
+  --primary-text: var(--brand-700);
+  --secondary-text: var(--brand-ink);
+  --on-primary: #ffffff;
+  --on-secondary: #ffffff;
+  --on-danger: #ffffff;
+
+  --primary-hover: color-mix(in srgb, var(--primary) 86%, #000000);
+  --soft: color-mix(in srgb, var(--primary) 10%, var(--surface));
+  --secondary-soft: color-mix(in srgb, var(--secondary) 8%, var(--surface));
+
+  /* --- Estado ----------------------------------------------------------- */
+  --success: #006937;
+  --success-soft: #ebfaef;
+  --warning: #8f5d00;
+  --warning-soft: #fff4e1;
+  --danger: #9e2d28;
+  --danger-soft: #ffefec;
+  --info: #00569f;
+  --info-soft: #ebf7ff;
+
+  /* --- Gráficos (seis séries, contraste ≥ 4:1 sobre a superfície) -------- */
+  --chart-1: #008c46;
+  --chart-2: #1577c8;
+  --chart-3: #a66300;
+  --chart-4: #bc4a41;
+  --chart-5: #9a53aa;
+  --chart-6: #008c97;
+
+  /* --- Profundidade ------------------------------------------------------ */
+  --scrim: #02362799;
+  --shadow-color: #0236271f;
+
+  /* --- Métricas de layout ------------------------------------------------ */
+  --sidebar-width: 236px;
+  --topbar-height: 72px;
+
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --background: var(--neutral-975);
+  --surface: var(--neutral-925);
+  --surface-muted: var(--neutral-850);
+  --ink: var(--neutral-100);
+  --muted: var(--neutral-400);
+  --border: var(--neutral-800);
+  --border-strong: var(--neutral-500);
+
+  --brand: var(--brand-400);
+  --primary: var(--brand-400);
+  --secondary: var(--brand-300);
+  --primary-text: var(--brand-300);
+  --secondary-text: var(--brand-200);
+  --on-primary: var(--neutral-1000);
+  --on-secondary: var(--neutral-1000);
+  --on-danger: var(--neutral-1000);
+
+  --primary-hover: color-mix(in srgb, var(--primary) 84%, #ffffff);
+  --soft: #14372a;
+  --secondary-soft: #16302a;
+
+  --success: #83d69b;
+  --success-soft: #123324;
+  --warning: #f5b75b;
+  --warning-soft: #33280f;
+  --danger: #f69c91;
+  --danger-soft: #3a1d1a;
+  --info: #91c3f6;
+  --info-soft: #182a3d;
+
+  --chart-1: #6ac988;
+  --chart-2: #6db6ff;
+  --chart-3: #e1a447;
+  --chart-4: #f98f84;
+  --chart-5: #d695e4;
+  --chart-6: #00c9d1;
+
+  --scrim: #030c07cc;
+  --shadow-color: #00000066;
+
+  color-scheme: dark;
+}
+
+/* ==========================================================================
+   2. Ligação dos tokens ao Tailwind
+   `inline` faz as utilidades apontarem para a variável, não para o valor
+   copiado — é o que mantém a marca de cada empresa a funcionar em runtime.
+   ========================================================================== */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+
+  --color-brand: var(--brand);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-text: var(--primary-text);
+  --color-on-primary: var(--on-primary);
+  --color-soft: var(--soft);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-text: var(--secondary-text);
+  --color-on-secondary: var(--on-secondary);
+  --color-secondary-soft: var(--secondary-soft);
+
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-on-danger: var(--on-danger);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+
+  --color-scrim: var(--scrim);
+
+  /* Poppins para a marca e os títulos; Inter para tudo o que é interface. */
+  --font-display: "Poppins", "Segoe UI", Arial, sans-serif;
+  --font-sans: "Inter", "Segoe UI", Arial, Helvetica, sans-serif;
+
+  /* Escala tipográfica */
+  /* Mobile-first: os tamanhos são os do telefone e crescem com o ecrã.
+     O piso é 12px, e só para rótulos em caixa alta; texto corrente nunca
+     desce abaixo de 13px. */
+  --text-display: clamp(30px, 8vw, 40px);
+  --text-display--line-height: 1.15;
+  --text-display--letter-spacing: -0.02em;
+  --text-h1: clamp(25px, 6.4vw, 30px);
+  --text-h1--line-height: 1.2;
+  --text-h1--letter-spacing: -0.015em;
+  --text-h2: clamp(20px, 4.8vw, 22px);
+  --text-h2--line-height: 1.27;
+  --text-h2--letter-spacing: -0.01em;
+  --text-h3: 18px;
+  --text-h3--line-height: 25px;
+  --text-body-lg: 16px;
+  --text-body-lg--line-height: 25px;
+  --text-body: 15px;
+  --text-body--line-height: 23px;
+  --text-small: 14px;
+  --text-small--line-height: 21px;
+  --text-caption: 13px;
+  --text-caption--line-height: 19px;
+  --text-overline: 12px;
+  --text-overline--line-height: 16px;
+  --text-overline--letter-spacing: 0.08em;
+
+  /* Raios */
+  --radius-control: 8px;
+  --radius-card: 12px;
+  --radius-panel: 16px;
+
+  /* Elevação */
+  --shadow-soft: 0 3px 12px var(--shadow-color);
+  --shadow-card: 0 8px 22px var(--shadow-color);
+  --shadow-float: 0 8px 40px var(--shadow-color);
+  --shadow-dialog: 0 25px 80px var(--shadow-color);
+
+  --spacing-sidebar: var(--sidebar-width);
+  --spacing-topbar: var(--topbar-height);
+}
+
+/* ==========================================================================
+   3. Base
+   ========================================================================== */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply min-w-[320px] bg-background font-sans text-body text-ink;
+    margin: 0;
+    font-synthesis: none;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Títulos em Poppins — é onde a geometria do logótipo se repete. */
+  h1,
+  h2,
+  h3 {
+    @apply font-display font-semibold text-ink;
+    overflow-wrap: break-word;
+  }
+
+  h1 {
+    @apply mb-2.5 text-h1;
+  }
+
+  h2 {
+    @apply mb-3.5 text-h2;
+  }
+
+  h3 {
+    @apply mb-2.5 text-h3;
+  }
+
+  p {
+    @apply mt-0;
+    line-height: 1.65;
+  }
+
+  small {
+    @apply text-caption;
+  }
+
+  strong {
+    @apply font-semibold;
+  }
+
+  a {
+    @apply text-inherit no-underline;
+  }
+
+  img {
+    @apply block max-w-full;
+  }
+
+  svg {
+    @apply shrink-0 align-middle;
+  }
+
+  fieldset {
+    @apply min-w-0 border-0 p-0;
+    margin: 0;
+  }
+
+  button {
+    @apply cursor-pointer;
+    font: inherit;
+    color: inherit;
+    transition:
+      background-color 0.16s,
+      color 0.16s,
+      border-color 0.16s,
+      box-shadow 0.16s;
+  }
+
+  button:disabled {
+    @apply cursor-not-allowed opacity-45;
+  }
+
+  button,
+  a {
+    touch-action: manipulation;
+  }
+
+  input,
+  select,
+  textarea {
+    @apply min-w-0 max-w-full;
+    font: inherit;
+    color: inherit;
+  }
+
+  /* Controlos de formulário: altura confortável para toque em qualquer ecrã. */
+  /* Contorno dos campos: border-line-strong garante os 3:1 que a WCAG exige
+     para elementos de interface, ao contrário das divisórias decorativas. */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    @apply min-h-11 rounded-control border border-line-strong bg-surface px-3 py-2.5 text-body;
+  }
+
+  textarea {
+    @apply min-h-[90px] resize-y;
+  }
+
+  /* Abaixo de sm, os campos ficam a 16px: com menos do que isso o Safari do
+     iPhone amplia a página ao focar o campo e desalinha tudo. */
+  @media (max-width: 639px) {
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+    select,
+    textarea {
+      font-size: 16px;
+    }
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-muted opacity-100;
+  }
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    @apply size-[18px] shrink-0;
+    accent-color: var(--primary);
+  }
+
+  /* Horas, preços e quantidades alinham em coluna. */
+  table,
+  time,
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  input[type="range"] {
+    accent-color: var(--primary);
+  }
+
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 3px solid var(--primary-text);
+    outline-offset: 3px;
+  }
+}
+
+/* ==========================================================================
+   4. Primitivas partilhadas
+   Só entra aqui o que se repete por toda a aplicação. Layout, grelhas e
+   composição de cada ecrã vivem no markup, em utilidades.
+   ========================================================================== */
+
+@layer components {
+  /* --- Acessibilidade ---------------------------------------------------- */
+
+  .sr-only {
+    @apply absolute m-[-1px] size-px overflow-hidden border-0 p-0 whitespace-nowrap;
+    clip: rect(0, 0, 0, 0);
+  }
+
+  .skip-link {
+    @apply fixed left-5 z-200 rounded-md border border-line bg-surface px-4 py-3 text-small font-semibold text-primary-text;
+    top: -80px;
+  }
+
+  .skip-link:focus {
+    @apply top-2.5;
+  }
+
+  /* --- Botões ------------------------------------------------------------ */
+
+  .btn {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-transparent px-4 py-2.5 text-center text-small leading-snug font-semibold;
+  }
+
+  .btn-primary {
+    @apply border-primary bg-primary text-on-primary;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    @apply bg-primary-hover;
+  }
+
+  .btn-secondary {
+    @apply border-line bg-surface text-ink;
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    @apply bg-soft text-primary-text;
+  }
+
+  .btn-danger {
+    @apply border-danger bg-danger text-on-danger;
+  }
+
+  .btn-danger:hover:not(:disabled) {
+    @apply opacity-90;
+  }
+
+  .btn-compact {
+    @apply min-h-[38px] px-3 py-1.5 text-caption;
+  }
+
+  .icon-btn {
+    @apply inline-flex size-11 shrink-0 items-center justify-center rounded-md border border-transparent bg-transparent p-1.5 text-muted;
+  }
+
+  .icon-btn:hover:not(:disabled) {
+    @apply bg-surface-muted text-primary-text;
+  }
+
+  .icon-btn-danger {
+    @apply text-danger;
+  }
+
+  .icon-btn-danger:hover:not(:disabled) {
+    @apply bg-danger-soft text-danger;
+  }
+
+  .text-button {
+    @apply inline-flex items-center justify-center gap-2 border-0 bg-transparent p-0 text-small font-semibold text-primary-text;
+  }
+
+  .text-button:hover:not(:disabled) {
+    @apply underline underline-offset-4;
+  }
+
+  /* --- Identidade -------------------------------------------------------- */
+
+  .eyebrow {
+    @apply mb-3 block text-overline font-semibold text-primary-text uppercase;
+  }
+
+  /* Número de destaque de um cartão de estatística. */
+  .figure {
+    @apply block font-display text-[clamp(24px,7vw,28px)] leading-tight font-semibold text-ink tabular-nums;
+  }
+
+  .avatar {
+    @apply inline-grid size-[46px] shrink-0 place-items-center rounded-full border-0 bg-surface-muted text-body font-semibold text-ink;
+  }
+
+  .avatar-sm {
+    @apply size-[34px] text-caption;
+  }
+
+  /* --- Etiquetas de estado ------------------------------------------------ */
+
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded px-2 py-1 text-caption leading-snug font-medium whitespace-nowrap;
+  }
+
+  .badge-success {
+    @apply bg-success-soft text-success;
+  }
+
+  .badge-warning {
+    @apply bg-warning-soft text-warning;
+  }
+
+  .badge-danger {
+    @apply bg-danger-soft text-danger;
+  }
+
+  .badge-neutral {
+    @apply bg-surface-muted text-muted;
+  }
+
+  .badge-info {
+    @apply bg-info-soft text-info;
+  }
+
+  /* --- Superfícies -------------------------------------------------------- */
+
+  .card {
+    @apply rounded-card border border-line bg-surface;
+  }
+
+  .panel {
+    @apply rounded-panel border border-line bg-surface p-6;
+  }
+
+  /* --- Formulários --------------------------------------------------------- */
+
+  .field {
+    @apply mb-[18px] flex min-w-0 flex-col gap-[7px] text-caption font-medium;
+  }
+
+  .field > input,
+  .field > select,
+  .field > textarea,
+  .field > * > input {
+    @apply w-full text-body font-normal;
+  }
+
+  .field > small {
+    @apply font-normal text-muted;
+  }
+
+  .check-field {
+    @apply flex items-center gap-2.5 text-small;
+  }
+
+  .form-grid {
+    @apply grid grid-cols-1 items-start gap-x-5 sm:grid-cols-2;
+  }
+
+  .form-grid-full {
+    @apply sm:col-span-2;
+  }
+
+  .form-actions {
+    @apply mt-6 flex flex-wrap items-center justify-end gap-3 border-t border-line pt-5;
+  }
+
+  .error-message {
+    @apply rounded-md bg-danger-soft px-3.5 py-3 text-caption text-danger;
+    line-height: 1.65;
+  }
+
+  .success-message {
+    @apply text-caption text-primary-text;
+  }
+
+  /* --- Tabelas ------------------------------------------------------------ */
+
+  /* min-w-0 é essencial: sem ele, uma tabela larga dentro de uma célula de
+     grelha ou de um flex empurra a página e cria scroll horizontal. */
+  .table-scroll {
+    @apply w-full max-w-full min-w-0 overflow-auto rounded-card border border-line bg-surface;
+  }
+
+  .data-table {
+    @apply w-full border-collapse text-left text-small;
+  }
+
+  .data-table th {
+    @apply bg-surface-muted px-4 py-3.5 text-overline font-medium whitespace-nowrap text-muted;
+  }
+
+  .data-table td {
+    @apply border-t border-line px-4 py-4 align-middle;
+  }
+
+  .data-table tbody tr:hover td {
+    @apply bg-surface-muted/60;
+  }
+
+  /* --- Navegação por separadores ------------------------------------------ */
+
+  .tabs {
+    @apply mb-6 flex max-w-full gap-6 overflow-x-auto border-b border-line;
+  }
+
+  .tabs > button {
+    @apply min-h-11 shrink-0 border-0 border-b-2 border-transparent bg-transparent px-0.5 py-3 text-small font-medium whitespace-nowrap text-muted;
+  }
+
+  .tabs > button.active {
+    @apply border-b-primary text-primary-text;
+  }
+
+  /* --- Diálogos ----------------------------------------------------------- */
+
+  /* O preflight do Tailwind zera a margem de todos os elementos, incluindo a
+     `margin: auto` com que o browser centra um <dialog> modal. Repô-la é o que
+     traz a janela de volta ao centro do ecrã, na vertical e na horizontal. */
+  .dialog {
+    @apply rounded-panel border border-line bg-surface p-0 text-ink shadow-dialog;
+    margin: auto;
+    width: calc(100% - 32px);
+    max-width: 620px;
+    max-height: calc(100dvh - 48px);
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  .dialog::backdrop {
+    background: var(--scrim);
+    backdrop-filter: blur(3px);
+  }
+
+  .dialog-inner {
+    @apply p-6 sm:p-7;
+  }
+
+  .dialog-header {
+    @apply mb-6 flex items-center justify-between gap-4;
+  }
+
+  .dialog-header h2 {
+    @apply mb-0 text-h2;
+  }
+
+  /* --- Estado vazio -------------------------------------------------------- */
+
+  .empty-state {
+    @apply flex flex-col items-center gap-2 px-5 py-14 text-center text-muted;
+  }
+
+  .empty-state h3 {
+    @apply mb-0 text-h3 text-ink;
+  }
+
+  .empty-state p {
+    @apply max-w-100 text-small;
+  }
+
+  /* --- Opções seleccionáveis (profissional, pagamento, espaço de trabalho) -- */
+
+  .choice {
+    @apply flex w-full items-center gap-3 rounded-md border border-line bg-surface p-3.5 text-left;
+  }
+
+  .choice:hover:not(:disabled) {
+    @apply border-primary/40 bg-surface-muted;
+  }
+
+  .choice-selected {
+    @apply border-primary-text bg-soft;
+  }
+}
+
+/* ==========================================================================
+   5. Animações — respeitando quem prefere menos movimento
+   ========================================================================== */
+
+@keyframes marcafacil-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .page-motion {
+    animation: marcafacil-page-in 0.24s ease both;
+  }
+
+  .theme-transition {
+    transition:
+      background-color 0.18s ease,
+      color 0.18s ease,
+      border-color 0.18s ease;
+  }
+}
+
+/* Transições nomeadas do Vue para o toast. */
+.toast-enter-active,
+.toast-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.toast-enter-from,
+.toast-leave-to {
+  opacity: 0;
+}
+
+/* Logótipo: uma variante por tema, trocada sem JavaScript. */
+.brand-logo-dark {
+  display: none;
+}
+
+:root[data-theme="dark"] .brand-logo-light {
+  display: none;
+}
+
+:root[data-theme="dark"] .brand-logo-dark {
+  display: block;
+}

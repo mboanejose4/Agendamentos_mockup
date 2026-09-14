@@ -1,0 +1,513 @@
+<template>
+  <main class="dashboard-page platform-page">
+    <section class="dashboard-welcome platform-welcome">
+      <div class="shell">
+        <span class="eyebrow light">Administração da Plataforma</span>
+        <h1>{{ pageTitle }}</h1>
+        <p>{{ pageSubtitle }}</p>
+      </div>
+    </section>
+    <div class="shell admin-layout">
+      <aside class="admin-sidebar desktop-only">
+        <div class="admin-context">
+          <span class="brand-mark">A</span>
+          <div>
+            <strong>Plataforma</strong><small>Administração global</small>
+          </div>
+        </div>
+        <nav>
+          <button
+            v-for="item in nav"
+            :key="item.view"
+            :class="{ active: store.view === item.view }"
+            @click="go(item.view)"
+          >
+            <span>{{ item.icon }}</span
+            >{{ item.label }}
+          </button>
+        </nav>
+      </aside>
+      <section class="admin-content">
+        <template v-if="store.view === 'platform-admin'">
+          <div class="metric-grid four">
+            <article>
+              <small>Salões activos</small><strong>32</strong
+              ><span>+4 este mês</span>
+            </article>
+            <article>
+              <small>Marcações hoje</small><strong>418</strong
+              ><span>plataforma</span>
+            </article>
+            <article>
+              <small>Disponibilidade</small><strong>99,9%</strong
+              ><span>últimas 24h</span>
+            </article>
+            <article>
+              <small>Suporte aberto</small><strong>7</strong
+              ><span>2 prioritários</span>
+            </article>
+          </div>
+          <div class="dashboard-grid two-col">
+            <section class="dashboard-section">
+              <div class="section-heading split compact-heading">
+                <div>
+                  <span class="eyebrow">Empresas</span>
+                  <h2>Registos recentes</h2>
+                </div>
+                <button class="text-link" @click="go('platform-salons')">
+                  Gerir →
+                </button>
+              </div>
+              <div class="data-list">
+                <div
+                  v-for="salon in salons.slice(0, 4)"
+                  :key="salon.id"
+                  class="data-row"
+                >
+                  <span class="salon-monogram small">{{
+                    monogram(salon.name)
+                  }}</span>
+                  <div class="data-main">
+                    <strong>{{ salon.name }}</strong
+                    ><small
+                      >{{ salon.city }} ·
+                      {{ salon.professionals }} profissionais</small
+                    >
+                  </div>
+                  <StatusBadge :status="salon.status" />
+                </div>
+              </div>
+            </section>
+            <section class="dashboard-section">
+              <div class="section-heading compact-heading">
+                <span class="eyebrow">Sistema</span>
+                <h2>Estado dos serviços</h2>
+              </div>
+              <div class="health-list">
+                <div v-for="item in health" :key="item.name">
+                  <span class="health-dot" :class="item.state"></span>
+                  <div>
+                    <strong>{{ item.name }}</strong
+                    ><small>{{ item.detail }}</small>
+                  </div>
+                  <StatusBadge :status="item.label" />
+                </div>
+              </div>
+              <button class="text-link" @click="go('platform-monitoring')">
+                Abrir monitoria →
+              </button>
+            </section>
+          </div>
+          <section class="dashboard-section">
+            <div class="section-heading compact-heading">
+              <span class="eyebrow">Administração</span>
+              <h2>Acções rápidas</h2>
+            </div>
+            <div class="quick-actions admin-actions">
+              <button @click="go('platform-salons')">
+                <span>◇</span><strong>Gerir salões</strong
+                ><small>Activar e desactivar</small></button
+              ><button @click="go('platform-settings')">
+                <span>⚙</span><strong>Parâmetros globais</strong
+                ><small>Configuração do sistema</small></button
+              ><button @click="go('platform-monitoring')">
+                <span>◌</span><strong>Monitorizar</strong
+                ><small>Saúde e desempenho</small></button
+              ><button @click="go('platform-support')">
+                <span>?</span><strong>Suporte técnico</strong
+                ><small>Pedidos das empresas</small>
+              </button>
+            </div>
+          </section>
+        </template>
+
+        <template v-else-if="store.view === 'platform-salons'">
+          <div class="toolbar">
+            <div>
+              <strong>Salões registados</strong
+              ><small>Gestão de adesões e estado operacional.</small>
+            </div>
+            <label class="search-control mini-search"
+              ><span>⌕</span
+              ><input v-model="search" placeholder="Pesquisar salão"
+            /></label>
+          </div>
+          <div class="data-table-card">
+            <div class="table-head platform-salon-head desktop-only">
+              <span>Salão</span><span>Responsável</span><span>Localização</span
+              ><span>Equipa</span><span>Estado</span><span></span>
+            </div>
+            <div
+              v-for="salon in filteredSalons"
+              :key="salon.id"
+              class="table-row platform-salon-row"
+            >
+              <div class="table-primary">
+                <span class="salon-monogram small">{{
+                  monogram(salon.name)
+                }}</span>
+                <div>
+                  <strong>{{ salon.name }}</strong
+                  ><small>Desde {{ salon.joined }}</small>
+                </div>
+              </div>
+              <span>{{ salon.owner }}</span
+              ><span>{{ salon.city }}</span
+              ><strong>{{ salon.professionals }}</strong
+              ><StatusBadge :status="salon.status" /><button
+                class="btn btn-outline compact"
+                @click="toggleSalon(salon)"
+              >
+                {{ salon.status === "Activo" ? "Desactivar" : "Activar" }}
+              </button>
+            </div>
+          </div>
+        </template>
+
+        <template v-else-if="store.view === 'platform-settings'">
+          <section class="dashboard-section">
+            <div class="section-heading split compact-heading">
+              <div>
+                <span class="eyebrow">Configuração</span>
+                <h2>Parâmetros globais</h2>
+                <p>Valores aplicáveis a todas as empresas aderentes.</p>
+              </div>
+              <button class="btn btn-primary compact" @click="saveSettings">
+                Guardar
+              </button>
+            </div>
+            <div class="settings-grid">
+              <label
+                >Fuso horário<select v-model="settings.timezone">
+                  <option>Africa/Maputo</option>
+                </select></label
+              ><label
+                >Moeda<select v-model="settings.currency">
+                  <option>MZN — Metical</option>
+                </select></label
+              ><label
+                >Intervalo mínimo da agenda<select v-model="settings.slot">
+                  <option>15 minutos</option>
+                  <option>30 minutos</option>
+                </select></label
+              ><label
+                >Antecedência máxima<select v-model="settings.advance">
+                  <option>60 dias</option>
+                  <option>90 dias</option>
+                </select></label
+              >
+            </div>
+            <div class="toggle-list">
+              <label
+                ><span
+                  ><strong>Pagamentos online</strong
+                  ><small
+                    >Permitir que salões activem gateway externo</small
+                  ></span
+                ><input type="checkbox" v-model="settings.payments" /></label
+              ><label
+                ><span
+                  ><strong>Promoções e cupões</strong
+                  ><small>Módulo global disponível para empresas</small></span
+                ><input type="checkbox" v-model="settings.promos" /></label
+              ><label
+                ><span
+                  ><strong>Notificações automáticas</strong
+                  ><small>Confirmações e lembretes</small></span
+                ><input type="checkbox" v-model="settings.notifications"
+              /></label>
+            </div>
+          </section>
+        </template>
+
+        <template v-else-if="store.view === 'platform-monitoring'">
+          <div class="metric-grid four">
+            <article>
+              <small>API</small><strong>122ms</strong
+              ><span>latência média</span>
+            </article>
+            <article>
+              <small>Erro</small><strong>0,12%</strong><span>última hora</span>
+            </article>
+            <article>
+              <small>Utilizadores</small><strong>186</strong
+              ><span>sessões activas</span>
+            </article>
+            <article>
+              <small>Fila</small><strong>3</strong><span>notificações</span>
+            </article>
+          </div>
+          <section class="dashboard-section">
+            <div class="section-heading compact-heading">
+              <span class="eyebrow">Monitoria</span>
+              <h2>Componentes do sistema</h2>
+            </div>
+            <div class="health-list large-health">
+              <div v-for="item in health" :key="item.name">
+                <span class="health-dot" :class="item.state"></span>
+                <div>
+                  <strong>{{ item.name }}</strong
+                  ><small>{{ item.detail }}</small>
+                </div>
+                <span class="mono">{{ item.metric }}</span
+                ><StatusBadge :status="item.label" />
+              </div>
+            </div>
+          </section>
+          <section class="dashboard-section">
+            <div class="section-heading compact-heading">
+              <h2>Eventos recentes</h2>
+            </div>
+            <div class="event-log">
+              <div v-for="event in events" :key="event.time">
+                <span class="mono">{{ event.time }}</span
+                ><StatusBadge :status="event.level" />
+                <p>{{ event.text }}</p>
+              </div>
+            </div>
+          </section>
+        </template>
+
+        <template v-else>
+          <div class="toolbar">
+            <div>
+              <strong>Suporte técnico</strong
+              ><small>Pedidos das empresas aderentes.</small>
+            </div>
+            <button class="btn btn-outline">Base de conhecimento</button>
+          </div>
+          <div class="support-layout">
+            <div class="ticket-list">
+              <button
+                v-for="ticket in tickets"
+                :key="ticket.id"
+                :class="[
+                  'ticket-card',
+                  { selected: selectedTicket === ticket.id },
+                ]"
+                @click="selectedTicket = ticket.id"
+              >
+                <div>
+                  <StatusBadge :status="ticket.priority" /><small>{{
+                    ticket.id
+                  }}</small>
+                </div>
+                <strong>{{ ticket.title }}</strong>
+                <p>{{ ticket.salon }} · {{ ticket.age }}</p>
+              </button>
+            </div>
+            <div class="ticket-detail">
+              <template v-if="ticket"
+                ><div class="sheet-head">
+                  <div>
+                    <span class="eyebrow">{{ ticket.id }}</span>
+                    <h2>{{ ticket.title }}</h2>
+                  </div>
+                  <StatusBadge :status="ticket.status" />
+                </div>
+                <p class="muted">
+                  Salão: <strong>{{ ticket.salon }}</strong>
+                </p>
+                <div class="message-thread">
+                  <div class="message incoming">
+                    <small>Salão · {{ ticket.age }}</small>
+                    <p>{{ ticket.message }}</p>
+                  </div>
+                  <div class="message outgoing">
+                    <small>Suporte · agora</small>
+                    <p>
+                      Olá. Estamos a analisar o pedido no ambiente
+                      demonstrativo. Pode confirmar se o erro ocorre em todos os
+                      horários?
+                    </p>
+                  </div>
+                </div>
+                <div class="reply-box">
+                  <textarea
+                    rows="3"
+                    placeholder="Escrever resposta..."
+                  ></textarea
+                  ><button
+                    class="btn btn-primary"
+                    @click="showToast('Resposta registada no mockup.')"
+                  >
+                    Responder
+                  </button>
+                </div></template
+              >
+            </div>
+          </div>
+        </template>
+      </section>
+    </div>
+  </main>
+</template>
+<script>
+import { appStore as store, go, showToast } from "../store.js";
+import { platformSalons } from "../data/mockData.js";
+import StatusBadge from "../components/StatusBadge.vue";
+export default {
+  name: "PlatformAdminModule",
+  components: { StatusBadge },
+  data: () => ({
+    store,
+    salons: platformSalons.map((x) => ({ ...x })),
+    search: "",
+    selectedTicket: "SUP-183",
+    settings: {
+      timezone: "Africa/Maputo",
+      currency: "MZN — Metical",
+      slot: "15 minutos",
+      advance: "60 dias",
+      payments: true,
+      promos: true,
+      notifications: true,
+    },
+    health: [
+      {
+        name: "Aplicação web",
+        detail: "Portal e painéis",
+        state: "ok",
+        label: "Operacional",
+        metric: "99,99%",
+      },
+      {
+        name: "API de agendamento",
+        detail: "Pesquisa, disponibilidade e reservas",
+        state: "ok",
+        label: "Operacional",
+        metric: "122 ms",
+      },
+      {
+        name: "Gateway de pagamento",
+        detail: "Integração externa",
+        state: "warn",
+        label: "Parcial",
+        metric: "388 ms",
+      },
+      {
+        name: "Notificações",
+        detail: "Fila de envio",
+        state: "ok",
+        label: "Operacional",
+        metric: "3 fila",
+      },
+      {
+        name: "Base de dados",
+        detail: "Persistência principal",
+        state: "ok",
+        label: "Operacional",
+        metric: "41 ms",
+      },
+    ],
+    events: [
+      {
+        time: "21:13:08",
+        level: "Info",
+        text: "Sincronização de notificações concluída.",
+      },
+      {
+        time: "21:08:42",
+        level: "Atenção",
+        text: "Aumento temporário da latência do gateway de pagamento.",
+      },
+      {
+        time: "20:55:17",
+        level: "Info",
+        text: "Novo salão activado: Studio Matola.",
+      },
+    ],
+    tickets: [
+      {
+        id: "SUP-183",
+        priority: "Alta",
+        title: "Horários não aparecem ao cliente",
+        salon: "Beleza & Estilo",
+        age: "há 22 min",
+        status: "Em análise",
+        message:
+          "Configurámos a disponibilidade da equipa, mas alguns horários de amanhã não são apresentados ao cliente.",
+      },
+      {
+        id: "SUP-182",
+        priority: "Média",
+        title: "Pagamento permanece pendente",
+        salon: "Studio Matola",
+        age: "há 1h",
+        status: "Aberto",
+        message:
+          "Uma transacção aprovada no gateway continua pendente na marcação.",
+      },
+      {
+        id: "SUP-179",
+        priority: "Baixa",
+        title: "Alteração do contacto do salão",
+        salon: "Linha Fina",
+        age: "ontem",
+        status: "Aberto",
+        message: "Precisamos actualizar o contacto principal do perfil.",
+      },
+    ],
+  }),
+  computed: {
+    nav() {
+      return [
+        { view: "platform-admin", label: "Visão geral", icon: "▦" },
+        { view: "platform-salons", label: "Salões", icon: "◇" },
+        { view: "platform-settings", label: "Parâmetros globais", icon: "⚙" },
+        { view: "platform-monitoring", label: "Monitoria", icon: "◌" },
+        { view: "platform-support", label: "Suporte técnico", icon: "?" },
+      ];
+    },
+    pageTitle() {
+      return (
+        this.nav.find((x) => x.view === store.view)?.label ||
+        "Administração da Plataforma"
+      );
+    },
+    pageSubtitle() {
+      return (
+        {
+          "platform-admin":
+            "Visão global das empresas, utilização e saúde do sistema.",
+          "platform-salons":
+            "Active, desactive e acompanhe as empresas aderentes.",
+          "platform-settings": "Configure parâmetros comuns da plataforma.",
+          "platform-monitoring":
+            "Acompanhe o funcionamento geral e integrações.",
+          "platform-support": "Preste suporte técnico às empresas aderentes.",
+        }[store.view] || ""
+      );
+    },
+    filteredSalons() {
+      const q = this.search.toLowerCase();
+      return this.salons.filter((s) =>
+        `${s.name} ${s.owner} ${s.city}`.toLowerCase().includes(q),
+      );
+    },
+    ticket() {
+      return this.tickets.find((t) => t.id === this.selectedTicket);
+    },
+  },
+  methods: {
+    go,
+    showToast,
+    monogram(name) {
+      return name
+        .split(" ")
+        .filter((x) => x.length > 2)
+        .slice(0, 2)
+        .map((x) => x[0])
+        .join("")
+        .toUpperCase();
+    },
+    toggleSalon(s) {
+      s.status = s.status === "Activo" ? "Inactivo" : "Activo";
+      showToast(`${s.name}: estado actualizado.`);
+    },
+    saveSettings() {
+      showToast("Parâmetros globais guardados no mockup.");
+    },
+  },
+};
+</script>
