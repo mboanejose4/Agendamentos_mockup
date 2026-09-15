@@ -34,7 +34,7 @@ function photoError(event) {
           >{{ company.name }}</span
         ></button
       ><span
-        class="pointer-events-none absolute top-[13px] left-[13px] flex items-center gap-[5px] rounded bg-scrim px-2 py-[5px] text-caption text-muted"
+        class="pointer-events-none absolute top-[13px] left-[13px] flex items-center gap-[5px] rounded bg-scrim px-2 py-[5px] text-white text-muted"
         ><AppIcon :name="categoryIcon" :size="13" />{{ company.category }}</span
       ><button
         :class="[

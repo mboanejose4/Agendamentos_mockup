@@ -109,7 +109,7 @@ const {
       /><AppIcon name="credit-card" /><span
         ><strong class="block text-caption">Online</strong
         ><small class="mt-1 block text-caption text-muted"
-          >M-Pesa, cartão ou referência. Pagamento de teste.</small
+          >Carteiras Móveis e Cartões de Crédito.</small
         ></span
       ></label
     >

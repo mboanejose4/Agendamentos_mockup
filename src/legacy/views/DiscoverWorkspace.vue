@@ -23,31 +23,26 @@ const categories = [
     name: "Todos",
     label: "Todos os serviços",
     icon: "grid-2x2",
-    color: "mint",
   },
   {
     name: "Beleza",
     label: "Beleza & estilo",
     icon: "scissors",
-    color: "peach",
   },
   {
     name: "Bem-estar",
     label: "Spa & bem-estar",
     icon: "flower-2",
-    color: "lavender",
   },
   {
     name: "Saúde",
     label: "Saúde & cuidados",
     icon: "heart-pulse",
-    color: "blue",
   },
   {
     name: "Restauração",
     label: "Mesa & sabores",
     icon: "utensils",
-    color: "yellow",
   },
 ];
 const cities = computed(() => [
@@ -206,19 +201,29 @@ function photoError(event) {
         <AppIcon name="search" :size="18" /><span>Pesquisar</span>
       </button>
     </form>
-    <div class="category-navigation" aria-label="Categorias">
-      <button
-        v-for="item in categories"
-        :key="item.name"
-        :class="['category-button', { selected: category === item.name }]"
-        :aria-pressed="category === item.name"
-        @click="category = item.name"
-      >
-        <span :class="['category-icon', item.color]"
-          ><AppIcon :name="item.icon" :size="23" /></span
-        ><span>{{ item.label }}</span>
-      </button>
-    </div>
+   <div class="category-navigation" aria-label="Categorias">
+  <button
+    v-for="item in categories"
+    :key="item.name"
+    type="button"
+    :class="[
+      'category-button',
+      {
+        selected: category === item.name,
+      },
+    ]"
+    :aria-pressed="category === item.name"
+    @click="category = item.name"
+  >
+    <span class="category-icon">
+      <AppIcon :name="item.icon" :size="23" />
+    </span>
+
+    <span class="category-label">
+      {{ item.label }}
+    </span>
+  </button>
+</div>
     <section class="discovery-results">
       <div class="section-heading">
         <div>

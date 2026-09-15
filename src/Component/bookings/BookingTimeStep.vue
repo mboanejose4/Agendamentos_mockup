@@ -56,6 +56,7 @@ const { state, today, draft, selectedService, people, slots, dates, maxDate } =
         class="min-h-[43px] rounded-[5px] border border-line bg-surface text-caption"
         :class="{
           'border-primary bg-primary text-on-primary': draft.time === time,
+          'booking-time-selected': draft.time === time,
         }"
         @click="draft.time = time"
       >
@@ -72,3 +73,11 @@ const { state, today, draft, selectedService, people, slots, dates, maxDate } =
     </div>
   </div>
 </template>
+
+<style scoped>
+:root:not([data-theme="dark"]) .booking-time-selected {
+  background-color: var(--brand-500);
+  border-color: var(--white);
+  color: var(--neutral-0);
+}
+</style>
