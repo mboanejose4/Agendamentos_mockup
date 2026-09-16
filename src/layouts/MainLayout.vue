@@ -3,6 +3,7 @@ import AppSidebar from "@/components/shared/navigation/AppSidebar.vue";
 import AppTopbar from "@/components/shared/navigation/AppTopbar.vue";
 import AppFooter from "@/components/shared/navigation/AppFooter.vue";
 import WorkspaceSwitcher from "@/components/shared/navigation/WorkspaceSwitcher.vue";
+import ShareBookingDialog from "@/components/shared/ui/ShareBookingDialog.vue";
 import { useAppNavigation } from "@/composables/navigation/useAppNavigation.ts";
 const {
   state,
@@ -94,5 +95,9 @@ const {
       @select-role="chooseRole"
       @sign-out="signOut"
     />
+
+    <!-- Partilhar uma marcação é possível a partir de vários ecrãs: o diálogo
+         mora aqui, uma só vez. -->
+    <ShareBookingDialog />
   </div>
 </template>

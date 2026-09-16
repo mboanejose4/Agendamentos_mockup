@@ -739,6 +739,7 @@ export function createBooking(draft: BookingInput): OperationResult<Booking> {
   const record: Booking = {
     ...result.record,
     id: uid("a"),
+    shareToken: uid("lnk").replace("lnk_", ""),
     status: "confirmed",
     paymentStatus: draft.paymentStatus === "paid" ? "paid" : "pending",
     createdAt: new Date().toISOString(),
@@ -877,6 +878,21 @@ export function cancelBooking(id: string): OperationResult<Booking> {
   );
   audit(`Marcação cancelada: ${record.clientName}`, record.businessId);
   return { ok: true, record };
+}
+
+/* A ligação partilhável de uma marcação. As marcações antigas não têm token:
+   é criado na primeira vez que alguém a partilha. */
+export function bookingShareToken(id: string): string {
+  const record = state.db.bookings.find((entry) => entry.id === id);
+  if (!record) return "";
+  /* O observador profundo do estado trata de guardar. */
+  if (!record.shareToken) record.shareToken = uid("lnk").replace("lnk_", "");
+  return record.shareToken;
+}
+
+export function bookingByToken(token: string): Booking | undefined {
+  if (!token) return undefined;
+  return state.db.bookings.find((entry) => entry.shareToken === token);
 }
 
 export function markPaid(id: string): OperationResult<Booking> {

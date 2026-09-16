@@ -1,5 +1,6 @@
 import { computed, reactive, ref, watch } from "vue";
 import { plural, bookingCode } from "@/utils/formatters.ts";
+import { openShareBooking } from "@/stores/shareBookingStore.ts";
 import {
   state,
   go,
@@ -724,6 +725,8 @@ export function useBusinessManagement() {
     notify(
       bookingForm.id ? "Reserva actualizada." : "Reserva criada com sucesso.",
     );
+    /* Criada ao balcão: a seguir envia-se ao cliente. */
+    if (!bookingForm.id && result.record) openShareBooking(result.record.id);
   }
   function inspectBooking(booking: Booking): void {
     detailId.value = booking.id;

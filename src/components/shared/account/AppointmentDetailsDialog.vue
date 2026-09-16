@@ -4,6 +4,7 @@ import { bookingReference } from "@/utils/formatters.ts";
 import AppModal from "@/components/shared/ui/AppModal.vue";
 import { useAccountManagementContext } from "@/composables/account/accountContext.ts";
 const {
+  openShareBooking,
   money,
   dateLabel,
   business,
@@ -155,6 +156,11 @@ const {
             <AppIcon name="calendar-clock" /> Reagendar
           </button></template
         ><template v-if="isProfessional"
+          ><button
+            class="btn btn-secondary"
+            @click="openShareBooking(selected.id)"
+          >
+            <AppIcon name="send" /> Enviar ao cliente</button
           ><button
             v-if="selected.status === 'confirmed'"
             class="btn btn-danger"

@@ -11,6 +11,7 @@ const {
   statusNames,
   statusClass,
   openBooking,
+  openNewBooking,
   changeStatus,
   agendaDate,
   agendaFilter,
@@ -88,8 +89,10 @@ const {
         <option value="in_progress">Em atendimento</option>
         <option value="completed">Concluídos</option>
         <option value="cancelled">Cancelados</option>
-        <option value="no_show">Não compareceu</option>
-      </select>
+        <option value="no_show">Não compareceu</option></select
+      ><button class="btn btn-primary w-full sm:w-auto" @click="openNewBooking">
+        <AppIcon name="calendar-plus" :size="18" /> Nova marcação
+      </button>
     </div>
     <div v-if="dayBookings.length" class="flex flex-col gap-4">
       <article

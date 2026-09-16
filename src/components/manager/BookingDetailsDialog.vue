@@ -2,6 +2,7 @@
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
 import { bookingReference } from "@/utils/formatters.ts";
 import AppModal from "@/components/shared/ui/AppModal.vue";
+import { openShareBooking } from "@/stores/shareBookingStore.ts";
 import { useBusinessManagementContext } from "@/composables/businesses/businessContext.ts";
 const {
   money,
@@ -109,6 +110,11 @@ const {
         </div>
         <div class="form-actions">
           <button
+            class="btn btn-secondary"
+            @click="openShareBooking(selectedBooking.id)"
+          >
+            <AppIcon name="send" :size="16" /> Enviar ao cliente</button
+          ><button
             v-if="selectedBooking.status === 'confirmed'"
             class="btn btn-primary"
             @click="changeStatus(selectedBooking, 'in_progress')"

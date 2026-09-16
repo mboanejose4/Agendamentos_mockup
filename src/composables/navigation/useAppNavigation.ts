@@ -8,6 +8,7 @@ import type { Role, ViewName } from "@/types/domain.ts";
 const fallbackLabels: Partial<Record<ViewName, string>> = {
   directory: "Estabelecimentos",
   business: "Estabelecimento",
+  shared: "A sua marcação",
   booking: "Nova marcação",
   auth: "A sua conta",
   onboard: "Registar empresa",

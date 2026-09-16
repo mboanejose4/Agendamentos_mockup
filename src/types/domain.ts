@@ -50,6 +50,7 @@ export interface GeoPoint {
 export type ViewName =
   | "explore"
   | "directory"
+  | "shared"
   | "favorites"
   | "business"
   | "booking"
@@ -187,6 +188,11 @@ export interface Booking {
   notes: string;
   createdAt: IsoDateTime;
   paidAt?: IsoDateTime;
+  /** Chave da ligação que o estabelecimento envia ao cliente. No backend será
+      um token assinado e com prazo; aqui é só um identificador aleatório. */
+  shareToken?: string;
+  /** Contacto de WhatsApp indicado ao criar a marcação ao balcão. */
+  whatsapp?: string;
 }
 
 export interface Promotion {

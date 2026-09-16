@@ -13,8 +13,12 @@ import {
   removeRecord,
   updateBooking,
   cancelBooking,
+  createBooking,
+  availableSlots,
+  bookingTotal,
   setAccountPassword,
 } from "@/stores/applicationStore.ts";
+import { openShareBooking } from "@/stores/shareBookingStore.ts";
 
 // Local state belongs to one mounted feature instance.
 import type {
@@ -124,6 +128,88 @@ export function useAccountManagement() {
           : `${b.date}${b.time}`.localeCompare(`${a.date}${a.time}`),
       ),
   );
+  /* O profissional marca para o cliente ao balcão. A ficha é sempre a dele e
+     a da empresa onde está a trabalhar: não escolhe por outro colega. */
+  const newBookingOpen = ref(false);
+  const newBookingError = ref("");
+  const newBooking = reactive({
+    clientId: "",
+    serviceId: "",
+    date: today(),
+    time: "",
+    partySize: 1,
+    notes: "",
+  });
+  const bookingClients = computed(() =>
+    (state.db.clients || [])
+      .filter((item) => item.businessId === state.businessId)
+      .sort((a, b) => a.name.localeCompare(b.name)),
+  );
+  const newBookingSlots = computed(() =>
+    newBooking.serviceId
+      ? availableSlots({
+          businessId: state.businessId,
+          serviceId: newBooking.serviceId,
+          date: newBooking.date,
+          staffId: state.staffId,
+          partySize: Number(newBooking.partySize) || 1,
+        })
+      : [],
+  );
+  const newBookingTotal = computed(() =>
+    newBooking.serviceId
+      ? bookingTotal({
+          serviceId: newBooking.serviceId,
+          partySize: Number(newBooking.partySize) || 1,
+          coupon: "",
+        }).total || 0
+      : 0,
+  );
+  function openNewBooking(): void {
+    newBookingError.value = "";
+    Object.assign(newBooking, {
+      clientId: "",
+      serviceId: assignedServices.value[0]?.id || "",
+      date: agendaDate.value >= today() ? agendaDate.value : today(),
+      time: "",
+      partySize: 1,
+      notes: "",
+    });
+    newBookingOpen.value = true;
+  }
+  function saveNewBooking(): void {
+    newBookingError.value = "";
+    const client = bookingClients.value.find(
+      (item) => item.id === newBooking.clientId,
+    );
+    if (!client) return void (newBookingError.value = "Escolha o cliente.");
+    if (!newBooking.serviceId)
+      return void (newBookingError.value = "Escolha o serviço.");
+    if (!newBooking.time)
+      return void (newBookingError.value = "Escolha uma hora disponível.");
+    const result = createBooking({
+      businessId: state.businessId,
+      serviceId: newBooking.serviceId,
+      staffId: state.staffId,
+      clientId: client.id,
+      clientName: client.name,
+      date: newBooking.date,
+      time: newBooking.time,
+      partySize: Number(newBooking.partySize) || 1,
+      notes: newBooking.notes.trim(),
+      paymentMethod: "onsite",
+      phone: client.phone,
+      email: client.email,
+    });
+    if (!result.ok)
+      return void (newBookingError.value =
+        result.error || "Não foi possível criar a marcação.");
+    newBookingOpen.value = false;
+    agendaDate.value = newBooking.date;
+    notify("Marcação criada. Envie-a ao cliente.");
+    if (result.record) openShareBooking(result.record.id);
+  }
+
   function openBooking(item: Booking): void {
     selectedId.value = item.id;
     confirmCancel.value = false;
@@ -550,6 +636,15 @@ export function useAccountManagement() {
     selected,
     filteredAppointments,
     openBooking,
+    openShareBooking,
+    newBookingOpen,
+    newBookingError,
+    newBooking,
+    bookingClients,
+    newBookingSlots,
+    newBookingTotal,
+    openNewBooking,
+    saveNewBooking,
     reschedule,
     handleCancel,
     changeStatus,

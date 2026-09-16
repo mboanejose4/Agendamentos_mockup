@@ -9,6 +9,7 @@ import ProfessionalAvailabilityPage from "@/views/staff/ProfessionalAvailability
 import ProfessionalHistoryPage from "@/views/staff/ProfessionalHistoryPage.vue";
 import AppointmentDetailsDialog from "@/components/shared/account/AppointmentDetailsDialog.vue";
 import AvailabilityBlockDialog from "@/components/staff/AvailabilityBlockDialog.vue";
+import StaffBookingDialog from "@/components/staff/StaffBookingDialog.vue";
 import DeleteAvailabilityBlockDialog from "@/components/staff/DeleteAvailabilityBlockDialog.vue";
 import { provideAccountManagement } from "@/composables/account/accountContext.ts";
 const { state } = provideAccountManagement();
@@ -35,6 +36,7 @@ const { state } = provideAccountManagement();
 
     <AppointmentDetailsDialog />
     <AvailabilityBlockDialog />
+    <StaffBookingDialog />
     <DeleteAvailabilityBlockDialog />
   </div>
 </template>
