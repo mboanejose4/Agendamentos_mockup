@@ -1,6 +1,6 @@
 # Mockup Vue.js — Plataforma de Agendamento e Gestão de Serviços
 
-Mockup funcional **mobile-first**, criado a partir dos documentos de requisitos fornecidos e inspirado na organização visual do **Portal do Munícipe e-Acácia** (`https://www.eacacia.gov.mz/`): cabeçalho institucional, pesquisa como acção principal, cartões de serviços, áreas seguras autenticadas e navegação simples para tarefas frequentes.
+Mockup funcional **mobile-first**, criado a partir dos documentos de requisitos fornecidos: cabeçalho institucional, pesquisa como acção principal, cartões de serviços, áreas seguras autenticadas e navegação simples para tarefas frequentes.
 
 > O objectivo é validar experiência, fluxos, papéis e organização de informação. Não existe backend real neste pacote e todos os dados são demonstrativos.
 
