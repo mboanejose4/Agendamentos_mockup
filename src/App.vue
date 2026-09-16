@@ -1,14 +1,14 @@
-<script setup>
-import { useBookingReminders } from "@/Composable/useBookingReminders.js";
+<script setup lang="ts">
+import { useBookingReminders } from "@/composables/useBookingReminders.ts";
 useBookingReminders();
-import { useAppearance } from "@/Composable/useAppearance.js";
+import { useAppearance } from "@/composables/useAppearance.ts";
 useAppearance();
 import { computed, watch } from "vue";
-import { state } from "@/Store/applicationStore.js";
-import MainLayout from "@/Layout/MainLayout.vue";
-import AuthLayout from "@/Layout/AuthLayout.vue";
-import AppToast from "@/Component/ui/AppToast.vue";
-import { resolvePage } from "@/Page/pageRegistry.js";
+import { state } from "@/stores/applicationStore.ts";
+import MainLayout from "@/layouts/MainLayout.vue";
+import AuthLayout from "@/layouts/AuthLayout.vue";
+import AppToast from "@/components/shared/ui/AppToast.vue";
+import { resolvePage } from "@/views/pageRegistry.ts";
 const layout = computed(() =>
   state.view === "auth" ? AuthLayout : MainLayout,
 );

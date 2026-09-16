@@ -11,7 +11,7 @@ page.on("console", (m) => {
 });
 const base = process.env.APP_URL || "http://localhost:5179";
 try {
-  await page.goto(base);
+  await page.goto(base, { waitUntil: "domcontentloaded" });
   await mkdir("previews/appearance", { recursive: true });
   for (const theme of ["light", "dark"]) {
     if ((await page.locator("html").getAttribute("data-theme")) !== theme)
@@ -35,13 +35,13 @@ try {
         await page.evaluate(
           async ({ role, view }) => {
             const { switchRole, go } =
-              await import("/src/Store/applicationStore.js");
+              await import("/src/stores/applicationStore.ts");
             switchRole(role);
             go(view);
           },
           { role, view },
         );
-        await page.waitForTimeout(100);
+        await page.waitForTimeout(350);
         assert.equal(
           await page.locator("html").getAttribute("data-theme"),
           theme,
@@ -74,7 +74,7 @@ try {
   }
   await page.setViewportSize({ width: 390, height: 1000 });
   await page.evaluate(async () => {
-    const { switchRole, go } = await import("/src/Store/applicationStore.js");
+    const { switchRole, go } = await import("/src/stores/applicationStore.ts");
     switchRole("client");
     go("onboard");
   });
@@ -87,18 +87,20 @@ try {
     .fill("Teste de identidade visual.");
   await page.getByLabel("Cor primária", { exact: true }).fill("#ffff00");
   await page.getByLabel("Cor secundária", { exact: true }).fill("#0000ff");
-  const png = await page.locator(".brand-preview").screenshot();
+  const png = await page
+    .locator('fieldset:has(legend:text("Identidade visual"))')
+    .screenshot();
   await page
-    .locator(".branding-editor input[type=file]")
+    .locator("fieldset input[type=file]")
     .setInputFiles({ name: "icon.png", mimeType: "image/png", buffer: png });
-  await page.locator(".brand-preview img").waitFor();
+  await page.locator("fieldset img").waitFor();
   await page.getByRole("button", { name: "Criar estabelecimento" }).click();
   await page.waitForFunction(async () => {
-    const { state } = await import("/src/Store/applicationStore.js");
+    const { state } = await import("/src/stores/applicationStore.ts");
     return state.view === "services";
   });
   let branding = await page.evaluate(async () => {
-    const { state } = await import("/src/Store/applicationStore.js");
+    const { state } = await import("/src/stores/applicationStore.ts");
     return state.db.businesses.find((b) => b.id === state.businessId).branding;
   });
   assert.equal(branding.primaryColor, "#ffff00");
@@ -113,37 +115,35 @@ try {
     "#ffff00",
   );
   await page.evaluate(async () => {
-    const { go } = await import("/src/Store/applicationStore.js");
+    const { go } = await import("/src/stores/applicationStore.ts");
     go("settings");
   });
   await page.getByLabel("Cor primária", { exact: true }).fill("#663399");
   await page
-    .locator("form.settings-form button[type=submit]")
+    .locator("main form button[type=submit]")
     .count()
     .then(async (n) => {
-      if (n)
-        await page.locator("form.settings-form button[type=submit]").click();
-      else
-        await page.locator("form.settings-form .form-actions .primary").click();
+      if (n) await page.locator("main form button[type=submit]").click();
+      else await page.locator("main form .form-actions .btn-primary").click();
     });
   await page.evaluate(async () => {
-    const { state, go } = await import("/src/Store/applicationStore.js");
+    const { state, go } = await import("/src/stores/applicationStore.ts");
     state.selectedBusinessId = state.businessId;
     go("business");
   });
-  await page.waitForTimeout(100);
+  await page.waitForTimeout(350);
   assert.equal(
     await page.evaluate(() =>
       document.documentElement.style.getPropertyValue("--primary"),
     ),
     "#663399",
   );
-  await page.locator(".business-title img").waitFor();
+  await page.locator('main img[src^="data:image/png"]').first().waitFor();
   await page.evaluate(async () => {
-    const { go } = await import("/src/Store/applicationStore.js");
+    const { go } = await import("/src/stores/applicationStore.ts");
     go("explore");
   });
-  await page.waitForTimeout(100);
+  await page.waitForTimeout(350);
   assert.equal(
     await page.evaluate(() =>
       document.documentElement.style.getPropertyValue("--primary"),
@@ -153,10 +153,10 @@ try {
   await page.evaluate(() => localStorage.removeItem("marcafacil.appearance"));
   await page.reload();
   await page.emulateMedia({ colorScheme: "light" });
-  await page.waitForTimeout(100);
+  await page.waitForTimeout(350);
   assert.equal(await page.locator("html").getAttribute("data-theme"), "light");
   await page.emulateMedia({ colorScheme: "dark" });
-  await page.waitForTimeout(100);
+  await page.waitForTimeout(350);
   assert.equal(await page.locator("html").getAttribute("data-theme"), "dark");
   assert.deepEqual(errors, []);
   console.log(

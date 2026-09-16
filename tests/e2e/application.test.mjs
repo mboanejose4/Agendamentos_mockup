@@ -44,20 +44,20 @@ async function visit(role, view) {
   await page.evaluate(
     async ({ role, view }) => {
       const { state, switchRole, go } =
-        await import("/src/Store/applicationStore.js");
+        await import("/src/stores/applicationStore.ts");
       switchRole(role);
       state.selectedBusinessId = "b1";
       go(view);
     },
     { role, view },
   );
-  await page
-    .locator(view === "auth" ? ".authentication-page" : ".application")
-    .waitFor();
-  await page.waitForTimeout(80);
+  await page.locator("main").waitFor();
+  await page.waitForTimeout(350);
 }
 try {
-  await page.goto(process.env.APP_URL || "http://localhost:5175");
+  await page.goto(process.env.APP_URL || "http://localhost:5175", {
+    waitUntil: "domcontentloaded",
+  });
   if (process.env.APP_THEME)
     if (
       (await page.locator("html").getAttribute("data-theme")) !==
@@ -78,7 +78,7 @@ try {
       for (const view of views) {
         await visit(role, view);
         assert.equal(
-          await page.locator("#main-content").count(),
+          await page.locator("main").count(),
           1,
           `${role}/${view}: main`,
         );
@@ -87,7 +87,7 @@ try {
           `${role}/${view}: heading`,
         );
         assert.equal(
-          await page.locator(".sidebar").count(),
+          await page.locator('aside[aria-label="Navegação principal"]').count(),
           view === "auth" ? 0 : 1,
         );
         assert.equal(await page.locator(".mobile-bottom-nav").count(), 0);
@@ -106,31 +106,41 @@ try {
     ["manager", "services", "Novo serviço"],
     ["manager", "team", "Adicionar membro"],
     ["manager", "resources", "Novo recurso"],
-    ["manager", "clients", "Novo cliente"],
+    ["manager", "clients", "Nova reserva"],
   ]) {
     await visit(role, view);
     await page.getByRole("button", { name: button, exact: true }).click();
     await page.locator("dialog[open]").waitFor();
-    assert(await page.locator("dialog[open] input").count());
+    assert(
+      await page.locator("dialog[open] input, dialog[open] select").count(),
+    );
     await page
       .locator("dialog[open]")
       .getByRole("button", { name: "Fechar", exact: true })
       .click();
   }
   await visit("guest", "explore");
-  await page.locator(".business-card .favorite-button").first().click();
+  await page
+    .locator(
+      'article button[aria-label^="Guardar"], article button[aria-label^="Remover"]',
+    )
+    .first()
+    .click();
   assert.equal(
     await page
-      .locator(".business-card .favorite-button")
+      .locator(
+        'article button[aria-label^="Guardar"], article button[aria-label^="Remover"]',
+      )
       .first()
       .getAttribute("aria-pressed"),
     "true",
   );
-  await page.locator(".business-card .photo-link").first().click();
-  await page.locator(".business-detail-layout").waitFor();
+  await page.locator('article button[aria-label^="Ver "]').first().click();
+  await page.getByRole("heading", { name: "Serviços", exact: true }).waitFor();
   // Each booking step and dialog receives the same draft from its feature provider.
   await page.evaluate(async () => {
-    const { state, go, today } = await import("/src/Store/applicationStore.js");
+    const { state, go, today } =
+      await import("/src/stores/applicationStore.ts");
     state.bookingDraft = {
       businessId: "b1",
       serviceId: state.db.services.find(
@@ -141,9 +151,9 @@ try {
     };
     go("booking");
   });
-  await page.locator(".booking-form-section").waitFor();
-  await page.locator(".booking-form-section .form-actions .primary").click();
-  await page.locator(".booking-date-grid").waitFor();
+  await page.getByRole("button", { name: "Continuar", exact: true }).waitFor();
+  await page.getByRole("button", { name: "Continuar", exact: true }).click();
+  await page.getByRole("heading", { name: "Qual é o melhor dia?" }).waitFor();
   await visit("guest", "auth");
   await page
     .getByRole("button", { name: "Quero registar a minha empresa" })
@@ -172,12 +182,12 @@ try {
     .fill("Business created by automated regression check.");
   await page.getByRole("button", { name: "Criar estabelecimento" }).click();
   await page.waitForFunction(async () => {
-    const { state } = await import("/src/Store/applicationStore.js");
+    const { state } = await import("/src/stores/applicationStore.ts");
     return state.view === "services" && state.role === "manager";
   });
   assert.equal(
     await page.evaluate(async () => {
-      const { state } = await import("/src/Store/applicationStore.js");
+      const { state } = await import("/src/stores/applicationStore.ts");
       return state.db.businesses.some(
         (b) => b.name === "Regression Business" && b.ownerId === state.userId,
       );

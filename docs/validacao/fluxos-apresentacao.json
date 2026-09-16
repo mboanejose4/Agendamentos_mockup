@@ -1,0 +1,67 @@
+{
+  "executedAt": "2026-09-15T11:02:01.435Z",
+  "results": [
+    {
+      "id": "F01",
+      "title": "Reserva completa no local, validação de horário, calendário e cancelamento",
+      "status": "PASS"
+    },
+    {
+      "id": "F02",
+      "title": "Carteiras Mkesh Mpesa e eMola, validação do telefone e pagamento",
+      "status": "PASS"
+    },
+    {
+      "id": "F03",
+      "title": "Cartão de crédito, campos obrigatórios e dados não persistidos",
+      "status": "PASS"
+    },
+    {
+      "id": "F04",
+      "title": "Gestor reserva, histórico, desactivação e remoção de cliente sem editar perfil",
+      "status": "FAIL",
+      "error": "expect(locator).not.toHaveValue(expected) failed\n\nLocator: locator('dialog[open]').getByLabel('Cliente', { exact: true })\nExpected: not \"\"\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n  - Expect \"not toHaveValue\" locator('dialog[open]').getByLabel('Cliente', { exact: true }) with timeout 5000ms\n  - waiting for locator('dialog[open]').getByLabel('Cliente', { exact: true })\n"
+    },
+    {
+      "id": "F05",
+      "title": "Recursos criar editar remover",
+      "status": "FAIL",
+      "error": "locator.fill: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('dialog[open]').getByLabel('Tipo', { exact: true })\u001b[22m\n"
+    },
+    {
+      "id": "F06",
+      "title": "Promoções criar desactivar activar editar e remover",
+      "status": "FAIL",
+      "error": "locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('tbody tr').filter({ hasText: 'APRESENTA10' }).getByTitle('Desactivar promoção')\u001b[22m\n"
+    },
+    {
+      "id": "F07",
+      "title": "Suporte criar responder resolver e reabrir",
+      "status": "FAIL",
+      "error": "locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('dialog[open]') to be hidden\u001b[22m\n\u001b[2m    23 × locator resolved to visible <dialog open=\"\" class=\"dialog\" aria-labelledby=\"dialog-1zno6p76aj6j\">…</dialog>\u001b[22m\n"
+    },
+    {
+      "id": "F08",
+      "title": "Profissional criar editar remover indisponibilidade e exportar histórico",
+      "status": "FAIL",
+      "error": "locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('tr').filter({ hasText: 'Pausa apresentação' }).getByTitle('Editar período')\u001b[22m\n"
+    },
+    {
+      "id": "F09",
+      "title": "Perfil do cliente e notificações",
+      "status": "PASS"
+    },
+    {
+      "id": "F10",
+      "title": "Administração criar editar suspender reactivar e eliminar utilizador",
+      "status": "FAIL",
+      "error": "locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('dialog[open]').getByRole('button', { name: 'Eliminar', exact: true })\u001b[22m\n"
+    },
+    {
+      "id": "F11",
+      "title": "Administração criar editar e remover empresa sem dependências",
+      "status": "FAIL",
+      "error": "locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('dialog[open]').getByRole('button', { name: 'Eliminar', exact: true })\u001b[22m\n"
+    }
+  ]
+}

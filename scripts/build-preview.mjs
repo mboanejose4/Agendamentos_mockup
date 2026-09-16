@@ -14,7 +14,7 @@ await build({
     outDir: 'preview',
     emptyOutDir: false,
     cssCodeSplit: false,
-    lib: { entry: 'src/main.js', name: 'MarcaFacil', formats: ['iife'], fileName: () => 'app.js', cssFileName: 'style' },
+    lib: { entry: 'src/main.ts', name: 'MarcaFacil', formats: ['iife'], fileName: () => 'app.js', cssFileName: 'style' },
   },
 })
 await writeFile('preview/index.html', `<!doctype html>

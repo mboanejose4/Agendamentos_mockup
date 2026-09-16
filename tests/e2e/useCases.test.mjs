@@ -8,7 +8,8 @@ const dialog = () => page.locator("dialog[open]");
 async function visit(role, view) {
   await page.evaluate(
     async ({ role, view }) => {
-      const { switchRole, go } = await import("/src/Store/applicationStore.js");
+      const { switchRole, go } =
+        await import("/src/stores/applicationStore.ts");
       switchRole(role);
       go(view);
     },
@@ -21,17 +22,23 @@ async function save() {
   await dialog().waitFor({ state: "hidden" });
 }
 try {
-  await page.goto(process.env.APP_URL || "http://localhost:5181");
+  await page.goto(process.env.APP_URL || "http://localhost:5181", {
+    waitUntil: "domcontentloaded",
+  });
   await visit("manager", "settings");
   assert.equal(
     await page.getByText("Imagem de capa (URL)", { exact: true }).count(),
     0,
   );
-  const image = await page.locator(".brand-preview").screenshot();
+  const image = await page
+    .locator('fieldset:has(legend:text("Identidade visual"))')
+    .screenshot();
   await page
-    .locator(".cover-upload input[type=file]")
+    .locator('input[type=file][accept="image/jpeg,image/png,image/webp"]')
     .setInputFiles({ name: "cover.png", mimeType: "image/png", buffer: image });
-  await page.locator(".cover-preview-trigger img").waitFor();
+  await page
+    .locator('button[aria-label="Ver imagem de capa em ecrã inteiro"] img')
+    .waitFor();
   for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await page
@@ -39,11 +46,11 @@ try {
       .click();
     assert(
       await page
-        .locator(".cover-fullscreen[open]")
+        .locator("dialog[open]")
         .evaluate((el) => el.getBoundingClientRect().width >= innerWidth - 1),
     );
     await page.keyboard.press("Escape");
-    await page.locator(".cover-fullscreen[open]").waitFor({ state: "hidden" });
+    await page.locator("dialog[open]").waitFor({ state: "hidden" });
   }
   await page
     .getByRole("button", { name: "Guardar alterações", exact: true })
@@ -52,14 +59,18 @@ try {
   await visit("manager", "settings");
   assert(
     (
-      await page.locator(".cover-preview-trigger img").getAttribute("src")
+      await page
+        .locator('button[aria-label="Ver imagem de capa em ecrã inteiro"] img')
+        .getAttribute("src")
     ).startsWith("data:image/jpeg;"),
   );
-  await page.locator(".cover-upload input[type=file]").setInputFiles({
-    name: "bad.txt",
-    mimeType: "text/plain",
-    buffer: Buffer.from("test"),
-  });
+  await page
+    .locator('input[type=file][accept="image/jpeg,image/png,image/webp"]')
+    .setInputFiles({
+      name: "bad.txt",
+      mimeType: "text/plain",
+      buffer: Buffer.from("test"),
+    });
   await page.getByRole("alert").filter({ hasText: "JPG" }).waitFor();
   await visit("manager", "services");
   await page.getByRole("button", { name: "Novo serviço", exact: true }).click();
@@ -84,13 +95,13 @@ try {
     .waitFor();
   await dialog().getByRole("button", { name: "Fechar", exact: true }).click();
   await page
-    .locator(".team-card")
+    .locator("article")
     .filter({ hasText: "Diagram Professional" })
     .getByTitle("Ver agenda do profissional")
     .click();
   assert.equal(
     await page.evaluate(async () => {
-      const { state } = await import("/src/Store/applicationStore.js");
+      const { state } = await import("/src/stores/applicationStore.ts");
       return state.view;
     }),
     "agenda",
@@ -128,7 +139,7 @@ try {
   await page.getByRole("button", { name: "Guardar configurações" }).click();
   assert.equal(
     await page.evaluate(async () => {
-      const { state } = await import("/src/Store/applicationStore.js");
+      const { state } = await import("/src/stores/applicationStore.ts");
       return state.db.settings.advanceDays;
     }),
     45,
@@ -143,8 +154,8 @@ try {
   // Prepare an isolated available slot, then execute payment, rescheduling and attendance through the UI.
   const bookingDate = await page.evaluate(async () => {
     const { state, switchRole, go, availableSlots } =
-      await import("/src/Store/applicationStore.js");
-    const { shiftDate } = await import("/src/API/service/data/seed.js");
+      await import("/src/stores/applicationStore.ts");
+    const { shiftDate } = await import("/src/services/seed.ts");
     switchRole("client");
     state.db.bookings = [];
     state.db.blocks = [];
@@ -184,12 +195,15 @@ try {
   await dialog().getByRole("button", { name: "Testar recusa" }).click();
   await dialog().getByRole("alert").waitFor();
   await dialog()
-    .getByRole("button", { name: "Aprovar pagamento de teste" })
-    .click();
-  await page.locator(".booking-confirmed").waitFor();
+    .getByRole("textbox", { name: "Número de telefone com indicativo +258" })
+    .fill("84 123 4567");
+  await dialog().getByRole("button", { name: "Pagar", exact: true }).click();
+  await page
+    .getByRole("heading", { name: "Tem um encontro marcado." })
+    .waitFor();
   assert.equal(
     await page.evaluate(async () => {
-      const { state } = await import("/src/Store/applicationStore.js");
+      const { state } = await import("/src/stores/applicationStore.ts");
       return state.db.bookings[0].paymentStatus;
     }),
     "paid",
@@ -200,10 +214,15 @@ try {
     .getByRole("button", { name: "Reagendar", exact: true })
     .click();
   await page.getByRole("button", { name: "Continuar", exact: true }).click();
-  await page.locator(".time-slot-grid button").nth(1).click();
+  await page
+    .getByRole("button", { name: /^\d{2}:\d{2}$/ })
+    .nth(1)
+    .click();
   await page.getByRole("button", { name: "Continuar", exact: true }).click();
   await page.getByRole("button", { name: "Confirmar alteração" }).click();
-  await page.locator(".booking-confirmed").waitFor();
+  await page
+    .getByRole("heading", { name: "Tem um encontro marcado." })
+    .waitFor();
   await visit("professional", "professional-agenda");
   await page.getByLabel("Dia da agenda").fill(bookingDate);
   await page
@@ -214,7 +233,7 @@ try {
     .click();
   assert.equal(
     await page.evaluate(async () => {
-      const { state } = await import("/src/Store/applicationStore.js");
+      const { state } = await import("/src/stores/applicationStore.ts");
       return state.db.bookings[0].status;
     }),
     "completed",
