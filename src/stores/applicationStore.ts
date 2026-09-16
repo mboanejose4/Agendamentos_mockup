@@ -66,7 +66,7 @@ function restore(): ApplicationState {
   const initial = defaults();
   try {
     const saved = readApplicationSnapshot();
-    if (!saved || saved.version !== 3 || !saved.db) return initial;
+    if (!saved || saved.version !== 4 || !saved.db) return initial;
     for (const name of Object.keys(initial.db) as (keyof Database)[]) {
       const current = initial.db[name];
       const stored = saved.db?.[name];
@@ -103,7 +103,7 @@ watch(
   () => {
     try {
       writeApplicationSnapshot({
-        version: 3,
+        version: 4,
         db: state.db,
         role: state.role,
         businessId: state.businessId,

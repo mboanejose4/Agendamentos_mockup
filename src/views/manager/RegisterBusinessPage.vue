@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import CoverImageUpload from "@/components/shared/ui/CoverImageUpload.vue";
-import BrandingEditor from "@/components/manager/BrandingEditor.vue";
+import BrandingEditor from "@/components/shared/ui/BrandingEditor.vue";
 import { defaultBrand } from "@/utils/theme.ts";
-import { reactive, ref } from "vue";
+import { onBeforeUnmount, reactive, ref, watch } from "vue";
+import { brandPreview } from "@/stores/brandPreview.ts";
 import {
   state,
   go,
@@ -12,6 +13,14 @@ import {
 } from "@/stores/applicationStore.ts";
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
 const error = ref("");
+/* As cores escolhidas pintam o ecrã enquanto se preenche o formulário, e o
+   ecrã volta à identidade da plataforma assim que se sai daqui. */
+watch(
+  () => company.branding,
+  (value) => (brandPreview.value = { ...value }),
+  { deep: true, immediate: true },
+);
+onBeforeUnmount(() => (brandPreview.value = null));
 const coverBusy = ref(false);
 const company = reactive({
   image: "",

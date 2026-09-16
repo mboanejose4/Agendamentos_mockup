@@ -15,6 +15,7 @@ const {
   detailTab,
   favorites,
   current,
+  originView,
   servicesFor,
   promotions,
   selectedCategory,
@@ -28,9 +29,15 @@ const {
   <div v-if="current">
     <button
       class="text-button -mt-[5px] mb-[22px] text-caption"
-      @click="go('explore')"
+      @click="go(originView)"
     >
-      <AppIcon name="arrow-left" :size="17" />Voltar a explorar
+      <AppIcon name="arrow-left" :size="17" />{{
+        originView === "directory"
+          ? "Voltar à lista"
+          : originView === "favorites"
+            ? "Voltar aos favoritos"
+            : "Voltar a explorar"
+      }}
     </button>
     <div
       class="relative mb-[35px] h-[220px] rounded-lg bg-surface-muted max-sm:h-[190px]"

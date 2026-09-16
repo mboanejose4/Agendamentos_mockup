@@ -30,6 +30,8 @@ export function makeSeed(): Database {
         "Um espaço dedicado a cuidar de si. Cabelo, estética e pequenos momentos de renovação no coração de Maputo.",
       city: "Maputo",
       address: "Av. Julius Nyerere, 420 · Polana",
+      latitude: -25.9601,
+      longitude: 32.5958,
       phone: "+258 84 320 4100",
       email: "ola@studiolume.co.mz",
       image:
@@ -51,6 +53,8 @@ export function makeSeed(): Database {
         "Massagens, rituais de relaxamento e terapias de bem-estar num ambiente tranquilo, pensado para desacelerar.",
       city: "Maputo",
       address: "Rua da Argélia, 85 · Sommerschield",
+      latitude: -25.9534,
+      longitude: 32.6012,
       phone: "+258 84 500 1200",
       email: "reservas@somawellness.co.mz",
       image:
@@ -72,6 +76,8 @@ export function makeSeed(): Database {
         "Cuidados de saúde próximos de si, com consultas de clínica geral, nutrição e fisioterapia por marcação.",
       city: "Matola",
       address: "Av. da União Africana, 210 · Matola A",
+      latitude: -25.9618,
+      longitude: 32.4593,
       phone: "+258 82 710 2020",
       email: "atendimento@clinicavida.co.mz",
       image:
@@ -93,6 +99,8 @@ export function makeSeed(): Database {
         "Sabores frescos, boa companhia e uma mesa à sua espera. Reserve o almoço, jantar ou uma experiência especial.",
       city: "Maputo",
       address: "Av. Marginal, 78 · Costa do Sol",
+      latitude: -25.9256,
+      longitude: 32.6214,
       phone: "+258 84 920 3030",
       email: "reservas@mesaemar.co.mz",
       image:

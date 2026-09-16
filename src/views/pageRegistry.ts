@@ -2,6 +2,7 @@ import SignInPage from "@/views/shared/SignInPage.vue";
 import RegisterBusinessPage from "@/views/manager/RegisterBusinessPage.vue";
 import CreateBookingPage from "@/views/client/CreateBookingPage.vue";
 import BusinessDirectoryPage from "@/views/client/BusinessDirectoryPage.vue";
+import BusinessListPage from "@/views/client/BusinessListPage.vue";
 import BusinessDetailsPage from "@/views/client/BusinessDetailsPage.vue";
 import BusinessManagement from "@/components/manager/BusinessManagement.vue";
 import AccountManagement from "@/components/shared/account/AccountManagement.vue";
@@ -15,6 +16,7 @@ const pages: Partial<Record<ViewName, Component>> = {
   onboard: RegisterBusinessPage,
   booking: CreateBookingPage,
   explore: BusinessDirectoryPage,
+  directory: BusinessListPage,
   favorites: BusinessDirectoryPage,
   business: BusinessDetailsPage,
 };

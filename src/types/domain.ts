@@ -39,10 +39,17 @@ export type TimeOfDay = string;
 /** Instante no formato ISO 8601 completo. */
 export type IsoDateTime = string;
 
+/** Ponto no globo, em graus decimais. */
+export interface GeoPoint {
+  latitude: number;
+  longitude: number;
+}
+
 /* Cada ecrã da aplicação. O nome da vista é a chave de navegação usada em
    `state.view`, nos grupos de navegação e no registo de páginas. */
 export type ViewName =
   | "explore"
+  | "directory"
   | "favorites"
   | "business"
   | "booking"
@@ -99,6 +106,11 @@ export interface Business {
   closes: TimeOfDay;
   days: Weekday[];
   cancelHours: number;
+  /** Onde fica, para o mapa e para a distância ao cliente. Opcional: uma
+      empresa registada aqui só as tem depois de alguém geocodificar a morada,
+      que é o que o backend fará ao guardar. Sem elas, não entra no mapa. */
+  latitude?: number;
+  longitude?: number;
   branding?: Branding;
   /** Estado de cada cliente nesta empresa; ausente significa activo. */
   clientStates?: Record<string, ClientState>;

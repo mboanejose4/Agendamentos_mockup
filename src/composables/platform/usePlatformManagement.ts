@@ -14,7 +14,9 @@ import {
 } from "@/stores/applicationStore.ts";
 
 // Local state belongs to one mounted feature instance.
+import { defaultBrand, normalizeBrand } from "@/utils/theme.ts";
 import type {
+  Branding,
   Business,
   CollectionName,
   IsoDateTime,
@@ -34,6 +36,8 @@ export interface CompanyForm extends Omit<
   Business,
   "rating" | "reviewCount" | "branding" | "clientStates"
 > {
+  /** Sempre presente no formulário, ao contrário da empresa guardada. */
+  branding: Branding;
   managerName: string;
   managerEmail: string;
   managerPassword: string;
@@ -155,6 +159,7 @@ export function usePlatformManagement() {
     closes: "18:00",
     cancelHours: 2,
     days: [1, 2, 3, 4, 5, 6],
+    branding: { ...defaultBrand },
     managerName: "",
     managerEmail: "",
     managerPassword: "",
@@ -166,6 +171,7 @@ export function usePlatformManagement() {
         ? {
             ...item,
             days: [...(item.days || [1, 2, 3, 4, 5, 6])],
+            branding: normalizeBrand(item.branding),
             managerName: "",
             managerEmail: "",
             managerPassword: "",
@@ -186,6 +192,7 @@ export function usePlatformManagement() {
             closes: "18:00",
             cancelHours: 2,
             days: [1, 2, 3, 4, 5, 6],
+            branding: { ...defaultBrand },
             managerName: "",
             managerEmail: "",
             managerPassword: "",

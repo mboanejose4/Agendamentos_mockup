@@ -1,7 +1,7 @@
 /* Persistência local do mockup: uma chave, um instantâneo do estado. */
 import type { ApplicationSnapshot } from "@/types/domain.ts";
 
-const STORAGE_KEY = "marcafacil.agendamento.v3";
+const STORAGE_KEY = "marcafacil.agendamento.v4";
 
 export function readApplicationSnapshot(): ApplicationSnapshot | null {
   try {

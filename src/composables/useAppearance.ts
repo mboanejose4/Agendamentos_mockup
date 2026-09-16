@@ -1,16 +1,21 @@
 import { computed, watchEffect } from "vue";
 import { state } from "@/stores/applicationStore.ts";
 import { isDark } from "@/stores/themeStore.ts";
+import { brandPreview } from "@/stores/brandPreview.ts";
 import { normalizeBrand, textOn, accessibleAccent } from "@/utils/theme.ts";
 export function useAppearance() {
   const activeBrand = computed(() => {
+    /* Quem está a escolher as cores vê-as já aplicadas, antes de gravar. */
+    if (brandPreview.value) return normalizeBrand(brandPreview.value);
     let id: string | undefined;
     if (state.view === "booking")
       id = state.bookingDraft?.businessId || state.selectedBusinessId;
     else if (state.view === "business") id = state.selectedBusinessId;
     else if (
       ["manager", "professional"].includes(state.role) &&
-      !["auth", "onboard", "explore", "favorites"].includes(state.view)
+      !["auth", "onboard", "explore", "directory", "favorites"].includes(
+        state.view,
+      )
     )
       id = state.businessId;
     return normalizeBrand(

@@ -7,7 +7,9 @@ import {
   business,
   notify,
 } from "@/stores/applicationStore.ts";
-import type { Business, Service } from "@/types/domain.ts";
+import { clientPoint } from "@/stores/locationStore.ts";
+import { distanceKm, distanceLabel, hasPoint } from "@/utils/geo.ts";
+import type { Business, Service, ViewName } from "@/types/domain.ts";
 
 /** Categoria do directório: o nome é o valor guardado na empresa. */
 export interface Category {
@@ -17,15 +19,22 @@ export interface Category {
   color: string;
 }
 
+/* Estado dos filtros partilhado por todas as vistas de descoberta: passar de
+   "Explorar" para a listagem completa, ou entrar num estabelecimento e voltar,
+   não deve apagar o que a pessoa escreveu. */
+const search = ref("");
+const category = ref("Todos");
+const city = ref("Todas as localizações");
+const sort = ref("recommended");
+const maxPrice = ref(10000);
+const onlineOnly = ref(false);
+const filtersOpen = ref(false);
+const detailTab = ref("Serviços");
+/* De onde se entrou no estabelecimento, para o botão de voltar não atirar
+   sempre para a exploração. */
+const originView = ref<ViewName>("explore");
+
 export function useBusinessDiscovery() {
-  const search = ref("");
-  const category = ref("Todos");
-  const city = ref("Todas as localizações");
-  const sort = ref("recommended");
-  const maxPrice = ref(10000);
-  const onlineOnly = ref(false);
-  const filtersOpen = ref(false);
-  const detailTab = ref("Serviços");
   const categories: Category[] = [
     {
       name: "Todos",
@@ -70,6 +79,11 @@ export function useBusinessDiscovery() {
       ...servicesFor(id).map((s) => Number(s.price)),
       0 === servicesFor(id).length ? 0 : Infinity,
     );
+  /* Quem não tem coordenadas fica no fim da ordenação por proximidade. */
+  const distanceFor = (company: Business): number =>
+    hasPoint(company) ? distanceKm(clientPoint.value, company) : Infinity;
+  const distanceFrom = (company: Business): string =>
+    hasPoint(company) ? distanceLabel(distanceFor(company)) : "";
   const results = computed(() => {
     const term = search.value.trim().toLocaleLowerCase("pt");
     let list = state.db.businesses.filter(
@@ -97,7 +111,9 @@ export function useBusinessDiscovery() {
         ? (a, b) => minPrice(a.id) - minPrice(b.id)
         : sort.value === "name"
           ? (a, b) => a.name.localeCompare(b.name)
-          : (a, b) => b.rating - a.rating,
+          : sort.value === "distance"
+            ? (a, b) => distanceFor(a) - distanceFor(b)
+            : (a, b) => b.rating - a.rating,
     );
   });
   const promotions = computed(() =>
@@ -111,6 +127,8 @@ export function useBusinessDiscovery() {
   const selectedCategory = (name: string): Category =>
     categories.find((c) => c.name === name) || categories[0];
   function openCompany(company: Business): void {
+    if (["explore", "directory", "favorites"].includes(state.view))
+      originView.value = state.view;
     state.selectedBusinessId = company.id;
     detailTab.value = "Serviços";
     go("business");
@@ -175,6 +193,8 @@ export function useBusinessDiscovery() {
     current,
     servicesFor,
     minPrice,
+    distanceFrom,
+    originView,
     results,
     promotions,
     selectedCategory,

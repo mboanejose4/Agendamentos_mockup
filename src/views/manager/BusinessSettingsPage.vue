@@ -1,12 +1,21 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onBeforeUnmount, ref, watch } from "vue";
+import { brandPreview } from "@/stores/brandPreview.ts";
 const coverBusy = ref(false);
 import CoverImageUpload from "@/components/shared/ui/CoverImageUpload.vue";
-import BrandingEditor from "@/components/manager/BrandingEditor.vue";
+import BrandingEditor from "@/components/shared/ui/BrandingEditor.vue";
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
 import { useBusinessManagementContext } from "@/composables/businesses/businessContext.ts";
 const { form, settings, resetSettings, saveSettings } =
   useBusinessManagementContext();
+/* Mexer nas cores repinta o ecrã antes de gravar; sair daqui devolve a
+   aparência à marca que está guardada. */
+watch(
+  () => settings.branding,
+  (value) => (brandPreview.value = value ? { ...value } : null),
+  { deep: true, immediate: true },
+);
+onBeforeUnmount(() => (brandPreview.value = null));
 </script>
 
 <template>

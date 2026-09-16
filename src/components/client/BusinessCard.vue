@@ -9,8 +9,15 @@ withDefaults(
     startingPrice: string;
     isFavorite?: boolean;
     categoryIcon?: string;
+    /** Distância ao cliente, já formatada; vazia quando não há coordenadas. */
+    distance?: string;
   }>(),
-  { services: () => [], isFavorite: false, categoryIcon: "building-2" },
+  {
+    services: () => [],
+    isFavorite: false,
+    categoryIcon: "building-2",
+    distance: "",
+  },
 );
 const emit = defineEmits<{
   open: [company: Business];
@@ -82,7 +89,15 @@ function photoError(event: Event) {
           <small class="ml-[3px] text-caption text-muted"
             >({{ company.reviewCount || 0 }})</small
           ></span
-        ><span class="text-caption text-muted">{{ company.city }}</span>
+        ><span class="flex items-center gap-1 text-caption text-muted"
+          >{{ company.city
+          }}<template v-if="distance"
+            ><span aria-hidden="true">·</span
+            ><span class="flex items-center gap-[3px]"
+              ><AppIcon name="compass" :size="13" />{{ distance }}</span
+            ></template
+          ></span
+        >
       </div>
       <h3 class="mb-2 text-h3">
         <button

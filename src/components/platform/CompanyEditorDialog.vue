@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppModal from "@/components/shared/ui/AppModal.vue";
+import BrandingEditor from "@/components/shared/ui/BrandingEditor.vue";
 import { usePlatformManagementContext } from "@/composables/platform/platformContext.ts";
 const {
   categories,
@@ -96,6 +97,19 @@ const {
           pagamento online</label
         >
       </div>
+      <!-- A marca é escolhida já na criação: é ela que o cliente vê ao abrir
+           a página do estabelecimento e ao marcar. -->
+      <section class="mt-6 border-t border-line pt-6">
+        <h3>Aparência do estabelecimento</h3>
+        <p class="mb-4 text-caption text-muted">
+          Estas cores acompanham o cliente na página do estabelecimento e
+          durante a marcação.
+        </p>
+        <BrandingEditor
+          v-model="companyForm.branding"
+          :business-name="companyForm.name"
+        />
+      </section>
       <section v-if="!companyForm.id" class="mt-6 border-t border-line pt-6">
         <h3>Conta do gestor</h3>
         <div class="form-grid">
