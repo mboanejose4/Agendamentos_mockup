@@ -38,6 +38,27 @@ onBeforeUnmount(() => (brandPreview.value = null));
           </label>
 
           <label class="field">
+            <span>Código da empresa</span>
+            <input
+              v-model.trim="settings.code"
+              maxlength="24"
+              :required="(settings.package ?? 3) <= 2"
+              placeholder="Ex.: SALAO-CENTRO"
+            />
+            <small>Os clientes podem procurar pelo código.</small>
+          </label>
+
+          <label class="field">
+            <span>Pacote</span>
+            <select v-model.number="settings.package">
+              <option :value="1">01 · Reservas da própria empresa</option>
+              <option :value="2">02 · Profissionais independentes</option>
+              <option :value="3">03 · Exploração completa</option>
+              <option :value="4">04 · Destaque na plataforma</option>
+            </select>
+          </label>
+
+          <label class="field">
             <span>Categoria</span>
             <select v-model="settings.category">
               <option>Beleza</option>
@@ -148,6 +169,20 @@ onBeforeUnmount(() => (brandPreview.value = null));
             max="168"
             required
           />
+        </label>
+        <label class="field mt-5 max-w-sm">
+          <span>Penalização por falta (%)</span>
+          <input
+            v-model.number="settings.noShowPenaltyPercent"
+            type="number"
+            min="0"
+            max="10"
+            step="0.5"
+          />
+          <small
+            >A empresa decide se aplica a taxa. Limite da MarcaFácil: 10% do
+            serviço.</small
+          >
         </label>
       </section>
 

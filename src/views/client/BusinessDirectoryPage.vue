@@ -94,7 +94,7 @@ function registerBusiness(): void {
             momento
           </p>
         </div>
-        <div class="flex items-center gap-3">
+        <div class="flex min-w-0 flex-wrap items-center justify-end gap-3">
           <select
             v-model="sort"
             aria-label="Ordenar estabelecimentos"

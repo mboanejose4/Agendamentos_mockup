@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
+import StatCard from "@/components/shared/ui/StatCard.vue";
+import TrendChart from "@/components/shared/ui/TrendChart.vue";
 import { plural } from "@/utils/formatters.ts";
 import { useBusinessManagementContext } from "@/composables/businesses/businessContext.ts";
 const {
@@ -15,6 +17,9 @@ const {
   reportByService,
   reportByStaff,
   maxServiceCount,
+  reportBuckets,
+  reportSummary,
+  reportDelta,
 } = useBusinessManagementContext();
 </script>
 <template>
@@ -36,55 +41,50 @@ const {
       >
     </div>
     <div class="mt-1 mb-8 grid grid-cols-2 gap-5 lg:grid-cols-4">
-      <div class="min-w-0 border-b border-line py-5 pr-5">
-        <span class="text-caption text-muted">Receita recebida</span>
-        <strong
-          class="my-2.5 block text-[clamp(24px,7vw,28px)] leading-tight break-words"
-          >{{ money(reportRevenue) }}</strong
-        >
-        <small class="block text-caption text-muted"
-          >No período seleccionado</small
-        >
-      </div>
-      <div class="min-w-0 border-b border-line py-5 pr-5">
-        <span class="text-caption text-muted">Atendimentos</span>
-        <strong
-          class="my-2.5 block text-[clamp(24px,7vw,28px)] leading-tight break-words"
-          >{{ reportCompleted }}</strong
-        >
-        <small class="block text-caption text-muted">Reservas concluídas</small>
-      </div>
-      <div class="min-w-0 border-b border-line py-5 pr-5">
-        <span class="text-caption text-muted">Valor médio pago</span>
-        <strong
-          class="my-2.5 block text-[clamp(24px,7vw,28px)] leading-tight break-words"
-          >{{
-            money(
-              reportRevenue /
-                Math.max(
-                  1,
-                  reportBookings.filter((item) => item.paymentStatus === "paid")
-                    .length,
-                ),
-            )
-          }}</strong
-        >
-        <small class="block text-caption text-muted">Por reserva paga</small>
-      </div>
-      <div class="min-w-0 border-b border-line py-5 pr-5">
-        <span class="text-caption text-muted">Cancelamentos</span>
-        <strong
-          class="my-2.5 block text-[clamp(24px,7vw,28px)] leading-tight break-words"
-          >{{ reportCancelled }}</strong
-        >
-        <small class="block text-caption text-muted"
-          >{{
-            reportBookings.length
-              ? Math.round((reportCancelled / reportBookings.length) * 100)
-              : 0
-          }}% das reservas do período</small
-        >
-      </div>
+      <StatCard
+        label="Receita recebida"
+        :value="money(reportRevenue)"
+        :delta="reportDelta('revenue')"
+      />
+      <StatCard
+        label="Atendimentos"
+        :value="String(reportCompleted)"
+        :delta="reportDelta('completed')"
+      />
+      <StatCard
+        label="Valor médio pago"
+        :value="money(reportSummary.ticket)"
+        :delta="reportDelta('ticket')"
+      />
+      <StatCard
+        label="Cancelamentos"
+        :value="String(reportCancelled)"
+        :hint="`${
+          reportBookings.length
+            ? Math.round((reportCancelled / reportBookings.length) * 100)
+            : 0
+        }% das reservas do período`"
+      />
+    </div>
+
+    <!-- Reservas e receita têm grandezas diferentes: dois gráficos, um eixo
+         cada. Nunca dois eixos no mesmo desenho. -->
+    <div class="mb-10 grid gap-6 lg:grid-cols-2">
+      <TrendChart
+        title="Reservas ao longo do período"
+        unit="Reservas"
+        :points="
+          reportBuckets.map((b) => ({ label: b.label, value: b.bookings }))
+        "
+      />
+      <TrendChart
+        title="Receita ao longo do período"
+        unit="Receita"
+        :format="money"
+        :points="
+          reportBuckets.map((b) => ({ label: b.label, value: b.revenue }))
+        "
+      />
     </div>
     <section class="mb-10">
       <div class="mb-5 flex flex-wrap items-center justify-between gap-4">
@@ -130,6 +130,8 @@ const {
               <th>Reservas</th>
               <th>Concluídas</th>
               <th>Receita recebida</th>
+              <th>Comissão a pagar</th>
+              <th>Renda mensal do espaço</th>
             </tr>
           </thead>
           <tbody>
@@ -143,9 +145,17 @@ const {
               <td>{{ person.count }}</td>
               <td>{{ person.completed }}</td>
               <td>{{ money(person.revenue) }}</td>
+              <td>{{ person.independent ? money(person.commission) : "—" }}</td>
+              <td>
+                {{
+                  person.independent
+                    ? money(person.spaceRentalMonthly || 0)
+                    : "—"
+                }}
+              </td>
             </tr>
             <tr v-if="!reportByStaff.length">
-              <td colspan="4" class="text-muted">
+              <td colspan="6" class="text-muted">
                 Ainda não há membros na equipa.
               </td>
             </tr>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
+import RoleDashboard from "@/components/shared/analytics/RoleDashboard.vue";
 import { plural } from "@/utils/formatters.ts";
 import { useAccountManagementContext } from "@/composables/account/accountContext.ts";
 const {
@@ -16,7 +17,6 @@ const {
   agendaDate,
   agendaFilter,
   dayBookings,
-  agendaStats,
   shiftDate,
   schedule,
   myBlocks,
@@ -24,33 +24,7 @@ const {
 </script>
 <template>
   <div>
-    <div class="mt-1 mb-8 grid grid-cols-2 gap-5 lg:grid-cols-4">
-      <div class="min-w-0 border-b border-line py-5 pr-5">
-        <span class="text-caption text-muted">Atendimentos</span
-        ><strong
-          class="my-2.5 block text-[clamp(24px,7vw,28px)] leading-tight break-words"
-          >{{ agendaStats.total }}</strong
-        ><span class="text-caption text-muted">no dia seleccionado</span>
-      </div>
-      <div class="min-w-0 border-b border-line py-5 pr-5">
-        <span class="text-caption text-muted">Concluídos</span
-        ><strong
-          class="my-2.5 block text-[clamp(24px,7vw,28px)] leading-tight break-words"
-          >{{ agendaStats.completed }}</strong
-        ><span class="text-caption text-muted"
-          >{{ agendaStats.pending }} por atender</span
-        >
-      </div>
-      <div class="min-w-0 border-b border-line py-5 pr-5">
-        <span class="text-caption text-muted">Tempo reservado</span
-        ><strong
-          class="my-2.5 block text-[clamp(24px,7vw,28px)] leading-tight break-words"
-          >{{ Math.floor(agendaStats.minutes / 60)
-          }}<small class="text-caption">h</small> {{ agendaStats.minutes % 60
-          }}<small class="text-caption">min</small></strong
-        ><span class="text-caption text-muted">na sua agenda</span>
-      </div>
-    </div>
+    <RoleDashboard role="professional" :anchor="agendaDate" />
     <div
       class="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
     >

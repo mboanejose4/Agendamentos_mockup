@@ -7,6 +7,7 @@ import ProfessionalAgendaPage from "@/views/staff/ProfessionalAgendaPage.vue";
 import ProfessionalServicesPage from "@/views/staff/ProfessionalServicesPage.vue";
 import ProfessionalAvailabilityPage from "@/views/staff/ProfessionalAvailabilityPage.vue";
 import ProfessionalHistoryPage from "@/views/staff/ProfessionalHistoryPage.vue";
+import ProfessionalPerformancePage from "@/views/staff/ProfessionalPerformancePage.vue";
 import AppointmentDetailsDialog from "@/components/shared/account/AppointmentDetailsDialog.vue";
 import AvailabilityBlockDialog from "@/components/staff/AvailabilityBlockDialog.vue";
 import StaffBookingDialog from "@/components/staff/StaffBookingDialog.vue";
@@ -33,6 +34,10 @@ const { state } = provideAccountManagement();
     />
 
     <ProfessionalHistoryPage v-if="state.view === 'professional-history'" />
+
+    <ProfessionalPerformancePage
+      v-if="state.view === 'professional-performance'"
+    />
 
     <AppointmentDetailsDialog />
     <AvailabilityBlockDialog />

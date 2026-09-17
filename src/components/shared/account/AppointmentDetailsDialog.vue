@@ -3,6 +3,15 @@ import AppIcon from "@/components/shared/ui/AppIcon.vue";
 import { bookingReference } from "@/utils/formatters.ts";
 import AppModal from "@/components/shared/ui/AppModal.vue";
 import { useAccountManagementContext } from "@/composables/account/accountContext.ts";
+import { computed, ref } from "vue";
+import {
+  state,
+  notify,
+  addServiceDuringVisit,
+  requestBookingDelay,
+  respondBookingDelay,
+  markPaid,
+} from "@/stores/applicationStore.ts";
 const {
   openShareBooking,
   money,
@@ -23,6 +32,42 @@ const {
   handleCancel,
   changeStatus,
 } = useAccountManagementContext();
+const delayMinutes = ref(10);
+const extraServiceId = ref("");
+const extraOptions = computed(() =>
+  state.db.services.filter(
+    (item) =>
+      item.businessId === selected.value?.businessId &&
+      item.active &&
+      item.id !== selected.value?.serviceId &&
+      !selected.value?.extraServiceIds?.includes(item.id),
+  ),
+);
+function requestDelay() {
+  if (!selected.value) return;
+  const result = requestBookingDelay(selected.value.id, delayMinutes.value);
+  notify(
+    result.ok ? "Pedido de atraso enviado ao estabelecimento." : result.error,
+  );
+}
+function answerDelay(accept: boolean) {
+  if (!selected.value) return;
+  const result = respondBookingDelay(selected.value.id, accept);
+  notify(
+    result.ok ? `Atraso ${accept ? "aceite" : "recusado"}.` : result.error,
+  );
+}
+function addExtra() {
+  if (!selected.value) return;
+  const result = addServiceDuringVisit(selected.value.id, extraServiceId.value);
+  notify(result.ok ? "Serviço acrescentado ao atendimento." : result.error);
+  if (result.ok) extraServiceId.value = "";
+}
+function collectPayment() {
+  if (!selected.value || !isProfessional.value) return;
+  const result = markPaid(selected.value.id);
+  notify(result.ok ? "Pagamento registado." : result.error);
+}
 </script>
 <template>
   <AppModal v-model="detailOpen" title="Detalhes do agendamento">
@@ -121,6 +166,89 @@ const {
         <strong class="block text-caption text-ink">Observações</strong>
         <p class="mt-1 text-small text-muted">{{ selected.notes }}</p>
       </div>
+      <div v-if="selected.extraServiceIds?.length" class="mt-5 text-caption">
+        <strong>Serviços adicionais</strong>
+        <p>
+          {{
+            selected.extraServiceIds
+              .map((id) => service(id)?.name || "Serviço")
+              .join(", ")
+          }}
+        </p>
+      </div>
+      <div v-if="selected.noShowPenalty" class="mt-5 text-caption">
+        Penalização por falta:
+        <strong>{{ money(selected.noShowPenalty) }}</strong>
+      </div>
+      <div
+        v-if="selected.delayMinutes"
+        class="mt-5 rounded-lg bg-surface-muted p-3 text-caption"
+      >
+        Atraso comunicado: {{ selected.delayMinutes }} min ·
+        {{
+          selected.delayStatus === "requested"
+            ? "A aguardar resposta"
+            : selected.delayStatus === "accepted"
+              ? "Aceite"
+              : "Recusado"
+        }}
+        <div
+          v-if="isProfessional && selected.delayStatus === 'requested'"
+          class="mt-3 flex gap-2"
+        >
+          <button class="btn btn-primary" @click="answerDelay(true)">
+            Aceitar
+          </button>
+          <button class="btn btn-secondary" @click="answerDelay(false)">
+            Recusar
+          </button>
+        </div>
+      </div>
+      <div
+        v-if="!isProfessional && selected.status === 'confirmed'"
+        class="mt-5 flex flex-wrap items-end gap-2"
+      >
+        <label class="field min-w-[180px]"
+          ><span>Vou chegar atrasado</span>
+          <select v-model.number="delayMinutes">
+            <option
+              v-for="minutes in [5, 10, 15, 20, 30]"
+              :key="minutes"
+              :value="minutes"
+            >
+              {{ minutes }} minutos
+            </option>
+          </select>
+        </label>
+        <button class="btn btn-secondary" @click="requestDelay">
+          Avisar estabelecimento
+        </button>
+      </div>
+      <div
+        v-if="isProfessional && selected.status === 'in_progress'"
+        class="mt-5 flex flex-wrap items-end gap-2"
+      >
+        <label class="field min-w-[220px] flex-1"
+          ><span>Adicionar serviço</span>
+          <select v-model="extraServiceId">
+            <option value="">Seleccionar serviço</option>
+            <option
+              v-for="item in extraOptions"
+              :key="item.id"
+              :value="item.id"
+            >
+              {{ item.name }} · {{ money(item.price) }}
+            </option>
+          </select>
+        </label>
+        <button
+          class="btn btn-secondary"
+          :disabled="!extraServiceId"
+          @click="addExtra"
+        >
+          Adicionar
+        </button>
+      </div>
       <div
         v-if="!isProfessional && activeStatus(selected)"
         class="mt-5 flex items-start gap-2 text-muted"
@@ -162,7 +290,21 @@ const {
           >
             <AppIcon name="send" /> Enviar ao cliente</button
           ><button
-            v-if="selected.status === 'confirmed'"
+            v-if="
+              selected.paymentStatus === 'pending' &&
+              ['confirmed', 'in_progress', 'completed'].includes(
+                selected.status,
+              )
+            "
+            class="btn btn-secondary"
+            @click="collectPayment"
+          >
+            <AppIcon name="wallet" /> Registar pagamento</button
+          ><button
+            v-if="
+              selected.status === 'confirmed' &&
+              selected.paymentStatus !== 'paid'
+            "
             class="btn btn-danger"
             @click="changeStatus(selected, 'no_show')"
           >

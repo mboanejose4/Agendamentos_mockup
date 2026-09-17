@@ -280,6 +280,64 @@ export function saveRecord<C extends CollectionName>(
       ok: false,
       error: "O gestor não pode criar ou alterar dados pessoais dos clientes.",
     } as SaveOutcome<RecordOf<C>>;
+  if (collection === "businesses") {
+    const company = record as Partial<Business>;
+    if (
+      company.package !== undefined &&
+      ![1, 2, 3, 4].includes(Number(company.package))
+    )
+      return {
+        ok: false,
+        error: "Seleccione um pacote válido.",
+      } as SaveOutcome<RecordOf<C>>;
+    const code = String(company.code || "")
+      .trim()
+      .toUpperCase();
+    if (Number(company.package || 3) <= 2 && !code)
+      return {
+        ok: false,
+        error: "Este pacote exige um código de empresa para acesso directo.",
+      } as SaveOutcome<RecordOf<C>>;
+    if (
+      code &&
+      state.db.businesses.some(
+        (item) => item.id !== company.id && item.code?.toUpperCase() === code,
+      )
+    )
+      return {
+        ok: false,
+        error: "Este código já pertence a outra empresa.",
+      } as SaveOutcome<RecordOf<C>>;
+    if (
+      company.noShowPenaltyPercent !== undefined &&
+      (!Number.isFinite(Number(company.noShowPenaltyPercent)) ||
+        Number(company.noShowPenaltyPercent) < 0 ||
+        Number(company.noShowPenaltyPercent) > 10)
+    )
+      return {
+        ok: false,
+        error: "A penalização por falta deve estar entre 0% e 10%.",
+      } as SaveOutcome<RecordOf<C>>;
+    (record as Record<string, unknown>)["code"] = code;
+  }
+  if (collection === "staff") {
+    const commission = Number(
+      (record as Partial<StaffMember>).commissionPercent || 0,
+    );
+    const rent = Number(
+      (record as Partial<StaffMember>).spaceRentalMonthly || 0,
+    );
+    if (!Number.isFinite(rent) || rent < 0)
+      return {
+        ok: false,
+        error: "A renda mensal do espaço não pode ser negativa.",
+      } as SaveOutcome<RecordOf<C>>;
+    if (!Number.isFinite(commission) || commission < 0 || commission > 100)
+      return {
+        ok: false,
+        error: "A comissão deve estar entre 0% e 100%.",
+      } as SaveOutcome<RecordOf<C>>;
+  }
   /* A partir daqui a colecção é dinâmica: trabalhamos sobre a forma mínima
      comum a todos os registos e devolvemos o tipo da colecção pedida. */
   const list = state.db[collection] as unknown as StoredRecord[];
@@ -716,6 +774,9 @@ function prepareBooking(
       paymentMethod,
       partySize: Number(draft.partySize || 1),
       notes: String(draft.notes || "").trim(),
+      whatsapp: String(
+        draft.phone || draft.whatsapp || client?.phone || "",
+      ).trim(),
     },
   };
 }
@@ -840,6 +901,8 @@ export function updateBooking(
       );
   }
   if ("notes" in patch) existing.notes = String(patch.notes || "").trim();
+  if ("whatsapp" in patch && patch.whatsapp)
+    existing.whatsapp = String(patch.whatsapp).trim();
   if (
     patch.paymentStatus &&
     ["pending", "paid", "refunded"].includes(patch.paymentStatus)
@@ -849,6 +912,169 @@ export function updateBooking(
     existing.clientName = String(patch.clientName).trim();
   audit(`Marcação actualizada: ${existing.clientName}`, existing.businessId);
   return { ok: true, record: existing };
+}
+
+/** O cliente comunica um atraso; o estabelecimento decide se ainda o pode atender. */
+export function requestBookingDelay(
+  id: string,
+  minutesLate: number,
+): OperationResult<Booking> {
+  const booking = state.db.bookings.find((item) => item.id === id);
+  if (
+    !booking ||
+    state.role !== "client" ||
+    booking.clientId !== state.userId ||
+    booking.status !== "confirmed"
+  )
+    return { ok: false, error: "Esta marcação não aceita pedidos de atraso." };
+  if (![5, 10, 15, 20, 30].includes(minutesLate))
+    return { ok: false, error: "Seleccione um tempo de atraso predefinido." };
+  booking.delayMinutes = minutesLate;
+  booking.delayStatus = "requested";
+  const recipients = state.db.users.filter(
+    (user) =>
+      user.active &&
+      user.businessId === booking.businessId &&
+      (user.role === "manager" ||
+        (user.role === "professional" && user.staffId === booking.staffId)),
+  );
+  for (const recipient of recipients)
+    addNotification(
+      recipient.id,
+      "Pedido de atraso",
+      `${booking.clientName} prevê ${minutesLate} minutos de atraso na marcação de ${dateLabel(booking.date)} às ${booking.time}. Confirme se ainda pode atender.`,
+    );
+  audit(`Atraso solicitado: ${minutesLate} min`, booking.businessId);
+  return { ok: true, record: booking };
+}
+
+export function respondBookingDelay(
+  id: string,
+  accept: boolean,
+): OperationResult<Booking> {
+  const booking = state.db.bookings.find((item) => item.id === id);
+  if (
+    !booking ||
+    !["manager", "professional"].includes(state.role) ||
+    booking.businessId !== state.businessId ||
+    (state.role === "professional" && booking.staffId !== state.staffId) ||
+    booking.delayStatus !== "requested"
+  )
+    return { ok: false, error: "Pedido de atraso indisponível." };
+  booking.delayStatus = accept ? "accepted" : "declined";
+  addNotification(
+    booking.clientId,
+    accept ? "Atraso aceite" : "Atraso recusado",
+    accept
+      ? `O estabelecimento confirmou que pode atender com ${booking.delayMinutes} minutos de atraso.`
+      : "Contacte o estabelecimento para combinar uma alternativa.",
+  );
+  audit(
+    `Atraso ${accept ? "aceite" : "recusado"}: ${booking.clientName}`,
+    booking.businessId,
+  );
+  return { ok: true, record: booking };
+}
+
+/** O gestor decide aplicar a taxa depois de registar a falta. */
+export function applyNoShowPenalty(id: string): OperationResult<Booking> {
+  const booking = state.db.bookings.find((item) => item.id === id);
+  const venue = booking && business(booking.businessId);
+  if (
+    !booking ||
+    !venue ||
+    state.role !== "manager" ||
+    booking.businessId !== state.businessId ||
+    booking.status !== "no_show"
+  )
+    return {
+      ok: false,
+      error: "A penalização só pode ser aplicada pelo gestor após uma falta.",
+    };
+  const percent = Number(venue.noShowPenaltyPercent || 0);
+  if (!Number.isFinite(percent) || percent <= 0 || percent > 10)
+    return {
+      ok: false,
+      error: "Defina uma taxa entre 0% e 10% nas preferências da empresa.",
+    };
+  if (booking.noShowPenalty)
+    return { ok: false, error: "A penalização já foi aplicada." };
+  booking.noShowPenalty =
+    Math.round(Number(service(booking.serviceId)?.price || 0) * percent) / 100;
+  addNotification(
+    booking.clientId,
+    "Penalização por falta",
+    `${venue.name} aplicou ${money(booking.noShowPenalty)} pela falta à marcação.`,
+  );
+  audit(
+    `Penalização por falta: ${money(booking.noShowPenalty)}`,
+    booking.businessId,
+  );
+  return { ok: true, record: booking };
+}
+
+/** Acrescenta um serviço durante o atendimento, conservando a marcação original. */
+export function addServiceDuringVisit(
+  id: string,
+  serviceId: string,
+): OperationResult<Booking> {
+  const booking = state.db.bookings.find((item) => item.id === id);
+  const extra = service(serviceId);
+  if (
+    !booking ||
+    !extra ||
+    !["manager", "professional"].includes(state.role) ||
+    booking.businessId !== state.businessId ||
+    (state.role === "professional" && booking.staffId !== state.staffId) ||
+    booking.status !== "in_progress" ||
+    !extra.active ||
+    extra.businessId !== booking.businessId
+  )
+    return {
+      ok: false,
+      error: "Serviço adicional indisponível para este atendimento.",
+    };
+  if (
+    booking.serviceId === serviceId ||
+    booking.extraServiceIds?.includes(serviceId)
+  )
+    return { ok: false, error: "Este serviço já está incluído." };
+  const professional = staffMember(booking.staffId);
+  if (professional && !professional.serviceIds.includes(serviceId))
+    return { ok: false, error: "O profissional não realiza este serviço." };
+  const end = minutes(booking.time) + booking.duration + extra.duration;
+  if (
+    end > minutes(business(booking.businessId)?.closes || "23:59") ||
+    state.db.bookings.some(
+      (other) =>
+        other.id !== id &&
+        other.date === booking.date &&
+        other.staffId === booking.staffId &&
+        !["cancelled", "no_show"].includes(other.status) &&
+        minutes(other.time) < end &&
+        minutes(other.time) + other.duration > minutes(booking.time),
+    )
+  )
+    return {
+      ok: false,
+      error: "Não há tempo livre suficiente para acrescentar o serviço.",
+    };
+  booking.extraServiceIds = [...(booking.extraServiceIds || []), serviceId];
+  booking.duration += extra.duration;
+  booking.total += extra.price * booking.partySize;
+  booking.subtotal =
+    Number(
+      booking.subtotal ?? booking.total - extra.price * booking.partySize,
+    ) +
+    extra.price * booking.partySize;
+  booking.paymentStatus = "pending";
+  addNotification(
+    booking.clientId,
+    "Serviço acrescentado",
+    `${extra.name} foi adicionado ao atendimento. Novo total: ${money(booking.total)}.`,
+  );
+  audit(`Serviço adicional: ${extra.name}`, booking.businessId);
+  return { ok: true, record: booking };
 }
 
 function canCancel(record: Booking): boolean {

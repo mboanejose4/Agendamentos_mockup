@@ -2,6 +2,15 @@ import { computed, reactive, ref, watch } from "vue";
 import { plural, bookingCode } from "@/utils/formatters.ts";
 import { openShareBooking } from "@/stores/shareBookingStore.ts";
 import {
+  bucketize,
+  change,
+  inRange,
+  previousRange,
+  rankClients,
+  segmentClients,
+  summarize,
+} from "@/utils/analytics.ts";
+import {
   state,
   go,
   notify,
@@ -296,10 +305,76 @@ export function useBusinessManagement() {
           revenue: rows
             .filter((booking) => booking.paymentStatus === "paid")
             .reduce((sum, booking) => sum + Number(booking.total), 0),
+          commission: item.independent
+            ? rows
+                .filter(
+                  (booking) =>
+                    booking.status === "completed" &&
+                    booking.paymentStatus === "paid",
+                )
+                .reduce(
+                  (sum, booking) =>
+                    sum +
+                    (Number(booking.total) *
+                      Number(item.commissionPercent || 0)) /
+                      100,
+                  0,
+                )
+            : 0,
         };
       })
       .sort((a, b) => b.count - a.count),
   );
+  /* Evolução ao longo do período e comparação com o período anterior do mesmo
+     comprimento — os cartões sozinhos não mostram tendência. */
+  const reportBuckets = computed(() =>
+    bucketize(reportBookings.value, reportFrom.value, reportTo.value),
+  );
+  const reportSummary = computed(() => summarize(reportBookings.value));
+  const reportPrevious = computed(() => {
+    const window = previousRange(reportFrom.value, reportTo.value);
+    return summarize(inRange(bookings.value, window.from, window.to));
+  });
+  const reportDelta = (key: "bookings" | "completed" | "revenue" | "ticket") =>
+    change(reportSummary.value[key], reportPrevious.value[key]);
+
+  /* --- Clientes: comparação e ranking ------------------------------------ */
+  const clientFrom = ref(today().slice(0, 7) + "-01");
+  const clientTo = ref(today());
+  const clientRankBy = ref<"visits" | "bookings" | "revenue">("visits");
+  const clientPeriodBookings = computed(() =>
+    inRange(bookings.value, clientFrom.value, clientTo.value),
+  );
+  const clientSegments = computed(() =>
+    segmentClients(bookings.value, clientFrom.value, clientTo.value),
+  );
+  const clientSummary = computed(() => summarize(clientPeriodBookings.value));
+  const clientPreviousSegments = computed(() => {
+    const window = previousRange(clientFrom.value, clientTo.value);
+    return segmentClients(bookings.value, window.from, window.to);
+  });
+  const clientDelta = (key: "active" | "fresh" | "returning") =>
+    change(clientSegments.value[key], clientPreviousSegments.value[key]);
+  const clientRanking = computed(() =>
+    rankClients(
+      clientPeriodBookings.value,
+      (id) =>
+        state.db.clients.find((entry) => entry.id === id)?.name ||
+        state.db.users.find((entry) => entry.id === id)?.name ||
+        "",
+    )
+      .sort(
+        (a, b) =>
+          b[clientRankBy.value] - a[clientRankBy.value] ||
+          b.revenue - a.revenue ||
+          a.name.localeCompare(b.name),
+      )
+      .slice(0, 10),
+  );
+  const maxClientRank = computed(() =>
+    Math.max(1, ...clientRanking.value.map((item) => item[clientRankBy.value])),
+  );
+
   const maxServiceCount = computed(() =>
     Math.max(1, ...reportByService.value.map((item) => item.count)),
   );
@@ -415,7 +490,11 @@ export function useBusinessManagement() {
     (Object.keys(settings) as (keyof Business)[]).forEach(
       (key) => delete settings[key],
     );
-    Object.assign(settings, JSON.parse(JSON.stringify(company.value || {})));
+    Object.assign(
+      settings,
+      { package: 3, noShowPenaltyPercent: 0 },
+      JSON.parse(JSON.stringify(company.value || {})),
+    );
   }
   function navigate(view: ViewName): void {
     go(view);
@@ -711,6 +790,7 @@ export function useBusinessManagement() {
       date: bookingForm.date || "",
       time: bookingForm.time || "",
       clientName: client?.name || bookingForm.clientName || "",
+      phone: bookingForm.whatsapp || client?.phone || "",
       partySize: Number(bookingForm.partySize),
       duration: bookingService.value?.duration,
     };
@@ -761,6 +841,11 @@ export function useBusinessManagement() {
       return notify("Verifique os dias e o horário de funcionamento.");
     if (Number(settings.cancelHours) < 0)
       return notify("O prazo de cancelamento não pode ser negativo.");
+    if (
+      Number(settings.noShowPenaltyPercent || 0) > 10 ||
+      Number(settings.noShowPenaltyPercent || 0) < 0
+    )
+      return notify("A penalização por falta deve estar entre 0% e 10%.");
     const result = saveRecord("businesses", {
       ...JSON.parse(JSON.stringify(settings)),
       cancelHours: Number(settings.cancelHours),
@@ -922,6 +1007,17 @@ export function useBusinessManagement() {
     reportCancelled,
     reportByService,
     reportByStaff,
+    reportBuckets,
+    reportSummary,
+    reportDelta,
+    clientFrom,
+    clientTo,
+    clientRankBy,
+    clientSegments,
+    clientSummary,
+    clientDelta,
+    clientRanking,
+    maxClientRank,
     maxServiceCount,
     weekDays,
     selectedBooking,

@@ -51,6 +51,10 @@ function photoError(event: Event) {
       ><span
         class="pointer-events-none absolute top-[13px] left-[13px] flex items-center gap-[5px] rounded bg-scrim px-2 py-[5px] text-white text-muted"
         ><AppIcon :name="categoryIcon" :size="13" />{{ company.category }}</span
+      ><span
+        v-if="company.package === 4"
+        class="absolute bottom-3 left-3 rounded bg-primary px-2 py-1 text-caption font-semibold text-white"
+        >Em destaque</span
       ><button
         :class="[
           'absolute top-3 right-3 grid size-[30px] place-items-center rounded-full border-0 bg-scrim',

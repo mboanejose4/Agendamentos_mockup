@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
-import { plural } from "@/utils/formatters.ts";
+import RoleDashboard from "@/components/shared/analytics/RoleDashboard.vue";
 import { useBusinessManagementContext } from "@/composables/businesses/businessContext.ts";
 const {
   state,
-  money,
   today,
   company,
   services,
   team,
   resources,
-  clients,
   selectedDate,
   settings,
   statusNames,
@@ -19,8 +17,6 @@ const {
   clientName,
   statusClass,
   todayBookings,
-  todayRevenue,
-  outstanding,
   weekDays,
   navigate,
   openBooking,
@@ -29,64 +25,7 @@ const {
 </script>
 <template>
   <div>
-    <div class="mt-1 mb-8 grid grid-cols-2 gap-5 lg:grid-cols-4">
-      <div class="min-w-0 border-b border-line py-5 pr-5">
-        <span class="flex items-center gap-1.5 text-caption text-muted">
-          <AppIcon name="calendar-days" :size="18" /> Reservas de hoje</span
-        >
-        <strong
-          class="my-2.5 block text-[clamp(24px,7vw,28px)] leading-tight break-words"
-          >{{ todayBookings.length }}</strong
-        >
-        <small class="block text-caption text-muted"
-          >{{
-            todayBookings.filter((item) => item.status === "completed").length
-          }}
-          atendimentos concluídos</small
-        >
-      </div>
-      <div class="min-w-0 border-b border-line py-5 pr-5">
-        <span class="flex items-center gap-1.5 text-caption text-muted">
-          <AppIcon name="wallet" :size="18" /> Recebido hoje</span
-        >
-        <strong
-          class="my-2.5 block text-[clamp(24px,7vw,28px)] leading-tight break-words"
-          >{{ money(todayRevenue) }}</strong
-        >
-        <small class="block text-caption text-muted"
-          >Pagamentos confirmados</small
-        >
-      </div>
-      <div class="min-w-0 border-b border-line py-5 pr-5">
-        <span class="flex items-center gap-1.5 text-caption text-muted">
-          <AppIcon name="users" :size="18" /> Clientes</span
-        >
-        <strong
-          class="my-2.5 block text-[clamp(24px,7vw,28px)] leading-tight break-words"
-          >{{ clients.length }}</strong
-        >
-        <small class="block text-caption text-muted"
-          >Na sua base de contactos</small
-        >
-      </div>
-      <div class="min-w-0 border-b border-line py-5 pr-5">
-        <span class="flex items-center gap-1.5 text-caption text-muted">
-          <AppIcon name="clock-3" :size="18" /> Por receber</span
-        >
-        <strong
-          class="my-2.5 block text-[clamp(24px,7vw,28px)] leading-tight break-words"
-          >{{
-            money(
-              outstanding.reduce((sum, item) => sum + Number(item.total), 0),
-            )
-          }}</strong
-        >
-        <small class="block text-caption text-muted"
-          >{{ plural(outstanding.length, "reserva", "reservas") }} com pagamento
-          pendente</small
-        >
-      </div>
-    </div>
+    <RoleDashboard role="manager" />
     <section class="mb-10">
       <div class="mb-5 flex flex-wrap items-center justify-between gap-4">
         <div>

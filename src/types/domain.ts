@@ -63,6 +63,7 @@ export type ViewName =
   | "professional-services"
   | "professional-schedule"
   | "professional-history"
+  | "professional-performance"
   | "overview"
   | "agenda"
   | "clients"
@@ -91,6 +92,9 @@ export interface Branding {
 
 export interface Business {
   id: string;
+  code?: string;
+  package?: 1 | 2 | 3 | 4;
+  noShowPenaltyPercent?: number;
   name: string;
   category: string;
   description: string;
@@ -141,6 +145,9 @@ export interface StaffMember {
   phone: string;
   serviceIds: string[];
   active: boolean;
+  independent?: boolean;
+  commissionPercent?: number;
+  spaceRentalMonthly?: number;
   start: TimeOfDay;
   end: TimeOfDay;
   days: Weekday[];
@@ -193,6 +200,10 @@ export interface Booking {
   shareToken?: string;
   /** Contacto de WhatsApp indicado ao criar a marcação ao balcão. */
   whatsapp?: string;
+  extraServiceIds?: string[];
+  noShowPenalty?: number;
+  delayMinutes?: number;
+  delayStatus?: "requested" | "accepted" | "declined";
 }
 
 export interface Promotion {

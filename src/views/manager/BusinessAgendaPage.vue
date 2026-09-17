@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
+import ViewModeToggle from "@/components/shared/ui/ViewModeToggle.vue";
+import { useListMode } from "@/composables/useListMode.ts";
 import { useBusinessManagementContext } from "@/composables/businesses/businessContext.ts";
 const {
   state,
@@ -23,6 +25,7 @@ const {
   inspectBooking,
   exportCsv,
 } = useBusinessManagementContext();
+const mode = useListMode("agenda");
 </script>
 <template>
   <div>
@@ -79,6 +82,7 @@ const {
           <AppIcon name="download" :size="18" />
         </button>
       </div>
+      <ViewModeToggle v-model="mode" />
     </div>
     <div class="mb-5 flex flex-wrap items-center justify-between gap-4">
       <h2 class="mb-0">{{ formatDate(selectedDate) }}</h2>
@@ -94,6 +98,55 @@ const {
       <button class="btn btn-primary" @click="openBooking()">
         <AppIcon name="plus" :size="17" /> Criar reserva
       </button>
+    </div>
+    <div v-else-if="mode === 'table'" class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th scope="col">Hora</th>
+            <th scope="col">Serviço</th>
+            <th scope="col">Cliente</th>
+            <th scope="col">Profissional</th>
+            <th scope="col">Estado</th>
+            <th scope="col"><span class="sr-only">Acções</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="item in agendaBookings"
+            :key="item.id"
+            :class="{ 'opacity-60': item.status === 'cancelled' }"
+          >
+            <th scope="row" class="tabular">
+              <span class="block text-ink">{{ item.time }}</span>
+              <small class="block text-caption text-muted"
+                >{{ item.duration }} min</small
+              >
+            </th>
+            <td>{{ serviceName(item.serviceId) }}</td>
+            <td>{{ clientName(item) }}</td>
+            <td>
+              {{ staffName(item.staffId)
+              }}<template v-if="item.resourceId">
+                · {{ resourceName(item.resourceId) }}</template
+              >
+            </td>
+            <td>
+              <span :class="['badge', `badge-${statusClass(item.status)}`]">{{
+                statusNames[item.status]
+              }}</span>
+            </td>
+            <td>
+              <button
+                class="btn btn-secondary btn-compact"
+                @click="inspectBooking(item)"
+              >
+                Ver
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
     <div v-else class="flex flex-col gap-4">
       <article

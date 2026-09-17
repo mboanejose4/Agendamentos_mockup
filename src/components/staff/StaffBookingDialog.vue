@@ -22,7 +22,11 @@ const {
         >Cliente
         <select v-model="newBooking.clientId" required>
           <option value="">Escolher cliente</option>
-          <option v-for="person in bookingClients" :key="person.id" :value="person.id">
+          <option
+            v-for="person in bookingClients"
+            :key="person.id"
+            :value="person.id"
+          >
             {{ person.name }}
           </option>
         </select>
@@ -35,7 +39,11 @@ const {
         >Serviço
         <select v-model="newBooking.serviceId" required>
           <option value="">Escolher serviço</option>
-          <option v-for="item in assignedServices" :key="item.id" :value="item.id">
+          <option
+            v-for="item in assignedServices"
+            :key="item.id"
+            :value="item.id"
+          >
             {{ item.name }} · {{ money(item.price) }}
           </option>
         </select></label
@@ -43,7 +51,8 @@ const {
 
       <div class="form-grid">
         <label class="field"
-          >Data <input v-model="newBooking.date" type="date" :min="today()" required
+          >Data
+          <input v-model="newBooking.date" type="date" :min="today()" required
         /></label>
       </div>
 
@@ -88,7 +97,11 @@ const {
           <strong class="ml-1 text-body text-ink">{{
             money(newBookingTotal)
           }}</strong></span
-        ><button type="button" class="btn btn-secondary" @click="newBookingOpen = false">
+        ><button
+          type="button"
+          class="btn btn-secondary"
+          @click="newBookingOpen = false"
+        >
           Cancelar</button
         ><button class="btn btn-primary">
           <AppIcon name="calendar-plus" :size="18" /> Criar e enviar

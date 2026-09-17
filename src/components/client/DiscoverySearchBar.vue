@@ -15,7 +15,7 @@ const { search, city, cities } = useBusinessDiscoveryContext();
     >
       <AppIcon name="search" /><input
         v-model="search"
-        placeholder="Serviço, estabelecimento ou especialidade"
+        placeholder="Serviço, empresa ou código"
         aria-label="Pesquisar serviços ou estabelecimentos"
         class="w-full border-0 bg-transparent pl-0 text-[12px] outline-none focus:outline-none focus:ring-1 focus:ring-primary max-sm:py-2"
       /><button

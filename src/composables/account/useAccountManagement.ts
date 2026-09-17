@@ -19,6 +19,14 @@ import {
   setAccountPassword,
 } from "@/stores/applicationStore.ts";
 import { openShareBooking } from "@/stores/shareBookingStore.ts";
+import {
+  bucketize,
+  change,
+  inRange,
+  previousRange,
+  rankClients,
+  summarize,
+} from "@/utils/analytics.ts";
 
 // Local state belongs to one mounted feature instance.
 import type {
@@ -529,6 +537,83 @@ export function useAccountManagement() {
     deleteBlockOpen.value = false;
     notify("Período novamente disponível.");
   }
+  /* --- O meu desempenho --------------------------------------------------
+     Só as reservas deste profissional. Um funcionário vê o seu trabalho, não
+     o dos colegas. */
+  const performanceFrom = ref(today().slice(0, 7) + "-01");
+  const performanceTo = ref(today());
+  const performanceBookings = computed(() =>
+    inRange(staffBookings.value, performanceFrom.value, performanceTo.value),
+  );
+  const performance = computed(() => summarize(performanceBookings.value));
+  const performancePrevious = computed(() => {
+    const window = previousRange(performanceFrom.value, performanceTo.value);
+    return summarize(inRange(staffBookings.value, window.from, window.to));
+  });
+  const performanceDelta = (key: "bookings" | "completed" | "revenue") =>
+    change(performance.value[key], performancePrevious.value[key]);
+  const performanceBuckets = computed(() =>
+    bucketize(
+      performanceBookings.value,
+      performanceFrom.value,
+      performanceTo.value,
+    ),
+  );
+  const performanceByService = computed(() => {
+    const rows = new Map<
+      string,
+      { name: string; count: number; revenue: number }
+    >();
+    performanceBookings.value
+      .filter((item) => !["cancelled", "no_show"].includes(item.status))
+      .forEach((item) => {
+        const row = rows.get(item.serviceId) || {
+          name: service(item.serviceId)?.name || "Serviço removido",
+          count: 0,
+          revenue: 0,
+        };
+        row.count += 1;
+        if (item.paymentStatus === "paid")
+          row.revenue += Number(item.total || 0);
+        rows.set(item.serviceId, row);
+      });
+    return [...rows.values()].sort((a, b) => b.count - a.count);
+  });
+  const performanceMaxService = computed(() =>
+    Math.max(1, ...performanceByService.value.map((item) => item.count)),
+  );
+  const performanceClients = computed(() =>
+    rankClients(
+      performanceBookings.value,
+      (id) =>
+        state.db.clients.find((entry) => entry.id === id)?.name ||
+        state.db.users.find((entry) => entry.id === id)?.name ||
+        "",
+    )
+      .sort((a, b) => b.visits - a.visits || b.revenue - a.revenue)
+      .slice(0, 8),
+  );
+  /* A comissão só faz sentido para quem trabalha por conta própria. */
+  const performanceCommission = computed(() =>
+    professional.value.independent
+      ? Math.round(
+          performanceBookings.value
+            .filter(
+              (item) =>
+                item.status === "completed" && item.paymentStatus === "paid",
+            )
+            .reduce(
+              (sum, item) =>
+                sum +
+                (Number(item.total || 0) *
+                  Number(professional.value.commissionPercent || 0)) /
+                  100,
+              0,
+            ),
+        )
+      : 0,
+  );
+
   const historySearch = ref("");
   const historyStatus = ref("all");
   const historyFrom = ref("");
@@ -637,6 +722,15 @@ export function useAccountManagement() {
     filteredAppointments,
     openBooking,
     openShareBooking,
+    performanceFrom,
+    performanceTo,
+    performance,
+    performanceDelta,
+    performanceBuckets,
+    performanceByService,
+    performanceMaxService,
+    performanceClients,
+    performanceCommission,
     newBookingOpen,
     newBookingError,
     newBooking,

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
+import RoleDashboard from "@/components/shared/analytics/RoleDashboard.vue";
 import { useAccountManagementContext } from "@/composables/account/accountContext.ts";
 const {
   state,
@@ -9,11 +10,9 @@ const {
   business,
   service,
   staffMember,
-  myBookings,
   statusNames,
   statusClass,
   upcoming,
-  totalCompleted,
   appointmentTab,
   search,
   filteredAppointments,
@@ -23,35 +22,7 @@ const {
 </script>
 <template>
   <div>
-    <div class="mt-1 mb-8 grid grid-cols-2 gap-5 lg:grid-cols-4">
-      <div class="min-w-0 border-b border-line py-5 pr-5">
-        <span class="text-caption text-muted">Próximas marcações</span
-        ><strong
-          class="my-2.5 block text-[clamp(24px,7vw,28px)] leading-tight break-words"
-          >{{ upcoming.length }}</strong
-        ><span class="text-caption text-muted">na sua agenda</span>
-      </div>
-      <div class="min-w-0 border-b border-line py-5 pr-5">
-        <span class="text-caption text-muted">Atendimentos concluídos</span
-        ><strong
-          class="my-2.5 block text-[clamp(24px,7vw,28px)] leading-tight break-words"
-          >{{ totalCompleted }}</strong
-        ><span class="text-caption text-muted">até ao momento</span>
-      </div>
-      <div class="min-w-0 border-b border-line py-5 pr-5">
-        <span class="text-caption text-muted">Estabelecimentos visitados</span
-        ><strong
-          class="my-2.5 block text-[clamp(24px,7vw,28px)] leading-tight break-words"
-          >{{
-            new Set(
-              myBookings
-                .filter((item) => item.status === "completed")
-                .map((item) => item.businessId),
-            ).size
-          }}</strong
-        ><span class="text-caption text-muted">experiências diferentes</span>
-      </div>
-    </div>
+    <RoleDashboard role="client" />
     <div
       class="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
     >

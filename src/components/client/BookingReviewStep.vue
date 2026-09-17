@@ -65,6 +65,17 @@ const {
         maxlength="500"
       /></label
     ><label class="field"
+      >Telefone para confirmação, de preferência com WhatsApp
+      <input
+        v-model.trim="draft.phone"
+        type="tel"
+        inputmode="tel"
+        autocomplete="tel"
+        placeholder="+258 84 000 0000"
+        required
+      />
+      <small>A confirmação usa este contacto.</small></label
+    ><label class="field"
       >Cupão de desconto
       <div class="flex gap-2.5">
         <input
@@ -109,7 +120,7 @@ const {
       /><AppIcon name="credit-card" /><span
         ><strong class="block text-caption">Online</strong
         ><small class="mt-1 block text-caption text-muted"
-          >Carteiras Móveis e Cartões de Crédito.</small
+          >M-Pesa e e-Mola.</small
         ></span
       ></label
     >

@@ -4,6 +4,14 @@ import { bookingReference } from "@/utils/formatters.ts";
 import AppModal from "@/components/shared/ui/AppModal.vue";
 import { openShareBooking } from "@/stores/shareBookingStore.ts";
 import { useBusinessManagementContext } from "@/composables/businesses/businessContext.ts";
+import { computed, ref } from "vue";
+import {
+  state,
+  notify,
+  addServiceDuringVisit,
+  applyNoShowPenalty,
+  respondBookingDelay,
+} from "@/stores/applicationStore.ts";
 const {
   money,
   detailOpen,
@@ -22,6 +30,37 @@ const {
   changeStatus,
   collectPayment,
 } = useBusinessManagementContext();
+const extraServiceId = ref("");
+const extraOptions = computed(() =>
+  state.db.services.filter(
+    (item) =>
+      item.businessId === selectedBooking.value?.businessId &&
+      item.active &&
+      item.id !== selectedBooking.value?.serviceId &&
+      !selectedBooking.value?.extraServiceIds?.includes(item.id),
+  ),
+);
+function addExtra() {
+  if (!selectedBooking.value) return;
+  const result = addServiceDuringVisit(
+    selectedBooking.value.id,
+    extraServiceId.value,
+  );
+  notify(result.ok ? "Serviço acrescentado ao atendimento." : result.error);
+  if (result.ok) extraServiceId.value = "";
+}
+function applyPenalty() {
+  if (!selectedBooking.value) return;
+  const result = applyNoShowPenalty(selectedBooking.value.id);
+  notify(result.ok ? "Penalização registada." : result.error);
+}
+function answerDelay(accept: boolean) {
+  if (!selectedBooking.value) return;
+  const result = respondBookingDelay(selectedBooking.value.id, accept);
+  notify(
+    result.ok ? `Atraso ${accept ? "aceite" : "recusado"}.` : result.error,
+  );
+}
 </script>
 <template>
   <AppModal v-model="detailOpen" title="Detalhes da reserva">
@@ -88,6 +127,84 @@ const {
           <p class="mt-1 text-small text-muted">{{ selectedBooking.notes }}</p>
         </div>
         <div
+          v-if="selectedBooking.extraServiceIds?.length"
+          class="mb-5 text-caption"
+        >
+          <strong>Serviços adicionais</strong>
+          <p>
+            {{
+              selectedBooking.extraServiceIds
+                .map(
+                  (id) =>
+                    state.db.services.find((item) => item.id === id)?.name ||
+                    "Serviço",
+                )
+                .join(", ")
+            }}
+          </p>
+        </div>
+        <div
+          v-if="selectedBooking.delayMinutes"
+          class="mb-5 rounded-lg bg-surface-muted p-3 text-caption"
+        >
+          Atraso comunicado: {{ selectedBooking.delayMinutes }} min ·
+          {{
+            selectedBooking.delayStatus === "requested"
+              ? "A aguardar resposta"
+              : selectedBooking.delayStatus === "accepted"
+                ? "Aceite"
+                : "Recusado"
+          }}
+          <div
+            v-if="selectedBooking.delayStatus === 'requested'"
+            class="mt-3 flex gap-2"
+          >
+            <button class="btn btn-primary" @click="answerDelay(true)">
+              Aceitar
+            </button>
+            <button class="btn btn-secondary" @click="answerDelay(false)">
+              Recusar
+            </button>
+          </div>
+        </div>
+        <div
+          v-if="selectedBooking.status === 'in_progress'"
+          class="mb-5 flex flex-wrap items-end gap-2"
+        >
+          <label class="field min-w-[220px] flex-1"
+            ><span>Adicionar serviço durante o atendimento</span>
+            <select v-model="extraServiceId">
+              <option value="">Seleccionar serviço</option>
+              <option
+                v-for="item in extraOptions"
+                :key="item.id"
+                :value="item.id"
+              >
+                {{ item.name }} · {{ money(item.price) }}
+              </option>
+            </select>
+          </label>
+          <button
+            class="btn btn-secondary"
+            :disabled="!extraServiceId"
+            @click="addExtra"
+          >
+            Adicionar
+          </button>
+        </div>
+        <div
+          v-if="selectedBooking.status === 'no_show'"
+          class="mb-5 rounded-lg bg-surface-muted p-3 text-caption"
+        >
+          <span v-if="selectedBooking.noShowPenalty"
+            >Penalização aplicada:
+            {{ money(selectedBooking.noShowPenalty) }}</span
+          >
+          <button v-else class="btn btn-secondary" @click="applyPenalty">
+            Aplicar penalização por falta
+          </button>
+        </div>
+        <div
           class="mb-5 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4"
         >
           <div>
@@ -142,13 +259,19 @@ const {
           >
             <AppIcon name="calendar-clock" :size="17" /> Reagendar / editar</button
           ><button
-            v-if="selectedBooking.status === 'confirmed'"
+            v-if="
+              selectedBooking.status === 'confirmed' &&
+              selectedBooking.paymentStatus !== 'paid'
+            "
             class="btn btn-secondary"
             @click="changeStatus(selectedBooking, 'no_show')"
           >
             <AppIcon name="user-x" :size="16" /> Não compareceu</button
           ><button
-            v-if="['confirmed', 'in_progress'].includes(selectedBooking.status)"
+            v-if="
+              ['confirmed', 'in_progress'].includes(selectedBooking.status) &&
+              selectedBooking.paymentStatus !== 'paid'
+            "
             class="btn btn-danger"
             @click="changeStatus(selectedBooking, 'cancelled')"
           >

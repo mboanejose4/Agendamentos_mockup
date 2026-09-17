@@ -564,6 +564,166 @@
     @apply rounded-panel border border-line bg-surface p-6;
   }
 
+  /* Painéis analíticos: a mesma hierarquia visual em todos os perfis. */
+  .insight-card,
+  .insight-panel {
+    @apply min-w-0 rounded-panel border border-line bg-surface;
+    box-shadow: 0 8px 28px
+      color-mix(in srgb, var(--shadow-color) 45%, transparent);
+  }
+
+  .insight-card {
+    @apply relative flex min-h-[172px] flex-col overflow-hidden p-5 sm:p-6;
+  }
+
+  .insight-card::before {
+    content: "";
+    @apply absolute inset-x-0 top-0 h-1;
+    background: var(--insight-accent, var(--chart-1));
+  }
+
+  .insight-card--primary {
+    --insight-accent: var(--chart-1);
+  }
+  .insight-card--blue {
+    --insight-accent: var(--chart-2);
+  }
+  .insight-card--amber {
+    --insight-accent: var(--chart-3);
+  }
+  .insight-card--violet {
+    --insight-accent: var(--chart-5);
+  }
+
+  .insight-card__top {
+    @apply flex items-start justify-between gap-3;
+  }
+  .insight-card__label {
+    @apply text-caption font-semibold text-muted;
+  }
+  .insight-card__icon {
+    @apply grid size-10 shrink-0 place-items-center rounded-xl;
+    color: var(--insight-accent, var(--chart-1));
+    background: color-mix(
+      in srgb,
+      var(--insight-accent, var(--chart-1)) 12%,
+      var(--surface)
+    );
+  }
+  .insight-card__value {
+    @apply mt-2 block text-[clamp(25px,3vw,34px)] leading-tight font-semibold tracking-tight text-ink tabular-nums break-words;
+  }
+  .insight-card__detail {
+    @apply mt-1 text-caption text-muted;
+  }
+  .insight-card__comparison {
+    @apply mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 pt-4 text-caption text-muted;
+  }
+  .insight-card__delta {
+    @apply rounded-full px-2 py-0.5 font-semibold;
+    color: var(--insight-accent, var(--chart-1));
+    background: color-mix(
+      in srgb,
+      var(--insight-accent, var(--chart-1)) 11%,
+      var(--surface)
+    );
+  }
+
+  .insight-panel {
+    @apply p-5 sm:p-6;
+  }
+  .insight-panel__header {
+    @apply mb-5 flex flex-wrap items-start justify-between gap-3;
+  }
+  .insight-panel__header h2 {
+    @apply mb-1 text-body-lg font-semibold text-ink;
+  }
+  .insight-panel__header p {
+    @apply text-caption text-muted;
+  }
+  .insight-panel__footer {
+    @apply mt-4 flex flex-wrap gap-x-5 gap-y-1 border-t border-line pt-4 text-caption text-muted;
+  }
+  .insight-panel__footer strong {
+    @apply font-semibold text-ink;
+  }
+
+  .comparison-legend {
+    @apply flex flex-wrap gap-x-3 gap-y-1 text-caption text-muted;
+  }
+  .comparison-legend span {
+    @apply inline-flex items-center gap-1.5;
+  }
+  .comparison-legend i {
+    @apply size-2.5 rounded-sm;
+  }
+  .comparison-legend__current {
+    background: var(--chart-1);
+  }
+  .comparison-legend__previous {
+    background: color-mix(in srgb, var(--chart-2) 55%, var(--surface));
+  }
+  .comparison-chart__plot {
+    @apply relative grid h-44 items-end gap-2 border-b border-line px-1 sm:h-52;
+    grid-template-columns: repeat(var(--chart-columns, 7), minmax(0, 1fr));
+    background: repeating-linear-gradient(
+      to top,
+      transparent 0,
+      transparent calc(25% - 1px),
+      var(--border) 25%
+    );
+  }
+  .comparison-chart__group {
+    @apply relative flex h-full min-w-0 flex-col justify-end;
+  }
+  .comparison-chart__bars {
+    @apply flex flex-1 items-end justify-center gap-1 sm:gap-1.5;
+  }
+  .comparison-chart__bar {
+    @apply block w-full max-w-7 rounded-t-md;
+    min-height: 2px;
+  }
+  .comparison-chart__bar--current {
+    background: var(--chart-1);
+  }
+  .comparison-chart__bar--previous {
+    background: color-mix(in srgb, var(--chart-2) 55%, var(--surface));
+  }
+  .comparison-chart__label {
+    @apply h-6 truncate pt-1 text-center text-[11px] text-muted;
+  }
+
+  .distribution-chart {
+    @apply flex flex-col items-center gap-5 sm:flex-row sm:gap-6;
+  }
+  .distribution-chart__ring {
+    @apply relative grid size-40 shrink-0 place-items-center rounded-full;
+  }
+  .distribution-chart__center {
+    @apply z-10 flex size-[112px] flex-col items-center justify-center rounded-full bg-surface text-center;
+  }
+  .distribution-chart__center strong {
+    @apply text-3xl leading-none font-semibold text-ink tabular-nums;
+  }
+  .distribution-chart__center span {
+    @apply mt-1 text-caption text-muted;
+  }
+  .distribution-chart__legend {
+    @apply flex w-full min-w-0 flex-col gap-2.5;
+  }
+  .distribution-chart__legend li {
+    @apply flex min-w-0 items-center gap-2 text-caption text-muted;
+  }
+  .distribution-chart__legend strong {
+    @apply min-w-5 text-right font-semibold text-ink tabular-nums;
+  }
+  .distribution-chart__legend small {
+    @apply w-9 text-right tabular-nums;
+  }
+  .distribution-chart__swatch {
+    @apply size-2.5 shrink-0 rounded-sm;
+  }
+
   /* --- Formulários --------------------------------------------------------- */
 
   .field {

@@ -1,175 +1,21 @@
 <script setup lang="ts">
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
+import RoleDashboard from "@/components/shared/analytics/RoleDashboard.vue";
 import { usePlatformManagementContext } from "@/composables/platform/platformContext.ts";
 const {
   state,
   go,
-  money,
-  today,
   business,
   businesses,
-  activeBusinesses,
-  totalBookings,
-  paidVolume,
-  activeUsers,
   dateTime,
   initials,
-  activityDays,
-  maxDayCount,
-  categoryDistribution,
   recentLogs,
   openCompany,
-  openTickets,
 } = usePlatformManagementContext();
 </script>
 <template>
   <div>
-    <div
-      class="mb-8 grid grid-cols-2 gap-x-4 gap-y-5 sm:gap-x-5 lg:grid-cols-4"
-    >
-      <div class="min-w-0 border-b border-line py-4 pr-4 sm:py-5 sm:pr-5">
-        <span class="text-caption text-muted">Estabelecimentos activos</span
-        ><strong
-          class="my-2 block text-2xl leading-tight break-words sm:text-[clamp(24px,7vw,28px)]"
-          >{{ activeBusinesses.length }}</strong
-        ><span class="text-caption text-muted"
-          >{{ businesses.length }} no total</span
-        >
-      </div>
-      <div class="min-w-0 border-b border-line py-4 pr-4 sm:py-5 sm:pr-5">
-        <span class="text-caption text-muted">Utilizadores activos</span
-        ><strong
-          class="my-2 block text-2xl leading-tight break-words sm:text-[clamp(24px,7vw,28px)]"
-          >{{ activeUsers.length }}</strong
-        ><span class="text-caption text-muted">em todos os perfis</span>
-      </div>
-      <div class="min-w-0 border-b border-line py-4 pr-4 sm:py-5 sm:pr-5">
-        <span class="text-caption text-muted">Agendamentos</span
-        ><strong
-          class="my-2 block text-2xl leading-tight break-words sm:text-[clamp(24px,7vw,28px)]"
-          >{{ totalBookings.length }}</strong
-        ><span class="text-caption text-muted">excluindo cancelamentos</span>
-      </div>
-      <div class="min-w-0 border-b border-line py-4 pr-4 sm:py-5 sm:pr-5">
-        <span class="text-caption text-muted">Pagamentos registados</span
-        ><strong
-          class="my-2 block text-2xl leading-tight break-words sm:text-[clamp(24px,7vw,28px)]"
-          >{{ money(paidVolume) }}</strong
-        ><span class="text-caption text-muted">volume acumulado</span>
-      </div>
-    </div>
-    <div
-      class="mb-10 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:gap-8"
-    >
-      <section>
-        <div class="mb-5 flex items-center justify-between gap-4">
-          <div>
-            <h2 class="mb-0">Actividade de agendamentos</h2>
-            <p class="mt-1.5 text-caption text-muted">Últimos 7 dias</p>
-          </div>
-          <AppIcon name="chart-no-axes-column" class="shrink-0 text-muted" />
-        </div>
-        <div
-          class="flex items-end gap-2 sm:gap-3"
-          role="img"
-          :aria-label="
-            activityDays
-              .map((day) => `${day.label}: ${day.count} agendamentos`)
-              .join(', ')
-          "
-        >
-          <div
-            v-for="day in activityDays"
-            :key="day.iso"
-            class="flex min-w-0 flex-1 flex-col items-center gap-2"
-          >
-            <span
-              class="text-caption font-semibold"
-              :class="day.iso === today() ? 'text-ink' : 'text-muted'"
-              >{{ day.count }}</span
-            >
-            <div
-              class="flex h-28 w-full items-end overflow-hidden rounded bg-soft sm:h-36"
-            >
-              <span
-                class="w-full rounded bg-primary"
-                :style="{
-                  height: `${day.count ? Math.max(5, (day.count / maxDayCount) * 100) : 2}%`,
-                }"
-              ></span>
-            </div>
-            <span
-              class="text-caption"
-              :class="
-                day.iso === today() ? 'font-semibold text-ink' : 'text-muted'
-              "
-              ><span class="sm:hidden">{{ day.label.slice(0, 3) }}</span
-              ><span class="hidden sm:inline">{{ day.label }}</span></span
-            >
-          </div>
-        </div>
-      </section>
-      <section>
-        <h2 class="mb-5">Uma plataforma, vários sectores</h2>
-        <div
-          v-for="(item, index) in categoryDistribution"
-          :key="item.category"
-          class="mb-4"
-        >
-          <div class="mb-1.5 flex items-center gap-2 text-caption">
-            <span
-              class="size-2 shrink-0 rounded-full"
-              :class="
-                [
-                  'bg-primary',
-                  'bg-secondary',
-                  'bg-warning',
-                  'bg-success',
-                  'bg-danger',
-                ][index % 5]
-              "
-            ></span
-            ><span class="min-w-0 flex-1 truncate text-ink">{{
-              item.category
-            }}</span
-            ><strong class="text-ink">{{ item.count }}</strong>
-          </div>
-          <div class="h-1.5 w-full overflow-hidden rounded-full bg-soft">
-            <span
-              class="block h-full rounded-full"
-              :class="
-                [
-                  'bg-primary',
-                  'bg-secondary',
-                  'bg-warning',
-                  'bg-success',
-                  'bg-danger',
-                ][index % 5]
-              "
-              :style="{
-                width: `${(item.count / Math.max(1, businesses.length)) * 100}%`,
-              }"
-            ></span>
-          </div>
-        </div>
-        <div class="mt-5 flex items-center gap-3 border-t border-line pt-5">
-          <span class="flex flex-1 items-center gap-2 text-small text-muted"
-            ><AppIcon name="messages-square" :size="18" /> Pedidos de suporte
-            abertos</span
-          ><strong class="text-body-lg text-ink">{{
-            openTickets.length
-          }}</strong
-          ><button
-            class="icon-btn"
-            title="Abrir suporte"
-            aria-label="Abrir suporte"
-            @click="go('support')"
-          >
-            <AppIcon name="arrow-up-right" />
-          </button>
-        </div>
-      </section>
-    </div>
+    <RoleDashboard role="platform" />
     <section class="mb-10">
       <div class="mb-5 flex items-center justify-between gap-4">
         <h2 class="mb-0">Estabelecimentos da rede</h2>

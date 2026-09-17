@@ -89,6 +89,8 @@ export function useBusinessDiscovery() {
     let list = state.db.businesses.filter(
       (b) =>
         b.active &&
+        ((b.package ?? 3) >= 3 ||
+          (!!b.code && term === b.code.toLocaleLowerCase("pt"))) &&
         (state.view !== "favorites" || favorites.value.includes(b.id)) &&
         (category.value === "Todos" || b.category === category.value) &&
         (city.value === "Todas as localizações" || b.city === city.value) &&
@@ -97,6 +99,7 @@ export function useBusinessDiscovery() {
         (!term ||
           [
             b.name,
+            b.code || "",
             b.city,
             b.address,
             b.category,
@@ -113,7 +116,9 @@ export function useBusinessDiscovery() {
           ? (a, b) => a.name.localeCompare(b.name)
           : sort.value === "distance"
             ? (a, b) => distanceFor(a) - distanceFor(b)
-            : (a, b) => b.rating - a.rating,
+            : (a, b) =>
+                Number(b.package === 4) - Number(a.package === 4) ||
+                b.rating - a.rating,
     );
   });
   const promotions = computed(() =>

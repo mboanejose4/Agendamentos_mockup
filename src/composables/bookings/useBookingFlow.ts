@@ -35,6 +35,11 @@ export function useBookingFlow() {
       coupon: "",
       paymentMethod: "onsite" as const,
       notes: "",
+      phone:
+        state.role === "guest"
+          ? ""
+          : state.db.users.find((user) => user.id === state.userId)?.phone ||
+            "",
     },
     ...(state.bookingDraft || {}),
   });
@@ -189,6 +194,11 @@ export function useBookingFlow() {
         appliedCoupon: appliedCoupon.value,
       };
       go("auth");
+      return;
+    }
+    if (String(draft.phone || "").replace(/\D/g, "").length < 9) {
+      error.value =
+        "Indique um número de telefone válido para confirmar a marcação.";
       return;
     }
     if (

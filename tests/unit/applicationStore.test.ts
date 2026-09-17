@@ -130,7 +130,7 @@ test("discounts persist in totals, reject expired or cross-business coupons, and
   assert.ok(bookingTotal({ serviceId: "s1", coupon: "BEMVINDO10" }).error);
   assert.equal(markPaid(booking.id).ok, true);
   assert.equal(booking.paymentStatus, "paid");
-  const stored = JSON.parse(storage.get("marcafacil.agendamento.v3") || "{}");
+  const stored = JSON.parse(storage.get("marcafacil.agendamento.v4") || "{}");
   assert.equal(stored.db.bookings[0].total, 1080);
   assert.equal(stored.db.bookings[0].paymentStatus, "paid");
 });
@@ -311,5 +311,105 @@ test("manager cannot deactivate clients belonging only to another company", asyn
   assert.equal(
     state.db.clients.some((item) => item.id === "other-company-client"),
     true,
+  );
+});
+
+test("a empresa aplica a penalização por falta uma vez, dentro do limite de 10%", async () => {
+  const { saveRecord, applyNoShowPenalty } =
+    await import("@/stores/applicationStore.ts");
+  const booking = recordOf(createBooking(draft()));
+  state.role = "manager";
+  assert.equal(
+    saveRecord("businesses", {
+      ...state.db.businesses[0],
+      noShowPenaltyPercent: 11,
+    }).ok,
+    false,
+  );
+  assert.equal(
+    saveRecord("businesses", {
+      ...state.db.businesses[0],
+      noShowPenaltyPercent: 10,
+    }).ok,
+    undefined,
+  );
+  assert.equal(applyNoShowPenalty(booking.id).ok, false);
+  assert.equal(updateBooking(booking.id, { status: "no_show" }).ok, true);
+  assert.equal(applyNoShowPenalty(booking.id).ok, true);
+  assert.equal(booking.noShowPenalty, 120);
+  assert.equal(applyNoShowPenalty(booking.id).ok, false);
+});
+
+test("o cliente pede atraso e a empresa responde sem alterar a hora original", async () => {
+  const { requestBookingDelay, respondBookingDelay } =
+    await import("@/stores/applicationStore.ts");
+  const booking = recordOf(createBooking(draft()));
+  state.db.notifications = [];
+  assert.equal(requestBookingDelay(booking.id, 12).ok, false);
+  assert.equal(requestBookingDelay(booking.id, 15).ok, true);
+  assert.equal(booking.delayStatus, "requested");
+  assert.deepEqual(state.db.notifications.map((item) => item.userId).sort(), [
+    "u2",
+    "u3",
+  ]);
+  assert.equal(
+    state.db.notifications.every(
+      (item) => item.title === "Pedido de atraso" && !item.read,
+    ),
+    true,
+  );
+  state.role = "professional";
+  state.userId = "u2";
+  state.staffId = "p1";
+  assert.equal(respondBookingDelay(booking.id, true).ok, true);
+  assert.equal(booking.delayStatus, "accepted");
+  assert.equal(booking.time, "10:00");
+  assert.equal(state.db.notifications[0].userId, "u1");
+  assert.equal(state.db.notifications[0].title, "Atraso aceite");
+  state.role = "client";
+  state.userId = "u1";
+  assert.equal(requestBookingDelay(booking.id, 20).ok, true);
+  state.role = "manager";
+  state.userId = "u3";
+  assert.equal(respondBookingDelay(booking.id, false).ok, true);
+  assert.equal(state.db.notifications[0].userId, "u1");
+  assert.equal(state.db.notifications[0].title, "Atraso recusado");
+});
+
+test("serviço adicional só entra durante atendimento e respeita a agenda", async () => {
+  const { addServiceDuringVisit } =
+    await import("@/stores/applicationStore.ts");
+  const booking = recordOf(createBooking(draft()));
+  state.role = "manager";
+  assert.equal(addServiceDuringVisit(booking.id, "s3").ok, false);
+  assert.equal(updateBooking(booking.id, { status: "in_progress" }).ok, true);
+  assert.equal(addServiceDuringVisit(booking.id, "s2").ok, false);
+  assert.equal(addServiceDuringVisit(booking.id, "s3").ok, true);
+  assert.deepEqual(booking.extraServiceIds, ["s3"]);
+  assert.equal(booking.duration, 180);
+  assert.equal(booking.total, 4700);
+  assert.equal(addServiceDuringVisit(booking.id, "s3").ok, false);
+});
+
+test("pacotes de acesso directo exigem códigos únicos", async () => {
+  const { saveRecord } = await import("@/stores/applicationStore.ts");
+  state.role = "manager";
+  const company = state.db.businesses[0];
+  assert.equal(
+    saveRecord("businesses", { ...company, package: 1, code: "" }).ok,
+    false,
+  );
+  assert.notEqual(
+    saveRecord("businesses", { ...company, package: 1, code: "LUME" }).ok,
+    false,
+  );
+  assert.equal(state.db.businesses[0].code, "LUME");
+  assert.equal(
+    saveRecord("businesses", {
+      ...state.db.businesses[1],
+      package: 2,
+      code: "lume",
+    }).ok,
+    false,
   );
 });

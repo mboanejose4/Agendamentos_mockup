@@ -152,6 +152,28 @@ const {
         <label class="check-field"
           ><input v-model="form.active" type="checkbox" /> Profissional
           activo</label
+        ><label class="check-field"
+          ><input v-model="form.independent" type="checkbox" /> Profissional
+          independente</label
+        ><label v-if="form.independent" class="field mt-4 max-w-sm"
+          ><span>Comissão sobre os serviços (%)</span
+          ><input
+            v-model.number="form.commissionPercent"
+            type="number"
+            min="0"
+            max="100"
+            step="0.5"
+          />
+          <small>Os atendimentos continuam associados à empresa.</small></label
+        ><label v-if="form.independent" class="field mt-4 max-w-sm"
+          ><span>Renda mensal do espaço (MZN)</span
+          ><input
+            v-model.number="form.spaceRentalMonthly"
+            type="number"
+            min="0"
+            step="0.01"
+          />
+          <small>Valor acordado com a empresa para uso do espaço.</small></label
         ></template
       >
       <template v-else-if="editorType === 'resources'"

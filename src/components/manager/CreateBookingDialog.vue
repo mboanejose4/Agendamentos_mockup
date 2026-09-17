@@ -153,6 +153,15 @@ const {
         </p>
       </fieldset>
       <label class="field"
+        ><span>Telefone para confirmação por WhatsApp</span>
+        <input
+          v-model.trim="bookingForm.whatsapp"
+          type="tel"
+          placeholder="+258 84 000 0000"
+        />
+        <small>Se vazio, será usado o telefone da ficha do cliente.</small>
+      </label>
+      <label class="field"
         ><span>Observações (opcional)</span
         ><textarea
           v-model="bookingForm.notes"

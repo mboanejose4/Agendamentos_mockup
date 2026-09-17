@@ -13,19 +13,14 @@ import {
 } from "@/stores/applicationStore.ts";
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
 const error = ref("");
-/* As cores escolhidas pintam o ecrã enquanto se preenche o formulário, e o
-   ecrã volta à identidade da plataforma assim que se sai daqui. */
-watch(
-  () => company.branding,
-  (value) => (brandPreview.value = { ...value }),
-  { deep: true, immediate: true },
-);
-onBeforeUnmount(() => (brandPreview.value = null));
 const coverBusy = ref(false);
 const company = reactive({
   image: "",
   branding: { ...defaultBrand },
   name: "",
+  code: "",
+  package: 3 as 1 | 2 | 3 | 4,
+  noShowPenaltyPercent: 0,
   category: "Beleza",
   city: "Maputo",
   address: "",
@@ -35,6 +30,13 @@ const company = reactive({
   opens: "08:00",
   closes: "18:00",
 });
+/* A identidade escolhida acompanha o formulário e é reposta ao sair. */
+watch(
+  () => company.branding,
+  (value) => (brandPreview.value = { ...value }),
+  { deep: true, immediate: true },
+);
+onBeforeUnmount(() => (brandPreview.value = null));
 function createCompany() {
   error.value = "";
   if (
@@ -60,6 +62,10 @@ function createCompany() {
     reviewCount: 0,
     ownerId: state.userId,
   });
+  if (record.ok === false) {
+    error.value = record.error || "Não foi possível registar a empresa.";
+    return;
+  }
   const user = state.db.users.find((u) => u.id === state.userId);
   if (user)
     saveRecord("users", { ...user, role: "manager", businessId: record.id });
@@ -88,6 +94,24 @@ function createCompany() {
             maxlength="100"
             autocomplete="organization"
           />
+        </label>
+        <label class="field">
+          Código da empresa
+          <input
+            v-model.trim="company.code"
+            maxlength="24"
+            :required="company.package <= 2"
+            placeholder="Ex.: SALAO-CENTRO"
+          />
+        </label>
+        <label class="field">
+          Pacote
+          <select v-model.number="company.package">
+            <option :value="1">01 · Reservas da própria empresa</option>
+            <option :value="2">02 · Profissionais independentes</option>
+            <option :value="3">03 · Exploração completa</option>
+            <option :value="4">04 · Destaque na plataforma</option>
+          </select>
         </label>
         <label class="field">
           Categoria

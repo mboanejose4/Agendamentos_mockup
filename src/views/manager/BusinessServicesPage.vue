@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
+import ViewModeToggle from "@/components/shared/ui/ViewModeToggle.vue";
+import { useListMode } from "@/composables/useListMode.ts";
 import { resourceTypeName } from "@/utils/resourceTypes.ts";
 import { plural } from "@/utils/formatters.ts";
 import { useBusinessManagementContext } from "@/composables/businesses/businessContext.ts";
@@ -13,6 +15,7 @@ const {
   requestRemoval,
   toggleActive,
 } = useBusinessManagementContext();
+const mode = useListMode("services");
 </script>
 <template>
   <div>
@@ -40,6 +43,7 @@ const {
         }}
         · {{ services.length }} no total</span
       >
+      <ViewModeToggle v-model="mode" />
     </div>
     <div v-if="!filteredServices.length" class="empty-state">
       <AppIcon name="sparkles" :size="34" />
@@ -53,6 +57,73 @@ const {
             : "Adicione os serviços disponíveis para reserva."
         }}
       </p>
+    </div>
+    <div v-else-if="mode === 'table'" class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th scope="col">Serviço</th>
+            <th scope="col">Duração</th>
+            <th scope="col">Preço</th>
+            <th scope="col">Recurso</th>
+            <th scope="col">Estado</th>
+            <th scope="col"><span class="sr-only">Acções</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in filteredServices" :key="item.id">
+            <th scope="row">
+              <span class="block text-ink">{{ item.name }}</span>
+              <small class="block text-caption text-muted">{{
+                item.description || "Sem descrição."
+              }}</small>
+            </th>
+            <td class="tabular">{{ item.duration }} min</td>
+            <td class="tabular">{{ money(item.price) }}</td>
+            <td>
+              {{
+                item.resourceType ? resourceTypeName(item.resourceType) : "—"
+              }}
+            </td>
+            <td>
+              <span
+                :class="[
+                  'badge',
+                  item.active ? 'badge-success' : 'badge-neutral',
+                ]"
+                >{{ item.active ? "Activo" : "Inactivo" }}</span
+              >
+            </td>
+            <td>
+              <div class="flex items-center gap-1">
+                <button
+                  class="icon-btn"
+                  :aria-label="'Editar ' + item.name"
+                  @click="openEditor('services', item)"
+                >
+                  <AppIcon name="pencil" :size="16" />
+                </button>
+                <button
+                  class="icon-btn"
+                  :aria-label="
+                    (item.active ? 'Desactivar ' : 'Activar ') + item.name
+                  "
+                  @click="toggleActive('services', item)"
+                >
+                  <AppIcon :name="item.active ? 'pause' : 'play'" :size="16" />
+                </button>
+                <button
+                  class="icon-btn icon-btn-danger"
+                  :aria-label="'Eliminar ' + item.name"
+                  @click="requestRemoval('services', item)"
+                >
+                  <AppIcon name="trash-2" :size="16" />
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
     <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
       <article

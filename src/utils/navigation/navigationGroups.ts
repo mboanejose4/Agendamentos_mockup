@@ -35,6 +35,7 @@ export function getNavigationGroups(role: Role): readonly NavigationGroup[] {
           ["reports", "Relatórios", "bar-chart-3"],
           ["promotions", "Promoções", "tag"],
           ["settings", "Definições", "settings"],
+          ["notifications", "Notificações", "bell"],
           ["support", "Suporte", "message-square"],
         ],
       },
@@ -62,6 +63,7 @@ export function getNavigationGroups(role: Role): readonly NavigationGroup[] {
           ["professional-services", "Serviços", "briefcase-business"],
           ["professional-schedule", "Disponibilidade", "clock"],
           ["professional-history", "Histórico", "receipt"],
+          ["professional-performance", "O meu desempenho", "bar-chart-3"],
         ],
       },
       {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
 import MobileCarousel from "@/components/shared/ui/MobileCarousel.vue";
+import RoleDashboard from "@/components/shared/analytics/RoleDashboard.vue";
 
 /* Secções informativas por baixo da lista de estabelecimentos. Explicam a
    plataforma a quem chega pela primeira vez e encaminham os donos de negócio
@@ -28,23 +29,13 @@ const benefits: { icon: string; title: string; body: string }[] = [
   {
     icon: "wallet",
     title: "Pague como preferir",
-    body: "No local, no fim do atendimento, ou já no momento da marcação através de carteira móvel ou cartão.",
+    body: "No local, no fim do atendimento, ou já no momento da marcação por M-Pesa ou e-Mola.",
   },
-];
-
-/* Valores de marketing, ainda por substituir pelos números reais da operação. */
-const figures: { value: string; label: string }[] = [
-  { value: "500+", label: "Estabelecimentos" },
-  { value: "1 200+", label: "Profissionais" },
-  { value: "20 mil", label: "Marcações feitas" },
-  { value: "4,8", label: "Avaliação média" },
 ];
 
 const payments: { icon: string; name: string; note: string }[] = [
   { icon: "wallet", name: "M-Pesa", note: "Carteira móvel" },
   { icon: "wallet", name: "e-Mola", note: "Carteira móvel" },
-  { icon: "wallet", name: "mKesh", note: "Carteira móvel" },
-  { icon: "credit-card", name: "Cartão", note: "Visa e Mastercard" },
   { icon: "receipt", name: "No local", note: "No fim do atendimento" },
 ];
 
@@ -141,23 +132,7 @@ const questions: { question: string; answer: string }[] = [
       </MobileCarousel>
     </section>
 
-    <!-- Números --------------------------------------------------------- -->
-    <section
-      class="rounded-panel border border-line bg-surface-muted px-[26px] py-7 sm:px-9"
-      aria-labelledby="numeros-titulo"
-    >
-      <h2 id="numeros-titulo" class="sr-only">Números da plataforma</h2>
-      <dl class="grid grid-cols-2 gap-x-5 gap-y-6 sm:grid-cols-4">
-        <div
-          v-for="item in figures"
-          :key="item.label"
-          class="flex flex-col-reverse gap-1"
-        >
-          <dt class="text-caption text-muted">{{ item.label }}</dt>
-          <dd class="figure">{{ item.value }}</dd>
-        </div>
-      </dl>
-    </section>
+    <RoleDashboard role="guest" />
 
     <!-- Formas de pagamento --------------------------------------------- -->
     <section aria-labelledby="pagamentos-titulo">

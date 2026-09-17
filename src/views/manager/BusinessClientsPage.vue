@@ -13,6 +13,8 @@ function showHistory(item: Client) {
   historyOpen.value = true;
 }
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
+import StatCard from "@/components/shared/ui/StatCard.vue";
+import { plural } from "@/utils/formatters.ts";
 import { useBusinessManagementContext } from "@/composables/businesses/businessContext.ts";
 const {
   state,
@@ -29,10 +31,173 @@ const {
   exportCsv,
   clientBookings,
   clientLastVisit,
+  money,
+  dateLabel,
+  clientFrom,
+  clientTo,
+  clientRankBy,
+  clientSegments,
+  clientSummary,
+  clientDelta,
+  clientRanking,
+  maxClientRank,
 } = useBusinessManagementContext();
+
+/* As três medidas ordenáveis. A ordenada é assinalada na tabela, em vez de
+   repetida numa coluna extra. */
+const rankColumns = [
+  { key: "visits", label: "Visitas" },
+  { key: "bookings", label: "Marcações" },
+  { key: "revenue", label: "Receita" },
+] as const;
 </script>
 <template>
   <div>
+    <!-- Análise do período: os filtros desta secção não mexem na lista
+         de clientes que vem mais abaixo. -->
+    <section class="mb-10">
+      <h2 class="mb-1 text-h3">Desempenho dos clientes</h2>
+      <p class="mb-5 text-caption text-muted">
+        Quem voltou, quem é novo e quem mais o procura no período escolhido.
+      </p>
+
+      <div
+        class="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
+      >
+        <label class="field mb-0">
+          <span>De</span>
+          <input v-model="clientFrom" type="date" :max="clientTo" />
+        </label>
+        <label class="field mb-0">
+          <span>Até</span>
+          <input v-model="clientTo" type="date" :min="clientFrom" />
+        </label>
+        <span class="text-caption text-muted"
+          >{{ plural(clientSummary.bookings, "marcação", "marcações") }} de
+          {{ plural(clientSegments.active, "cliente", "clientes") }}</span
+        >
+      </div>
+
+      <div class="mt-1 mb-8 grid grid-cols-2 gap-5 lg:grid-cols-4">
+        <StatCard
+          label="Clientes activos"
+          :value="String(clientSegments.active)"
+          :delta="clientDelta('active')"
+        />
+        <StatCard
+          label="Novos clientes"
+          :value="String(clientSegments.fresh)"
+          :delta="clientDelta('fresh')"
+        />
+        <StatCard
+          label="Clientes que voltaram"
+          :value="String(clientSegments.returning)"
+          :delta="clientDelta('returning')"
+        />
+        <StatCard
+          label="Taxa de regresso"
+          :value="`${clientSegments.returnRate}%`"
+          hint="dos activos já eram conhecidos"
+        />
+      </div>
+
+      <div class="mb-8 grid grid-cols-2 gap-5 lg:grid-cols-4">
+        <StatCard
+          label="Mais de uma visita"
+          :value="String(clientSegments.loyal)"
+          hint="clientes com duas ou mais marcações"
+        />
+        <StatCard
+          label="Sem voltar"
+          :value="String(clientSegments.dormant)"
+          hint="conhecidos que não vieram no período"
+        />
+        <StatCard
+          label="Ticket médio"
+          :value="money(clientSummary.ticket)"
+          hint="por marcação contabilizada"
+        />
+        <StatCard
+          label="Faltas"
+          :value="String(clientSummary.noShow)"
+          :hint="`${clientSummary.noShowRate}% do total marcado`"
+        />
+      </div>
+
+      <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <h3 class="text-body font-medium">Os clientes que mais o procuram</h3>
+        <label class="flex items-center gap-2 text-caption text-muted"
+          >Ordenar por
+          <select
+            v-model="clientRankBy"
+            class="border-0 bg-transparent px-[3px] py-[7px] text-caption"
+          >
+            <option value="visits">Visitas</option>
+            <option value="bookings">Marcações</option>
+            <option value="revenue">Receita</option>
+          </select></label
+        >
+      </div>
+
+      <div v-if="clientRanking.length" class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Cliente</th>
+              <th
+                v-for="column in rankColumns"
+                :key="column.key"
+                scope="col"
+                :aria-sort="
+                  clientRankBy === column.key ? 'descending' : undefined
+                "
+                :class="clientRankBy === column.key ? 'text-ink' : ''"
+              >
+                {{ column.label
+                }}<AppIcon
+                  v-if="clientRankBy === column.key"
+                  name="chevron-down"
+                  :size="13"
+                  class="ml-1 inline align-[-2px]"
+                />
+              </th>
+              <th scope="col">Faltas</th>
+              <th scope="col">Última visita</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(person, index) in clientRanking" :key="person.id">
+              <td class="tabular text-muted">{{ index + 1 }}</td>
+              <th scope="row">
+                <span class="block">{{ person.name }}</span>
+                <span
+                  class="mt-1 block h-1.5 max-w-[140px] rounded-full bg-surface-muted"
+                  ><span
+                    class="block h-1.5 rounded-full bg-primary"
+                    :style="{
+                      width: (person[clientRankBy] / maxClientRank) * 100 + '%',
+                    }"
+                  ></span
+                ></span>
+              </th>
+              <td class="tabular">{{ person.visits }}</td>
+              <td class="tabular">{{ person.bookings }}</td>
+              <td class="tabular">{{ money(person.revenue) }}</td>
+              <td class="tabular">{{ person.noShow }}</td>
+              <td>
+                {{ person.lastVisit ? dateLabel(person.lastVisit) : "—" }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p v-else class="text-caption text-muted">
+        Sem marcações de clientes neste período.
+      </p>
+    </section>
+
+    <h2 class="mb-5 text-h3">Todos os clientes</h2>
     <div
       class="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
     >

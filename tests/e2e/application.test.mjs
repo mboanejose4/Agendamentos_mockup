@@ -26,6 +26,7 @@ const roles = {
     "schedule",
     "clients",
     "payments",
+    "notifications",
     "reports",
     "promotions",
     "settings",
@@ -86,10 +87,58 @@ try {
           await page.locator("main h1, main h2").count(),
           `${role}/${view}: heading`,
         );
+        if (
+          [
+            "explore",
+            "appointments",
+            "professional-agenda",
+            "overview",
+            "platform-overview",
+          ].includes(view)
+        ) {
+          assert.equal(
+            await page.locator(".insight-card").count(),
+            role === "manager" && view === "overview" ? 12 : 4,
+            `${role}/${view}: metric cards`,
+          );
+          assert.equal(
+            await page.locator(".comparison-chart").count(),
+            role === "manager" && view === "overview" ? 2 : 1,
+            `${role}/${view}: comparison chart`,
+          );
+          assert.equal(
+            await page.locator(".distribution-chart").count(),
+            1,
+            `${role}/${view}: distribution chart`,
+          );
+        }
         assert.equal(
           await page.locator('aside[aria-label="Navegação principal"]').count(),
-          view === "auth" ? 0 : 1,
+          role === "guest" || view === "auth" ? 0 : 1,
         );
+        if (view !== "auth") {
+          assert.equal(
+            await page
+              .getByRole("button", { name: "Escolher espaço de trabalho" })
+              .count(),
+            role === "guest" ? 1 : 0,
+          );
+          if (width < 1025) {
+            assert.equal(
+              await page
+                .getByRole("button", { name: "Abrir navegação" })
+                .count(),
+              role === "guest" ? 0 : 1,
+            );
+            assert.equal(
+              await page
+                .locator("header")
+                .getByRole("button", { name: "MarcaFácil, início" })
+                .count(),
+              role === "guest" ? 1 : 0,
+            );
+          }
+        }
         assert.equal(await page.locator(".mobile-bottom-nav").count(), 0);
         assert.equal(
           await page.evaluate(
@@ -102,6 +151,80 @@ try {
       }
   }
   await page.setViewportSize({ width: 1440, height: 1000 });
+  await visit("manager", "overview");
+  assert.equal(
+    await page.getByRole("heading", { name: "Desempenho da equipa" }).count(),
+    1,
+  );
+  assert.equal(
+    await page
+      .getByRole("heading", { name: "Comparativo de clientes" })
+      .count(),
+    1,
+  );
+  await page.getByRole("button", { name: "Mais marcações" }).click();
+  assert.equal(
+    await page
+      .getByRole("button", { name: "Mais marcações" })
+      .getAttribute("aria-pressed"),
+    "true",
+  );
+  await page
+    .getByRole("combobox", { name: "Período da análise" })
+    .selectOption("28");
+  assert(await page.getByText("vs 4 semanas anteriores").count());
+  await visit("professional", "professional-agenda");
+  assert.equal(
+    await page
+      .getByRole("heading", { name: "O seu desempenho pessoal" })
+      .count(),
+    1,
+  );
+  assert.equal(
+    await page.getByRole("heading", { name: "Ranking de clientes" }).count(),
+    0,
+  );
+  await visit("manager", "agenda");
+  await page.evaluate(async () => {
+    const { markPaid } = await import("/src/stores/applicationStore.ts");
+    markPaid("a1");
+  });
+  await page
+    .locator("article")
+    .filter({ hasText: "Corte & styling" })
+    .first()
+    .getByTitle("Ver detalhes da reserva")
+    .click();
+  let bookingDialog = page.locator("dialog[open]");
+  assert.equal(
+    await bookingDialog
+      .getByRole("button", { name: "Cancelar reserva" })
+      .count(),
+    0,
+  );
+  assert.equal(
+    await bookingDialog.getByRole("button", { name: "Não compareceu" }).count(),
+    0,
+  );
+  await bookingDialog.getByRole("button", { name: "Fechar" }).click();
+
+  await visit("professional", "professional-agenda");
+  await page
+    .locator("article")
+    .filter({ hasText: "Joaquim Bila" })
+    .first()
+    .getByRole("button", { name: "Detalhes" })
+    .click();
+  bookingDialog = page.locator("dialog[open]");
+  await bookingDialog
+    .getByRole("button", { name: "Registar pagamento" })
+    .click();
+  assert.equal(
+    await bookingDialog.getByRole("button", { name: "Registar falta" }).count(),
+    0,
+  );
+  await bookingDialog.getByRole("button", { name: "Fechar" }).click();
+
   for (const [role, view, button] of [
     ["manager", "services", "Novo serviço"],
     ["manager", "team", "Adicionar membro"],
@@ -136,7 +259,7 @@ try {
     "true",
   );
   await page.locator('article button[aria-label^="Ver "]').first().click();
-  await page.getByRole("heading", { name: "Serviços", exact: true }).waitFor();
+  await page.getByRole("button", { name: "Serviços", exact: true }).waitFor();
   // Each booking step and dialog receives the same draft from its feature provider.
   await page.evaluate(async () => {
     const { state, go, today } =
