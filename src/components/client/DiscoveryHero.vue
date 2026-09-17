@@ -1,12 +1,85 @@
 <script setup lang="ts">
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
 import MobileCarousel from "@/components/shared/ui/MobileCarousel.vue";
+import heroSalao from "@/assets/img/hero-salao-maputo.png";
+import heroSalaoMobile from "@/assets/img/hero-salao-maputo-mobile.png";
+import heroClinica from "@/assets/img/hero-clinica-maputo.png";
+import heroClinicaMobile from "@/assets/img/hero-clinica-maputo-mobile.png";
+import heroHotel from "@/assets/img/hero-hotel-maputo.png";
+import heroHotelMobile from "@/assets/img/hero-hotel-maputo-mobile.png";
+import heroRestaurante from "@/assets/img/hero-restaurante-maputo.png";
+import heroRestauranteMobile from "@/assets/img/hero-restaurante-maputo-mobile.png";
+import heroGinasio from "@/assets/img/hero-ginasio-maputo.png";
+import heroGinasioMobile from "@/assets/img/hero-ginasio-maputo-mobile.png";
 
 /* O painel de apresentação da plataforma: explica o agendamento em três passos
    a quem chega pela primeira vez. Só é mostrado a visitantes, na exploração. */
 const emit = defineEmits<{
   (event: "register"): void;
 }>();
+
+const hero = ref<HTMLElement | null>(null);
+const backgroundScale = ref(1.12);
+const activeImage = ref(0);
+const heroImages = [
+  { src: heroHotel, mobileSrc: heroHotelMobile, alt: "Receção de um hotel em Maputo" },
+  { src: heroRestaurante, mobileSrc: heroRestauranteMobile, alt: "Clientes recebidos num restaurante em Maputo" },
+  { src: heroClinica, mobileSrc: heroClinicaMobile, alt: "Atendimento numa clínica em Maputo" },
+  { src: heroGinasio, mobileSrc: heroGinasioMobile, alt: "Treino acompanhado num ginásio em Maputo" },
+  { src: heroSalao, mobileSrc: heroSalaoMobile, alt: "Atendimento num salão de beleza em Maputo" },
+];
+
+let carouselTimer: number | undefined;
+let scrollFrame: number | undefined;
+
+function startCarousel(): void {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  carouselTimer = window.setInterval(() => {
+    if (!document.hidden) activeImage.value = (activeImage.value + 1) % heroImages.length;
+  }, 6500);
+}
+
+/* No telemóvel, a escala acompanha a saída da Hero do ecrã. Como deriva
+   sempre da posição atual, o movimento inverte naturalmente ao voltar. */
+function updateMobileZoom(): void {
+  scrollFrame = undefined;
+  if (!hero.value || window.innerWidth >= 640) {
+    backgroundScale.value = 1;
+    return;
+  }
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    backgroundScale.value = 1;
+    return;
+  }
+  const rect = hero.value.getBoundingClientRect();
+  const progress = Math.min(
+    1,
+    Math.max(0, -rect.top / Math.max(window.innerHeight * 0.72, 1)),
+  );
+  /* Começa ampliada e termina exatamente em cover (1). Nunca fica abaixo de
+     1, evitando margens vazias durante o zoom-out. */
+  backgroundScale.value = 1.12 - progress * 0.12;
+}
+
+function requestZoomUpdate(): void {
+  if (scrollFrame === undefined)
+    scrollFrame = window.requestAnimationFrame(updateMobileZoom);
+}
+
+onMounted(() => {
+  startCarousel();
+  updateMobileZoom();
+  window.addEventListener("scroll", requestZoomUpdate, { passive: true });
+  window.addEventListener("resize", requestZoomUpdate, { passive: true });
+});
+
+onBeforeUnmount(() => {
+  window.clearInterval(carouselTimer);
+  if (scrollFrame !== undefined) window.cancelAnimationFrame(scrollFrame);
+  window.removeEventListener("scroll", requestZoomUpdate);
+  window.removeEventListener("resize", requestZoomUpdate);
+});
 
 const steps: { icon: string; title: string; body: string }[] = [
   {
@@ -35,51 +108,91 @@ function scrollToResults(): void {
 </script>
 <template>
   <section
-    class="mb-6 overflow-hidden rounded-panel border border-line bg-soft sm:mb-[30px]"
+    ref="hero"
+    class="relative left-1/2 -mt-6 mb-6 flex min-h-[760px] w-[100dvw] -translate-x-1/2 flex-col overflow-hidden border-b border-white/15 bg-[#15221d] sm:-mt-[30px] sm:mb-[30px] sm:min-h-[680px] lg:min-h-[760px] xl:min-h-[820px]"
     aria-labelledby="hero-titulo"
   >
-    <div class="px-[26px] pt-[30px] pb-[26px] sm:px-9 sm:pt-11 sm:pb-9">
-      <span class="eyebrow">MARCAÇÕES ONLINE EM MOÇAMBIQUE</span>
-      <h1 id="hero-titulo" class="max-w-[620px]">
+    <div
+      class="pointer-events-none absolute inset-0 overflow-hidden"
+      aria-hidden="true"
+    >
+      <picture
+        v-for="(image, index) in heroImages"
+        :key="image.src"
+        :class="[
+          'absolute inset-0 size-full transition-opacity duration-1000 motion-reduce:transition-none',
+          activeImage === index ? 'opacity-100' : 'opacity-0',
+        ]"
+      >
+        <source media="(max-width: 639px)" :srcset="image.mobileSrc" />
+        <img
+          :src="image.src"
+          alt=""
+          class="size-full object-cover object-center will-change-transform sm:object-[center_45%]"
+          :style="{ transform: `scale(${backgroundScale})` }"
+        />
+      </picture>
+      <div class="absolute inset-0 bg-gradient-to-r from-[#07130f]/95 via-[#07130f]/75 to-[#07130f]/20 sm:via-[#07130f]/62 sm:to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-[#07130f]/85 via-[#07130f]/10 to-[#07130f]/15"></div>
+    </div>
+
+    <div class="relative mx-auto flex w-full max-w-[1200px] flex-1 flex-col justify-center px-[26px] pt-[30px] pb-[26px] sm:min-h-[450px] sm:px-9 sm:pt-14 sm:pb-12 lg:min-h-[530px] lg:pt-16 lg:pb-14 xl:min-h-[580px]">
+      <span class="eyebrow !text-white/75">MARCAÇÕES ONLINE EM MOÇAMBIQUE</span>
+      <h1 id="hero-titulo" class="max-w-[620px] text-white">
         Marque em três passos, a qualquer hora.
       </h1>
-      <p class="mt-3 max-w-[560px] text-body text-muted max-sm:text-caption">
+      <p class="mt-3 max-w-[560px] text-body text-white/80 max-sm:text-caption">
         Sem telefonemas, sem esperar que abram. Escolha o estabelecimento, veja
-        os horários realmente livres e confirme — tudo em menos de um minuto.
+        os horários realmente livres e confirme, tudo em menos de um minuto.
       </p>
       <div class="mt-6 flex flex-wrap gap-3">
         <button class="btn btn-primary" @click="scrollToResults">
           <AppIcon name="search" :size="18" /> Ver estabelecimentos</button
-        ><button class="btn btn-secondary" @click="emit('register')">
+        ><button class="btn border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20" @click="emit('register')">
           <AppIcon name="building-2" :size="18" /> Tenho um negócio
         </button>
       </div>
+      <div class="mt-7 flex gap-2" aria-label="Imagens da apresentação">
+        <button
+          v-for="(_, index) in heroImages"
+          :key="index"
+          type="button"
+          class="grid h-8 place-items-center"
+          :aria-label="`Mostrar imagem ${index + 1} de ${heroImages.length}`"
+          :aria-current="activeImage === index ? 'true' : undefined"
+          @click="activeImage = index"
+        >
+          <span :class="['block h-1 rounded-full transition-all', activeImage === index ? 'w-8 bg-white' : 'w-3 bg-white/45']"></span>
+        </button>
+      </div>
     </div>
-    <div class="border-t border-line bg-surface px-[26px] py-[22px] sm:px-0">
+    <div class="relative border-t border-white/15 bg-[#07130f]/30 backdrop-blur-[2px]">
+      <div class="mx-auto w-full max-w-[1200px] px-[26px] py-[22px] sm:px-9 sm:py-6">
       <MobileCarousel
         tag="ol"
         label="Como funciona o agendamento"
-        grid-class="sm:grid-cols-3 sm:gap-px sm:bg-line"
+        grid-class="sm:grid-cols-3 sm:gap-3"
         bleed-class="-mx-[26px] px-[26px]"
       >
         <li
           v-for="(step, index) in steps"
           :key="step.title"
-          class="flex gap-[14px] rounded-card border border-line p-[18px] sm:rounded-none sm:border-0 sm:bg-surface sm:px-7 sm:py-[22px]"
+          class="flex gap-[14px] rounded-card border border-white/20 bg-[#07130f]/45 p-[18px] text-white shadow-sm backdrop-blur-md sm:px-6 sm:py-[22px]"
         >
           <span
-            class="inline-grid size-[38px] shrink-0 place-items-center rounded-xl bg-soft text-primary-text"
+            class="inline-grid size-[38px] shrink-0 place-items-center rounded-xl bg-white/15 text-white"
             ><AppIcon :name="step.icon" :size="19"
           /></span>
           <div>
             <h2 class="mb-1 text-body font-medium">
-              <span class="text-muted tabular-nums">{{ index + 1 }}.</span>
+              <span class="text-white/55 tabular-nums">{{ index + 1 }}.</span>
               {{ step.title }}
             </h2>
-            <p class="text-caption text-muted">{{ step.body }}</p>
+            <p class="text-caption text-white/70">{{ step.body }}</p>
           </div>
         </li>
       </MobileCarousel>
+      </div>
     </div>
   </section>
 </template>

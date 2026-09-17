@@ -36,7 +36,9 @@ const {
           ? "Voltar à lista"
           : originView === "favorites"
             ? "Voltar aos favoritos"
-            : "Voltar a explorar"
+            : originView === "appointments"
+              ? "Voltar às marcações"
+              : "Voltar a explorar"
       }}
     </button>
     <div

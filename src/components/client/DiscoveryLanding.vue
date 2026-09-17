@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
 import MobileCarousel from "@/components/shared/ui/MobileCarousel.vue";
-import RoleDashboard from "@/components/shared/analytics/RoleDashboard.vue";
 
 /* Secções informativas por baixo da lista de estabelecimentos. Explicam a
    plataforma a quem chega pela primeira vez e encaminham os donos de negócio
@@ -131,8 +130,6 @@ const questions: { question: string; answer: string }[] = [
         </div>
       </MobileCarousel>
     </section>
-
-    <RoleDashboard role="guest" />
 
     <!-- Formas de pagamento --------------------------------------------- -->
     <section aria-labelledby="pagamentos-titulo">

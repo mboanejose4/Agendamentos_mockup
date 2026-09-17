@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import PageHeader from "@/components/shared/ui/PageHeader.vue";
+import { ref } from "vue";
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
+import DiscoveryDialog from "@/components/client/DiscoveryDialog.vue";
+
+/* Marcar de novo faz-se aqui mesmo, sem sair das marcações. */
+const discoveryOpen = ref(false);
 import { useAccountManagementContext } from "@/composables/account/accountContext.ts";
 const {
   state,
@@ -25,7 +30,7 @@ const {
       <button
         v-if="state.view === 'appointments'"
         class="btn btn-primary"
-        @click="go('explore')"
+        @click="discoveryOpen = true"
       >
         <AppIcon name="plus" /> Nova marcação
       </button>
@@ -54,4 +59,6 @@ const {
       </button>
     </template>
   </PageHeader>
+
+  <DiscoveryDialog v-model="discoveryOpen" />
 </template>

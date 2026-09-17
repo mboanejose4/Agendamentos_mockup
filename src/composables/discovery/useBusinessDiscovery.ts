@@ -132,7 +132,9 @@ export function useBusinessDiscovery() {
   const selectedCategory = (name: string): Category =>
     categories.find((c) => c.name === name) || categories[0];
   function openCompany(company: Business): void {
-    if (["explore", "directory", "favorites"].includes(state.view))
+    if (
+      ["explore", "directory", "favorites", "appointments"].includes(state.view)
+    )
       originView.value = state.view;
     state.selectedBusinessId = company.id;
     detailTab.value = "Serviços";
