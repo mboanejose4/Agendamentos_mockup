@@ -28,7 +28,12 @@ const {
 </script>
 
 <template>
-  <div class="min-h-dvh bg-background">
+  <!-- overflow-x-clip: a faixa da marca sangra com 100dvw, medida que inclui
+       a barra de deslocamento, e sem isto a página ganharia uns pixéis de
+       deslocamento horizontal. `clip` corta o excesso sem criar um contexto de
+       deslocamento — ao contrário de `hidden`, que quebraria o `sticky` da
+       barra de topo. -->
+  <div class="min-h-dvh overflow-x-clip bg-background">
     <a class="skip-link" href="#main-content">Saltar para o conteúdo</a>
 
     <!-- Véu por trás da gaveta de navegação, só enquanto a barra lateral não é fixa. -->
@@ -83,7 +88,10 @@ const {
       <main
         id="main-content"
         :class="[
-          'mx-auto w-full min-w-0 flex-1 px-5 pt-7 pb-10 sm:px-7 lg:pt-9 lg:pb-12 2xl:pt-11',
+          'mx-auto w-full min-w-0 flex-1 px-5 pb-10 sm:px-7 lg:pb-12',
+          state.role === 'guest' && state.view === 'explore'
+            ? 'pt-0'
+            : 'pt-7 lg:pt-9 2xl:pt-11',
           contentWidth(state.role),
         ]"
         tabindex="-1"

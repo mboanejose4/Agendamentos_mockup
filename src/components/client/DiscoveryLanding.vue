@@ -13,12 +13,12 @@ const benefits: { icon: string; title: string; body: string }[] = [
   {
     icon: "clock",
     title: "Horários que existem mesmo",
-    body: "A disponibilidade tem em conta a duração do serviço, o turno do profissional e a sala ou mesa necessária. O que aparece livre está livre.",
+    body: "A disponibilidade tem em conta a duração do serviço, o turno do profissional e o recurso necessário. O que aparece livre está livre.",
   },
   {
     icon: "bell",
     title: "Lembretes antes do dia",
-    body: "Confirmação imediata e aviso na véspera, para que ninguém se esqueça — nem o cliente, nem o estabelecimento.",
+    body: "Confirmação imediata e aviso na véspera, para que ninguém se esqueça, o cliente ou estabelecimento.",
   },
   {
     icon: "refresh-cw",
@@ -119,7 +119,7 @@ const questions: { question: string; answer: string }[] = [
         <div
           v-for="item in benefits"
           :key="item.title"
-          class="card flex flex-col gap-3 p-[22px]"
+          class="card rounded-4xl flex flex-col gap-3 p-[22px]"
         >
           <span
             class="inline-grid size-[42px] shrink-0 place-items-center rounded-xl bg-soft text-primary-text"
@@ -145,7 +145,7 @@ const questions: { question: string; answer: string }[] = [
         <li
           v-for="item in payments"
           :key="item.name"
-          class="card flex items-center gap-3 px-[18px] py-3"
+          class="card rounded-4xl flex items-center gap-3 px-[18px] py-3"
         >
           <span class="text-primary-text"
             ><AppIcon :name="item.icon" :size="19"
@@ -181,7 +181,7 @@ const questions: { question: string; answer: string }[] = [
         <figure
           v-for="item in testimonials"
           :key="item.name"
-          class="card flex flex-col gap-4 p-[22px]"
+          class="card rounded-4xl flex flex-col gap-4 p-[22px]"
         >
           <span class="flex gap-0.5 text-warning" aria-hidden="true">
             <AppIcon v-for="star in 5" :key="star" name="star" :size="15" />
@@ -204,7 +204,7 @@ const questions: { question: string; answer: string }[] = [
 
     <!-- Para empresas ---------------------------------------------------- -->
     <section
-      class="overflow-hidden rounded-panel border border-line bg-soft"
+      class="overflow-hidden rounded-4xl border border-line bg-soft"
       aria-labelledby="empresas-titulo"
     >
       <div
@@ -233,7 +233,10 @@ const questions: { question: string; answer: string }[] = [
             </li>
           </ul>
         </div>
-        <button class="btn btn-primary shrink-0" @click="emit('register')">
+        <button
+          class="btn rounded-4xl btn-primary shrink-0"
+          @click="emit('register')"
+        >
           <AppIcon name="building-2" :size="18" /> Registar o meu negócio
         </button>
       </div>
@@ -243,7 +246,7 @@ const questions: { question: string; answer: string }[] = [
     <section aria-labelledby="faq-titulo">
       <span class="eyebrow">PERGUNTAS FREQUENTES</span>
       <h2 id="faq-titulo" class="text-h2">Antes de marcar, talvez ajude.</h2>
-      <div class="mt-[26px] card divide-y divide-line">
+      <div class="mt-[26px] card rounded-4xl divide-y divide-line">
         <details
           v-for="item in questions"
           :key="item.question"

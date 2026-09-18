@@ -31,7 +31,7 @@ function photoError(event: Event) {
 </script>
 <template>
   <article
-    class="card flex min-w-0 flex-col overflow-hidden transition-shadow duration-200 hover:shadow-card"
+    class="card rounded-4xl flex min-w-0 flex-col overflow-hidden transition-shadow duration-200 hover:shadow-card"
   >
     <div class="relative h-[190px] bg-surface-muted sm:h-[178px] 2xl:h-[186px]">
       <button
@@ -49,7 +49,7 @@ function photoError(event: Event) {
           >{{ company.name }}</span
         ></button
       ><span
-        class="pointer-events-none absolute top-[13px] left-[13px] flex items-center gap-[5px] rounded bg-scrim px-2 py-[5px] text-white text-muted"
+        class="pointer-events-none absolute top-[13px] left-[13px] flex items-center gap-[5px] rounded-full bg-white px-2 py-[5px] text-primary-text"
         ><AppIcon :name="categoryIcon" :size="13" />{{ company.category }}</span
       ><span
         v-if="company.package === 4"
@@ -57,21 +57,26 @@ function photoError(event: Event) {
         >Em destaque</span
       ><button
         :class="[
-          'absolute top-3 right-3 grid size-[30px] place-items-center rounded-full border-0 bg-scrim',
-          isFavorite ? 'bg-soft text-primary-text' : 'text-muted',
+          'absolute top-3 right-3 grid size-[32px] place-items-center rounded-full border border-white/25 bg-white text-white shadow-sm transition-colors',
+          'hover:bg-white/60',
+          isFavorite ? 'favorite-active' : '',
         ]"
+        type="button"
         :aria-label="
           isFavorite
             ? `Remover ${company.name} dos favoritos`
             : `Guardar ${company.name} nos favoritos`
         "
         :aria-pressed="isFavorite"
-        @click="emit('toggle-favorite', company.id)"
+        @click.stop="emit('toggle-favorite', company.id)"
       >
         <AppIcon
           name="heart"
           :size="18"
-          :class="isFavorite ? 'fill-danger' : ''"
+          :class="[
+            'text-rose-600',
+            isFavorite ? 'fill-rose-600' : 'fill-transparent',
+          ]"
         />
       </button>
     </div>
@@ -112,13 +117,11 @@ function photoError(event: Event) {
         </button>
       </h3>
       <p
-        class="mb-[15px] flex min-h-[17px] items-center gap-[5px] text-caption text-muted"
+        class="flex min-h-[17px] items-center gap-[5px] text-caption text-muted"
       >
         <AppIcon name="map-pin" :size="14" />{{ company.address }}
       </p>
-      <div
-        class="mb-[15px] flex min-h-[26px] flex-wrap gap-1.5 max-[480px]:mb-[17px]"
-      >
+      <div class="flex min-h-[26px] flex-wrap gap-1.5 max-[480px]:mb-[17px]">
         <span
           v-for="item in services.slice(0, 2)"
           :key="item.id"
@@ -127,7 +130,7 @@ function photoError(event: Event) {
         >
       </div>
       <div
-        class="mt-auto flex items-center justify-between gap-2 border-t border-line py-[13px] max-[480px]:py-[15px]"
+        class="mt-auto flex items-center justify-between gap-2 py-[13px] max-[480px]:py-[15px]"
       >
         <span class="text-caption text-muted max-[480px]:text-caption"
           >A partir de

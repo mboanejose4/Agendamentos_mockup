@@ -941,3 +941,65 @@
   filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.9)
     saturate(0.75);
 }
+
+/* Banner da página de todos os estabelecimentos */
+.directory-banner {
+  background-color: #006937 !important;
+  background-image: linear-gradient(
+    120deg,
+    #00281a 0%,
+    #00512e 30%,
+    #006937 65%,
+    #00803f 100%
+  ) !important;
+  color: #ffffff !important;
+}
+
+.directory-banner__eyebrow {
+  color: rgb(255 255 255 / 75%) !important;
+}
+
+.directory-banner__title {
+  color: #ffffff !important;
+}
+
+.directory-banner__description {
+  color: rgb(255 255 255 / 82%) !important;
+}
+
+/* Conteúdo dentro da faixa da marca. As classes de cor do Tailwind ganham à
+   cor herdada, por isso os títulos, o texto secundário e os botões precisam de
+   ser repostos aqui — de outro modo ficariam verde-escuros sobre verde. */
+.directory-banner :is(h1, h2, h3, strong) {
+  color: #ffffff;
+}
+
+.directory-banner .eyebrow {
+  color: rgb(255 255 255 / 75%);
+}
+
+.directory-banner :is(p, small, .text-muted, .text-caption) {
+  color: rgb(255 255 255 / 82%);
+}
+
+/* Um botão preenchido a verde desaparecia no fundo: dentro da faixa inverte-se. */
+.directory-banner .btn-primary {
+  background: #ffffff;
+  color: #00512e;
+}
+
+.directory-banner .btn-primary:hover:not(:disabled) {
+  background: rgb(255 255 255 / 88%);
+}
+
+.directory-banner :is(.btn-secondary, .icon-btn) {
+  border-color: rgb(255 255 255 / 50%);
+  /* Escurecer, não clarear: sobre o verde, um véu branco baixaria o contraste
+     do texto do botão abaixo do mínimo. */
+  background: rgb(0 0 0 / 18%);
+  color: #ffffff;
+}
+
+.directory-banner :is(.btn-secondary, .icon-btn):hover:not(:disabled) {
+  background: rgb(0 0 0 / 28%);
+}

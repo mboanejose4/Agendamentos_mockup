@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
+import BrandBanner from "@/components/shared/ui/BrandBanner.vue";
 import BusinessFiltersDialog from "@/components/client/BusinessFiltersDialog.vue";
 import BusinessGrid from "@/components/client/BusinessGrid.vue";
 import DiscoveryCategories from "@/components/client/DiscoveryCategories.vue";
@@ -21,13 +22,27 @@ const { go, sort, onlineOnly, maxPrice, filtersOpen, results } =
       <AppIcon name="arrow-left" :size="17" />Voltar a explorar
     </button>
 
-    <header class="mb-6 sm:mb-[30px]">
-      <span class="eyebrow max-sm:text-caption">TODOS OS ESTABELECIMENTOS</span>
-      <h1 class="max-sm:text-h1">Procure entre todos.</h1>
-      <p class="max-sm:text-caption text-muted">
+    <!-- A mesma faixa da marca do resto da aplicação. -->
+    <BrandBanner labelledby="directory-title">
+      <span
+        class="directory-banner__eyebrow text-caption font-semibold tracking-[0.14em]"
+      >
+        TODOS OS ESTABELECIMENTOS
+      </span>
+
+      <h1
+        id="directory-title"
+        class="directory-banner__title mt-2 max-w-[620px]"
+      >
+        Procure entre todos.
+      </h1>
+
+      <p
+        class="directory-banner__description mt-3 max-w-[560px] text-body max-sm:text-caption"
+      >
         Pesquise, filtre por categoria, localização ou preço.
       </p>
-    </header>
+    </BrandBanner>
 
     <DiscoverySearchBar />
     <DiscoveryCategories />

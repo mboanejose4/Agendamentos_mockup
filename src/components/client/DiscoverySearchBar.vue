@@ -7,7 +7,7 @@ const { search, city, cities } = useBusinessDiscoveryContext();
 </script>
 <template>
   <form
-    class="flex min-h-[65px] rounded-lg border border-line bg-surface p-2 shadow-soft max-sm:min-h-[58px] max-sm:p-1.5"
+    class="flex min-h-[65px] rounded-4xl border border-line bg-surface p-2 shadow-soft max-sm:min-h-[58px] max-sm:p-1.5"
     @submit.prevent
   >
     <div
@@ -43,7 +43,7 @@ const { search, city, cities } = useBusinessDiscoveryContext();
       </select>
     </div>
     <button
-      class="btn btn-primary min-w-[115px] text-caption max-sm:min-w-[42px] max-sm:p-2.5"
+      class="btn rounded-4xl btn-primary min-w-[115px] text-caption max-sm:min-w-[42px] max-sm:p-2.5"
       type="submit"
     >
       <AppIcon name="search" :size="18" /><span class="max-sm:hidden"

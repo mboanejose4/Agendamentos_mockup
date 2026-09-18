@@ -27,7 +27,6 @@ const {
         v-for="company in results"
         :key="company.id"
         :company="company"
-        :services="servicesFor(company.id)"
         :starting-price="money(minPrice(company.id))"
         :is-favorite="favorites.includes(company.id)"
         :distance="distanceFrom(company)"

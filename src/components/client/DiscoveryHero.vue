@@ -23,11 +23,31 @@ const hero = ref<HTMLElement | null>(null);
 const backgroundScale = ref(1.12);
 const activeImage = ref(0);
 const heroImages = [
-  { src: heroHotel, mobileSrc: heroHotelMobile, alt: "Receção de um hotel em Maputo" },
-  { src: heroRestaurante, mobileSrc: heroRestauranteMobile, alt: "Clientes recebidos num restaurante em Maputo" },
-  { src: heroClinica, mobileSrc: heroClinicaMobile, alt: "Atendimento numa clínica em Maputo" },
-  { src: heroGinasio, mobileSrc: heroGinasioMobile, alt: "Treino acompanhado num ginásio em Maputo" },
-  { src: heroSalao, mobileSrc: heroSalaoMobile, alt: "Atendimento num salão de beleza em Maputo" },
+  {
+    src: heroHotel,
+    mobileSrc: heroHotelMobile,
+    alt: "Receção de um hotel em Maputo",
+  },
+  {
+    src: heroRestaurante,
+    mobileSrc: heroRestauranteMobile,
+    alt: "Clientes recebidos num restaurante em Maputo",
+  },
+  {
+    src: heroClinica,
+    mobileSrc: heroClinicaMobile,
+    alt: "Atendimento numa clínica em Maputo",
+  },
+  {
+    src: heroGinasio,
+    mobileSrc: heroGinasioMobile,
+    alt: "Treino acompanhado num ginásio em Maputo",
+  },
+  {
+    src: heroSalao,
+    mobileSrc: heroSalaoMobile,
+    alt: "Atendimento num salão de beleza em Maputo",
+  },
 ];
 
 let carouselTimer: number | undefined;
@@ -36,7 +56,8 @@ let scrollFrame: number | undefined;
 function startCarousel(): void {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   carouselTimer = window.setInterval(() => {
-    if (!document.hidden) activeImage.value = (activeImage.value + 1) % heroImages.length;
+    if (!document.hidden)
+      activeImage.value = (activeImage.value + 1) % heroImages.length;
   }, 6500);
 }
 
@@ -132,11 +153,17 @@ function scrollToResults(): void {
           :style="{ transform: `scale(${backgroundScale})` }"
         />
       </picture>
-      <div class="absolute inset-0 bg-gradient-to-r from-[#07130f]/95 via-[#07130f]/75 to-[#07130f]/20 sm:via-[#07130f]/62 sm:to-transparent"></div>
-      <div class="absolute inset-0 bg-gradient-to-t from-[#07130f]/85 via-[#07130f]/10 to-[#07130f]/15"></div>
+      <div
+        class="absolute inset-0 bg-gradient-to-r from-[#07130f]/95 via-[#07130f]/75 to-[#07130f]/20 sm:via-[#07130f]/62 sm:to-transparent"
+      ></div>
+      <div
+        class="absolute inset-0 bg-gradient-to-t from-[#07130f]/85 via-[#07130f]/10 to-[#07130f]/15"
+      ></div>
     </div>
 
-    <div class="relative mx-auto flex w-full max-w-[1200px] flex-1 flex-col justify-center px-[26px] pt-[30px] pb-[26px] sm:min-h-[450px] sm:px-9 sm:pt-14 sm:pb-12 lg:min-h-[530px] lg:pt-16 lg:pb-14 xl:min-h-[580px]">
+    <div
+      class="relative mx-auto flex w-full max-w-[1080px] flex-1 flex-col justify-center px-[26px] pt-[30px] pb-[26px] sm:min-h-[450px] sm:px-9 sm:pt-14 sm:pb-12 lg:min-h-[530px] lg:pt-16 lg:pb-14 xl:min-h-[580px]"
+    >
       <span class="eyebrow !text-white/75">MARCAÇÕES ONLINE EM MOÇAMBIQUE</span>
       <h1 id="hero-titulo" class="max-w-[620px] text-white">
         Marque em três passos, a qualquer hora.
@@ -146,9 +173,12 @@ function scrollToResults(): void {
         os horários realmente livres e confirme, tudo em menos de um minuto.
       </p>
       <div class="mt-6 flex flex-wrap gap-3">
-        <button class="btn btn-primary" @click="scrollToResults">
+        <button class="btn rounded-4xl btn-primary" @click="scrollToResults">
           <AppIcon name="search" :size="18" /> Ver estabelecimentos</button
-        ><button class="btn border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20" @click="emit('register')">
+        ><button
+          class="btn rounded-4xl border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20"
+          @click="emit('register')"
+        >
           <AppIcon name="building-2" :size="18" /> Tenho um negócio
         </button>
       </div>
@@ -162,37 +192,77 @@ function scrollToResults(): void {
           :aria-current="activeImage === index ? 'true' : undefined"
           @click="activeImage = index"
         >
-          <span :class="['block h-1 rounded-full transition-all', activeImage === index ? 'w-8 bg-white' : 'w-3 bg-white/45']"></span>
+          <span
+            :class="[
+              'block h-1 rounded-full transition-all',
+              activeImage === index ? 'w-8 bg-white' : 'w-3 bg-white/45',
+            ]"
+          ></span>
         </button>
       </div>
     </div>
-    <div class="relative border-t border-white/15 bg-[#07130f]/30 backdrop-blur-[2px]">
-      <div class="mx-auto w-full max-w-[1200px] px-[26px] py-[22px] sm:px-9 sm:py-6">
-      <MobileCarousel
-        tag="ol"
-        label="Como funciona o agendamento"
-        grid-class="sm:grid-cols-3 sm:gap-3"
-        bleed-class="-mx-[26px] px-[26px]"
+    <div class="relative">
+      <div
+        class="mx-auto w-full max-w-[1080px] px-[26px] py-[22px] sm:px-9 sm:py-6"
       >
-        <li
-          v-for="(step, index) in steps"
-          :key="step.title"
-          class="flex gap-[14px] rounded-card border border-white/20 bg-[#07130f]/45 p-[18px] text-white shadow-sm backdrop-blur-md sm:px-6 sm:py-[22px]"
+        <MobileCarousel
+          tag="ol"
+          label="Como funciona o agendamento"
+          grid-class="sm:grid-cols-3 sm:gap-3"
+          bleed-class="-mx-[26px] px-[26px]"
         >
-          <span
-            class="inline-grid size-[38px] shrink-0 place-items-center rounded-xl bg-white/15 text-white"
-            ><AppIcon :name="step.icon" :size="19"
-          /></span>
-          <div>
-            <h2 class="mb-1 text-body font-medium">
-              <span class="text-white/55 tabular-nums">{{ index + 1 }}.</span>
-              {{ step.title }}
-            </h2>
-            <p class="text-caption text-white/70">{{ step.body }}</p>
-          </div>
-        </li>
-      </MobileCarousel>
+          <li
+            v-for="(step, index) in steps"
+            :key="step.title"
+            class="hero-step-card flex gap-3 rounded-4xl border p-4 shadow-sm sm:px-5 sm:py-[18px]"
+          >
+            <span
+              class="hero-step-card__icon inline-grid size-[38px] shrink-0 place-items-center rounded-full"
+            >
+              <AppIcon :name="step.icon" :size="19" />
+            </span>
+
+            <div>
+              <h2 class="hero-step-card__title mb-1 text-body font-medium">
+                <span class="hero-step-card__number tabular-nums">
+                  {{ index + 1 }}.
+                </span>
+
+                {{ step.title }}
+              </h2>
+
+              <p class="hero-step-card__description text-caption">
+                {{ step.body }}
+              </p>
+            </div>
+          </li>
+        </MobileCarousel>
       </div>
     </div>
   </section>
 </template>
+
+<style scoped>
+.hero-step-card {
+  background-color: var(--brand-700);
+  border-color: rgb(255 255 255 / 20%);
+  color: #ffffff;
+}
+
+.hero-step-card__icon {
+  background-color: rgb(255 255 255 / 15%);
+  color: #ffffff;
+}
+
+.hero-step-card__number,
+.hero-step-card__title,
+.hero-step-card__description {
+  color: #ffffff;
+}
+
+/* Garante que o SVG do AppIcon também fique branco. */
+.hero-step-card__icon :deep(svg) {
+  color: #ffffff;
+  stroke: currentColor;
+}
+</style>

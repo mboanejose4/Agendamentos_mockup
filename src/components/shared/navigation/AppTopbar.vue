@@ -83,14 +83,7 @@ const emit = defineEmits<{
       </div>
 
       <div class="flex shrink-0 items-center gap-1 sm:gap-2">
-        <ThemeToggle />
-
-        <span
-          v-if="['guest', 'client'].includes(role)"
-          class="hidden items-center gap-1.5 text-caption text-muted xl:flex"
-        >
-          <AppIcon name="map-pin" :size="16" /> Maputo, Moçambique
-        </span>
+        <ThemeToggle class="!border-0 !shadow-none bg-none" />
 
         <button
           class="icon-btn relative hidden sm:inline-flex"
@@ -108,7 +101,7 @@ const emit = defineEmits<{
 
         <button
           v-if="role === 'guest'"
-          class="btn btn-secondary btn-compact"
+          class="btn rounded-4xl btn-primary btn-compact"
           @click="emit('navigate', 'auth')"
         >
           Entrar <AppIcon name="arrow-up-right" :size="16" />
