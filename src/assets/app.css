@@ -12,6 +12,12 @@
        cartões, navegação — é escrito com utilidades directamente no markup.
 */
 
+/* Ordem das camadas, declarada antes de tudo: vale a primeira declaração, e a
+   do Tailwind vem dentro do @import. O PrimeVue injecta os seus estilos em
+   `primevue`, depois de `components` e antes de `utilities` — os componentes da
+   biblioteca ganham às nossas primitivas, e as utilidades ganham a tudo. */
+@layer theme, base, components, primevue, utilities;
+
 @import "tailwindcss";
 
 /* Tema escuro comandado pelo atributo data-theme na raiz. Raramente é preciso:
@@ -236,7 +242,9 @@
   --text-body-lg--line-height: 25px;
   --text-body: 15px;
   --text-body--line-height: 23px;
-  --text-small: 14px;
+  /* `text-small` foi fundido em `text-caption`: eram 13 e 14px a fazer o
+     mesmo trabalho. Fica como sinónimo para não partir markup antigo. */
+  --text-small: var(--text-caption);
   --text-small--line-height: 21px;
   --text-caption: 13px;
   --text-caption--line-height: 19px;
@@ -447,7 +455,7 @@
   /* --- Botões ------------------------------------------------------------ */
 
   .btn {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-transparent px-4 py-2.5 text-center text-small leading-snug font-semibold;
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-4xl border border-transparent px-5 py-2.5 text-center text-caption leading-snug font-semibold;
   }
 
   .btn-primary {
@@ -1002,4 +1010,50 @@
 
 .directory-banner :is(.btn-secondary, .icon-btn):hover:not(:disabled) {
   background: rgb(0 0 0 / 28%);
+}
+
+/* --- PrimeVue -------------------------------------------------------------
+   A biblioteca traz os seus próprios tokens `--p-*`. Aqui ligam-se aos da
+   aplicação, para que os componentes sigam a marca da empresa e o tema
+   escuro sem uma segunda paleta a viver em paralelo. */
+:root {
+  --p-primary-color: var(--primary);
+  --p-primary-contrast-color: var(--on-primary);
+  --p-primary-hover-color: var(--primary-hover);
+  --p-primary-active-color: var(--primary-hover);
+  --p-content-border-color: var(--border);
+  --p-content-background: var(--surface);
+  --p-text-color: var(--ink);
+  --p-text-muted-color: var(--muted);
+  --p-content-hover-background: var(--surface-muted);
+  --p-anchor-gutter: 6px;
+
+  /* Cantos redondos, os mesmos dos botões da aplicação. */
+  --p-border-radius-md: 2rem;
+  --p-border-radius-lg: 2rem;
+  --p-button-border-radius: 2rem;
+  --p-inputtext-border-radius: 2rem;
+  --p-select-border-radius: 2rem;
+  --p-multiselect-border-radius: 2rem;
+  --p-textarea-border-radius: 1.25rem;
+  --p-card-border-radius: 2rem;
+  --p-datatable-header-border-radius: 2rem;
+}
+
+/* A tabela inteira arredondada: sem isto os cantos do cabeçalho saem quadrados
+   por cima da moldura. */
+.p-datatable,
+.p-datatable-table-container,
+.p-dataview {
+  border-radius: 2rem;
+  overflow: hidden;
+}
+
+/* O texto dos componentes segue a escala da aplicação, em vez da do preset. */
+.p-button,
+.p-inputtext,
+.p-select-label,
+.p-datatable,
+.p-dataview {
+  font-size: var(--text-caption);
 }

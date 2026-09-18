@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
+import { ref } from "vue";
+import Tabs from "primevue/tabs";
+import TabList from "primevue/tablist";
+import Tab from "primevue/tab";
 import AvatarUpload from "@/components/shared/ui/AvatarUpload.vue";
+
+/* Qual das três partes do perfil está à vista. */
+const tab = ref<"pessoais" | "seguranca" | "preferencias">("pessoais");
 import type { Role } from "@/types/domain.ts";
 import { useAccountManagementContext } from "@/composables/account/accountContext.ts";
 const {
@@ -56,8 +63,20 @@ const roleNames: Record<Role, string> = {
     </aside>
 
     <form class="flex flex-col gap-6" @submit.prevent="saveProfile">
+      <!-- Separadores do PrimeVue: as três partes do perfil deixam de estar
+           empilhadas e passam a navegar-se aqui. Os painéis mantêm-se no DOM
+           para que o formulário continue a ser um só, e o que se escreve num
+           separador não se perde ao mudar para outro. -->
+      <Tabs v-model:value="tab">
+        <TabList>
+          <Tab value="pessoais">Informações pessoais</Tab>
+          <Tab value="seguranca">Segurança</Tab>
+          <Tab value="preferencias">Preferências</Tab>
+        </TabList>
+      </Tabs>
+
       <!-- 1. Informações pessoais -->
-      <section class="card p-6 sm:p-7">
+      <section v-show="tab === 'pessoais'" class="card p-6 sm:p-7">
         <header class="mb-5">
           <h2 class="mb-1">Informações pessoais</h2>
           <p class="mb-0 text-caption text-muted">
@@ -100,7 +119,7 @@ const roleNames: Record<Role, string> = {
       </section>
 
       <!-- 2. Segurança -->
-      <section class="card p-6 sm:p-7">
+      <section v-show="tab === 'seguranca'" class="card p-6 sm:p-7">
         <header class="mb-5">
           <h2 class="mb-1">Segurança</h2>
           <p class="mb-0 text-caption text-muted">
@@ -134,7 +153,7 @@ const roleNames: Record<Role, string> = {
       </section>
 
       <!-- 3. Preferências e comunicação -->
-      <section class="card p-6 sm:p-7">
+      <section v-show="tab === 'preferencias'" class="card p-6 sm:p-7">
         <header class="mb-5">
           <h2 class="mb-1">Preferências e comunicação</h2>
           <p class="mb-0 text-caption text-muted">

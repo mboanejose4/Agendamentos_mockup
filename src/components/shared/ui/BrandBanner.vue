@@ -25,7 +25,7 @@ const full = computed(() => props.bleed ?? state.role === "guest");
   <section
     :class="[
       'directory-banner relative mb-6 overflow-hidden sm:mb-[30px]',
-      full ? 'left-1/2 w-[100dvw] -translate-x-1/2' : 'rounded-panel',
+      full ? 'left-1/2 w-[100dvw] -translate-x-1/2' : 'rounded-4xl',
     ]"
     :aria-labelledby="labelledby || undefined"
   >
