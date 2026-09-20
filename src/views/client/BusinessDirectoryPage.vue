@@ -34,7 +34,7 @@ const showHero = computed(() => isExplore.value && state.role === "guest");
 
 const showMap = computed(() => isExplore.value || isDirectory.value);
 
-const showPromo = computed(() => isExplore.value && !isDirectory.value);
+const showPromo = computed(() => isExplore.value && state.role === "guest");
 
 const sortOpen = ref(false);
 const sortHost = ref<HTMLElement | null>(null);

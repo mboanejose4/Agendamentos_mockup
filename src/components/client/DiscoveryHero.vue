@@ -182,6 +182,13 @@ function scrollToResults(): void {
           <AppIcon name="building-2" :size="18" /> Tenho um negócio
         </button>
       </div>
+      <nav class="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-caption text-white/85" aria-label="Nesta página">
+        <a href="#como-funciona" class="hover:text-white hover:underline">Como funciona</a>
+        <a href="#estabelecimentos" class="hover:text-white hover:underline">Estabelecimentos</a>
+        <a href="#vantagens-titulo" class="hover:text-white hover:underline">Vantagens</a>
+        <a href="#faq-titulo" class="hover:text-white hover:underline">Perguntas frequentes</a>
+        <a href="#empresas-titulo" class="hover:text-white hover:underline">Para estabelecimentos</a>
+      </nav>
       <div class="mt-7 flex gap-2" aria-label="Imagens da apresentação">
         <button
           v-for="(_, index) in heroImages"
@@ -201,7 +208,7 @@ function scrollToResults(): void {
         </button>
       </div>
     </div>
-    <div class="relative">
+    <div id="como-funciona" class="relative scroll-mt-20">
       <div
         class="mx-auto w-full max-w-[1080px] px-[26px] py-[22px] sm:px-9 sm:py-6"
       >
