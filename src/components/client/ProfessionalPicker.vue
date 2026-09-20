@@ -12,10 +12,10 @@ const selected = defineModel({ type: String, default: "" });
   >
     <h3>Profissionais disponíveis para este serviço</h3>
     <p class="text-muted">Disponibilidade na data seleccionada.</p>
-    <div class="mb-6 grid gap-2.5">
+    <div class="rounded-4xl mb-6 grid gap-2.5">
       <button
         type="button"
-        class="choice"
+        class="rounded-4xl choice"
         :class="{ 'choice-selected': !selected }"
         :aria-pressed="!selected"
         @click="selected = ''"
@@ -31,7 +31,7 @@ const selected = defineModel({ type: String, default: "" });
         v-for="person in professionals"
         :key="person.id"
         type="button"
-        class="choice"
+        class="rounded-4xl choice"
         :class="{ 'choice-selected': selected === person.id }"
         :aria-pressed="selected === person.id"
         @click="selected = person.id"

@@ -18,7 +18,7 @@ const {
 <template>
   <aside
     v-if="current"
-    class="hidden self-start overflow-hidden rounded-lg border border-line bg-surface lg:sticky lg:top-[22px] lg:block"
+    class="hidden self-start overflow-hidden rounded-4xl border border-line bg-surface lg:sticky lg:top-[22px] lg:block"
   >
     <img
       :src="current.image"

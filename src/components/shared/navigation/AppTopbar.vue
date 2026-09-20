@@ -5,22 +5,25 @@ import { contentWidth } from "@/utils/layout.ts";
 import { initials } from "@/utils/formatters.ts";
 import type { Role, ViewName } from "@/types/domain.ts";
 import marcaFacilLogo from "@/assets/img/marcafacil-logo.png";
+import { landingLinks } from "@/utils/navigation/landingLinks.ts";
 
 withDefaults(
   defineProps<{
     role: Role;
+    menuOpen?: boolean;
     currentLabel: string;
     unread?: number;
     userName?: string;
     userAvatar?: string;
     companyName?: string;
   }>(),
-  { unread: 0, userName: "", userAvatar: "", companyName: "" },
+  { menuOpen: false, unread: 0, userName: "", userAvatar: "", companyName: "" },
 );
 
 const emit = defineEmits<{
   navigate: [view: ViewName];
   "open-menu": [];
+  "navigate-section": [section: string];
 }>();
 </script>
 
@@ -30,8 +33,8 @@ const emit = defineEmits<{
        gaveta. Assim a marca mostra-se uma vez só, e a barra fica para o que a
        pessoa precisa de tocar. -->
   <header
-    class="sticky top-0 z-40 border-b border-line bg-surface/95 backdrop-blur-md"
-  >
+  class="sticky top-3 z-40 mx-5 mb-3 rounded-4xl border border-line bg-surface/95 shadow-lg backdrop-blur-md"
+>
     <div
       :class="[
         'mx-auto flex min-h-topbar w-full items-center justify-between gap-3 px-3 py-2.5 sm:px-5',
@@ -40,19 +43,21 @@ const emit = defineEmits<{
     >
       <div class="flex min-w-0 items-center gap-1.5 sm:gap-2.5">
         <button
-          v-if="role !== 'guest'"
-          class="icon-btn desk:hidden"
+          class="icon-btn"
+          :class="role === 'guest' ? 'xl:hidden' : 'desk:hidden'"
           type="button"
           aria-label="Abrir navegação"
           title="Menu"
+          :aria-controls="role === 'guest' ? 'guest-navigation' : undefined"
+          :aria-expanded="menuOpen"
           @click="emit('open-menu')"
         >
           <AppIcon name="menu" />
         </button>
 
         <button
-          v-else
-          class="icon-btn desk:hidden"
+          v-if="role === 'guest'"
+          class="icon-btn xl:hidden"
           type="button"
           aria-label="MarcaFácil, início"
           title="Início"
@@ -81,6 +86,22 @@ const emit = defineEmits<{
           </strong>
         </span>
       </div>
+
+      <nav
+        v-if="role === 'guest'"
+        class="hidden min-w-0 items-center gap-4 xl:flex"
+        aria-label="Navegação da landing page"
+      >
+        <a
+          v-for="link in landingLinks"
+          :key="link.section"
+          :href="`#${link.section}`"
+          class="whitespace-nowrap text-caption text-muted hover:text-primary-text"
+          @click.prevent="emit('navigate-section', link.section)"
+        >
+          {{ link.label }}
+        </a>
+      </nav>
 
       <div class="flex shrink-0 items-center gap-1 sm:gap-2">
         <ThemeToggle class="!border-0 !shadow-none bg-none" />

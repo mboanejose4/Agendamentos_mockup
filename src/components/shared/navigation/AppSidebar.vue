@@ -49,15 +49,15 @@ const homeView = (role: Role): ViewName =>
     Gaveta em telefones e tablets, coluna fixa em ecrãs largos não tácteis.
     A largura acompanha o ecrã para nunca tapar o conteúdo por completo.
   -->
-  <aside
-    class="fixed inset-y-0 left-0 z-70 flex w-[270px] max-w-[86vw] flex-col overflow-y-auto overscroll-contain border-r border-line bg-surface px-4 pt-5 pb-4 transition-transform duration-200 ease-out desk:w-sidebar desk:max-w-none desk:translate-x-0 desk:px-3.5 desk:pt-6"
-    :class="open ? 'translate-x-0' : '-translate-x-full'"
-    aria-label="Navegação principal"
-  >
+<aside
+  class="fixed top-3 bottom-3 left-3 z-70 flex w-[270px] max-w-[calc(86vw-24px)] flex-col overflow-y-auto overscroll-contain rounded-4xl border border-line bg-surface px-4 pt-5 pb-4 shadow-lg transition-transform duration-200 ease-out desk:w-sidebar desk:max-w-none desk:translate-x-0 desk:px-3.5 desk:pt-6"
+  :class="open ? 'translate-x-0' : '-translate-x-[calc(100%+12px)]'"
+  aria-label="Navegação principal"
+>
     <!-- Logótipo e fecho da gaveta -->
     <div class="mb-5 flex items-center justify-between gap-2 px-1">
       <button
-        class="flex min-w-0 flex-1 items-center rounded-lg border-0 bg-transparent p-0 text-left"
+        class="flex min-w-0 flex-1 items-center rounded-4xl border-0 bg-transparent p-0 text-left"
         aria-label="MarcaFácil, início"
         @click="emit('navigate', homeView(role))"
       >
@@ -88,7 +88,7 @@ const homeView = (role: Role): ViewName =>
     <!-- Estabelecimento activo -->
     <div
       v-if="['manager', 'professional'].includes(role)"
-      class="mb-5 flex flex-col gap-2 rounded-xl border border-line bg-surface-muted/60 p-3"
+      class="mb-5 flex flex-col gap-2 rounded-4xl border border-line bg-surface-muted/60 p-3"
     >
       <div class="flex items-center gap-2.5">
         <BusinessIcon
@@ -152,7 +152,7 @@ const homeView = (role: Role): ViewName =>
         <button
           v-for="[view, label, icon] in group.items"
           :key="view"
-          class="my-0.5 flex min-h-11 w-full items-center gap-2.5 rounded-md border-0 px-3 py-2.5 text-left text-small"
+          class="my-0.5 flex min-h-11 w-full items-center gap-2.5 rounded-4xl border-0 px-3 py-2.5 text-left text-small"
           :class="
             activeView === view ||
             (view === 'explore' && ['business', 'booking'].includes(activeView))
@@ -168,7 +168,7 @@ const homeView = (role: Role): ViewName =>
 
           <span
             v-if="view === 'notifications' && unread && role !== 'guest'"
-            class="rounded bg-surface-muted px-1.5 py-0.5 text-caption font-semibold text-ink"
+            class="rounded-4xl bg-surface-muted px-1.5 py-0.5 text-caption font-semibold text-ink"
           >
             {{ unread }}
           </span>
@@ -186,7 +186,7 @@ const homeView = (role: Role): ViewName =>
     <div class="mt-auto pt-4">
       <div
         v-if="['guest', 'client'].includes(role)"
-        class="mb-3 rounded-xl bg-soft p-4"
+        class="mb-3 rounded-4xl bg-soft p-4"
       >
         <span class="mb-2.5 block text-primary-text">
           <AppIcon name="building-2" :size="20" />
@@ -206,7 +206,7 @@ const homeView = (role: Role): ViewName =>
       </div>
 
       <button
-        class="flex min-h-11 w-full items-center gap-2.5 rounded-lg border-0 border-t border-line bg-transparent px-2 pt-3.5 pb-2 text-left hover:bg-surface-muted"
+        class="flex min-h-11 w-full items-center gap-2.5 rounded-4xl border-0 border-t border-line bg-transparent px-2 pt-3.5 pb-2 text-left hover:bg-surface-muted"
         @click="emit('open-workspace')"
       >
         <span class="avatar avatar-sm overflow-hidden">

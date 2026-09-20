@@ -77,7 +77,7 @@ onBeforeUnmount(() => {
     <template v-if="modelValue"
       ><button
         ref="trigger"
-        class="relative block w-full overflow-hidden rounded-xl border border-line bg-surface p-0"
+        class="relative block w-full overflow-hidden rounded-4xl border border-line bg-surface p-0"
         type="button"
         @click="open"
         aria-label="Ver imagem de capa em ecrã inteiro"
@@ -87,7 +87,7 @@ onBeforeUnmount(() => {
           :alt="'Imagem de capa de ' + name"
           class="h-[180px] w-full object-cover sm:h-[220px]"
         /><span
-          class="absolute right-3 bottom-3 flex items-center gap-2 rounded-lg bg-scrim px-3.5 py-2.5 text-muted"
+          class="absolute right-3 bottom-3 flex items-center gap-2 rounded-4xl bg-scrim px-3.5 py-2.5 text-muted"
           ><AppIcon name="eye" :size="18" />Ver em ecrã inteiro</span
         ></button
       ><button

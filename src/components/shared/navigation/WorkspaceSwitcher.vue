@@ -22,12 +22,12 @@ const open = defineModel<boolean>({ default: false });
       <button
         v-for="role in roles"
         :key="role.id"
-        class="choice"
+        class="rounded-4xl choice"
         :class="{ 'choice-selected': currentRoleId === role.id }"
         @click="emit('select-role', role.id)"
       >
         <span
-          class="inline-grid size-11 shrink-0 place-items-center rounded-xl bg-soft text-primary-text"
+          class="inline-grid size-11 shrink-0 place-items-center rounded-4xl bg-soft text-primary-text"
         >
           <AppIcon :name="role.icon" />
         </span>
@@ -46,16 +46,10 @@ const open = defineModel<boolean>({ default: false });
       </button>
     </div>
 
-    <p
-      class="my-5 rounded-md bg-surface-muted px-3.5 py-3 text-caption text-muted"
-    >
-      Ambiente local de avaliação. Os perfis de exemplo permitem percorrer cada
-      área.
-    </p>
-
+    
     <button
       v-if="currentRoleId !== 'guest'"
-      class="btn btn-secondary w-full"
+      class="mt-4 btn btn-secondary w-full"
       @click="
         emit('sign-out');
         open = false;

@@ -29,7 +29,7 @@ const comparison = computed(() => {
 </script>
 
 <template>
-  <article class="insight-card" :class="`insight-card--${tone}`">
+  <article class="insight-card">
     <div class="insight-card__top">
       <span class="insight-card__label">{{ label }}</span>
       <span class="insight-card__icon"
@@ -38,9 +38,9 @@ const comparison = computed(() => {
     </div>
     <strong class="insight-card__value">{{ value }}</strong>
     <p class="insight-card__detail">{{ detail }}</p>
-    <div v-if="comparison" class="insight-card__comparison">
+    <!--<div v-if="comparison" class="insight-card__comparison">
       <span class="insight-card__delta">{{ comparison }}</span>
       <span>{{ comparisonLabel || "face ao período anterior" }}</span>
-    </div>
+    </div>-->
   </article>
 </template>

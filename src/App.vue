@@ -3,7 +3,7 @@ import { useBookingReminders } from "@/composables/useBookingReminders.ts";
 useBookingReminders();
 import { useAppearance } from "@/composables/useAppearance.ts";
 useAppearance();
-import { computed, watch } from "vue";
+import { computed, onBeforeUnmount, onMounted, watch } from "vue";
 import { state } from "@/stores/applicationStore.ts";
 import MainLayout from "@/layouts/MainLayout.vue";
 import AuthLayout from "@/layouts/AuthLayout.vue";
@@ -13,6 +13,8 @@ import { openSharedLink } from "@/stores/sharedBookingStore.ts";
 
 /* Uma marcação aberta por ligação manda no ecrã inicial. */
 openSharedLink();
+onMounted(() => window.addEventListener("popstate", openSharedLink));
+onBeforeUnmount(() => window.removeEventListener("popstate", openSharedLink));
 const layout = computed(() =>
   ["auth", "shared"].includes(state.view) ? AuthLayout : MainLayout,
 );

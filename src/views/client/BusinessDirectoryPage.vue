@@ -163,7 +163,7 @@ onBeforeUnmount(() => {
 
     <BusinessMap v-if="showMap" :companies="results" @open="openCompany" />
 
-    <section id="estabelecimentos" class="scroll-mt-6">
+    <section id="estabelecimentos" class="scroll-mt-28">
       <div
         class="mb-[22px] flex items-center justify-between gap-[15px] max-sm:mb-[18px] max-sm:flex-wrap max-sm:gap-[13px]"
       >

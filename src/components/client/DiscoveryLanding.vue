@@ -86,7 +86,7 @@ const questions: { question: string; answer: string }[] = [
   {
     question: "Como pago?",
     answer:
-      "Depende do estabelecimento. Uns aceitam apenas pagamento no local, no fim do atendimento; outros permitem pagar na hora da marcação por carteira móvel ou cartão.",
+      "Depende do estabelecimento. Uns aceitam pagamento no local; outros permitem pagar na hora da marcação por M-Pesa ou e-Mola.",
   },
   {
     question: "E se eu faltar?",
@@ -103,7 +103,11 @@ const questions: { question: string; answer: string }[] = [
 <template>
   <div class="mt-[46px] flex flex-col gap-[46px] sm:mt-14 sm:gap-14">
     <!-- Vantagens ------------------------------------------------------- -->
-    <section aria-labelledby="vantagens-titulo">
+    <section
+      id="vantagens"
+      class="scroll-mt-28"
+      aria-labelledby="vantagens-titulo"
+    >
       <span class="eyebrow">PORQUÊ O MARCAFÁCIL</span>
       <h2 id="vantagens-titulo" class="text-h2">
         Marcar devia ser a parte fácil.
@@ -132,7 +136,11 @@ const questions: { question: string; answer: string }[] = [
     </section>
 
     <!-- Formas de pagamento --------------------------------------------- -->
-    <section aria-labelledby="pagamentos-titulo">
+    <section
+      id="pagamentos"
+      class="scroll-mt-28"
+      aria-labelledby="pagamentos-titulo"
+    >
       <span class="eyebrow">PAGAMENTOS</span>
       <h2 id="pagamentos-titulo" class="text-h2">
         As formas de pagamento que já usa.
@@ -204,7 +212,8 @@ const questions: { question: string; answer: string }[] = [
 
     <!-- Para empresas ---------------------------------------------------- -->
     <section
-      class="overflow-hidden rounded-4xl border border-line bg-soft"
+      id="empresas"
+      class="scroll-mt-28 overflow-hidden rounded-4xl border border-line bg-soft"
       aria-labelledby="empresas-titulo"
     >
       <div
@@ -243,7 +252,7 @@ const questions: { question: string; answer: string }[] = [
     </section>
 
     <!-- Perguntas frequentes --------------------------------------------- -->
-    <section aria-labelledby="faq-titulo">
+    <section id="faq" class="scroll-mt-28" aria-labelledby="faq-titulo">
       <span class="eyebrow">PERGUNTAS FREQUENTES</span>
       <h2 id="faq-titulo" class="text-h2">Antes de marcar, talvez ajude.</h2>
       <div class="mt-[26px] card rounded-4xl divide-y divide-line">

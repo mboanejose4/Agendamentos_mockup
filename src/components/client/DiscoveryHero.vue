@@ -129,6 +129,7 @@ function scrollToResults(): void {
 </script>
 <template>
   <section
+    id="inicio"
     ref="hero"
     class="relative left-1/2 -mt-6 mb-6 flex min-h-[760px] w-[100dvw] -translate-x-1/2 flex-col overflow-hidden border-b border-white/15 bg-[#15221d] sm:-mt-[30px] sm:mb-[30px] sm:min-h-[680px] lg:min-h-[760px] xl:min-h-[820px]"
     aria-labelledby="hero-titulo"
@@ -170,7 +171,7 @@ function scrollToResults(): void {
       </h1>
       <p class="mt-3 max-w-[560px] text-body text-white/80 max-sm:text-caption">
         Sem telefonemas, sem esperar que abram. Escolha o estabelecimento, veja
-        os horários realmente livres e confirme, tudo em menos de um minuto.
+        os horários disponíveis e confirme a sua marcação.
       </p>
       <div class="mt-6 flex flex-wrap gap-3">
         <button class="btn rounded-4xl btn-primary" @click="scrollToResults">
@@ -182,13 +183,6 @@ function scrollToResults(): void {
           <AppIcon name="building-2" :size="18" /> Tenho um negócio
         </button>
       </div>
-      <nav class="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-caption text-white/85" aria-label="Nesta página">
-        <a href="#como-funciona" class="hover:text-white hover:underline">Como funciona</a>
-        <a href="#estabelecimentos" class="hover:text-white hover:underline">Estabelecimentos</a>
-        <a href="#vantagens-titulo" class="hover:text-white hover:underline">Vantagens</a>
-        <a href="#faq-titulo" class="hover:text-white hover:underline">Perguntas frequentes</a>
-        <a href="#empresas-titulo" class="hover:text-white hover:underline">Para estabelecimentos</a>
-      </nav>
       <div class="mt-7 flex gap-2" aria-label="Imagens da apresentação">
         <button
           v-for="(_, index) in heroImages"
@@ -208,10 +202,15 @@ function scrollToResults(): void {
         </button>
       </div>
     </div>
-    <div id="como-funciona" class="relative scroll-mt-20">
+    <div id="como-funciona" class="relative scroll-mt-28">
       <div
         class="mx-auto w-full max-w-[1080px] px-[26px] py-[22px] sm:px-9 sm:py-6"
       >
+        <h2 class="mb-2 text-body font-semibold text-white">Como funciona</h2>
+        <p class="mb-4 max-w-[680px] text-caption text-white/80">
+          Encontre um estabelecimento, escolha um serviço e um horário disponível.
+          Antes de confirmar, veja o preço e as formas de pagamento aceites.
+        </p>
         <MobileCarousel
           tag="ol"
           label="Como funciona o agendamento"
@@ -230,13 +229,13 @@ function scrollToResults(): void {
             </span>
 
             <div>
-              <h2 class="hero-step-card__title mb-1 text-body font-medium">
+              <h3 class="hero-step-card__title mb-1 text-body font-medium">
                 <span class="hero-step-card__number tabular-nums">
                   {{ index + 1 }}.
                 </span>
 
                 {{ step.title }}
-              </h2>
+              </h3>
 
               <p class="hero-step-card__description text-caption">
                 {{ step.body }}

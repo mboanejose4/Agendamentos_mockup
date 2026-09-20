@@ -8,9 +8,9 @@ import AppIcon from "@/components/shared/ui/AppIcon.vue";
        vem entrar na conta. -->
   <section class="flex flex-col">
     <span
-      class="mb-4 inline-grid size-10 shrink-0 place-items-center rounded-[10px] bg-soft text-primary-text sm:mb-[27px] sm:size-[46px] sm:rounded-xl"
+      class="mb-4 inline-grid size-10 shrink-0 place-items-center rounded-4xl bg-soft text-primary-text sm:mb-[27px] sm:size-[46px] sm:rounded-4xl"
     >
-      <AppIcon name="calendar-check" :size="30" />
+      <AppIcon name="calendar-check" :size="28" />
     </span>
 
     <span class="eyebrow mb-0 sm:mb-3">BEM-VINDA À MARCAFÁCIL</span>
@@ -28,7 +28,7 @@ import AppIcon from "@/components/shared/ui/AppIcon.vue";
     <img
       src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=85"
       alt="Espaço acolhedor de um restaurante"
-      class="mt-[25px] hidden h-[185px] w-full rounded-[7px] object-cover sm:block"
+      class="mt-[25px] hidden h-[185px] w-full rounded-4xl object-cover sm:block"
     />
   </section>
 </template>

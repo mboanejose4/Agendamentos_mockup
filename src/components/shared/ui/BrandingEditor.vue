@@ -57,7 +57,7 @@ async function upload(event: Event) {
 </script>
 <template>
   <fieldset
-    class="my-6 min-w-0 rounded-xl border border-line bg-surface p-4 sm:p-6"
+    class="my-6 min-w-0 rounded-4xl border border-line bg-surface p-4 sm:p-6"
   >
     <legend class="px-2 text-h3 font-semibold">Identidade visual</legend>
     <p class="mb-5 text-small text-muted">
@@ -142,14 +142,14 @@ async function upload(event: Event) {
         class="min-w-[100px] flex-1 break-words"
         >{{ businessName || "A sua empresa" }}</strong
       ><span
-        class="inline-flex rounded-lg px-4 py-2.5 font-semibold"
+        class="inline-flex rounded-4xl px-4 py-2.5 font-semibold"
         :style="{
           background: brand.primaryColor,
           color: textOn(brand.primaryColor),
         }"
         >Reservar</span
       ><span
-        class="inline-flex rounded-lg px-4 py-2.5 font-semibold"
+        class="inline-flex rounded-4xl px-4 py-2.5 font-semibold"
         :style="{
           background: brand.secondaryColor,
           color: textOn(brand.secondaryColor),

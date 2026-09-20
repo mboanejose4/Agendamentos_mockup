@@ -5,6 +5,7 @@ import ComparisonChart from "@/components/shared/analytics/ComparisonChart.vue";
 import DistributionChart from "@/components/shared/analytics/DistributionChart.vue";
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
 import { state, today } from "@/stores/applicationStore.ts";
+import Select from "primevue/select";
 import { money } from "@/utils/formatters.ts";
 import {
   activeBookingValue,
@@ -60,6 +61,12 @@ const seriesFor = (value: (booking: Booking) => number) =>
     days.value === 7 ? 7 : 4,
     value,
   );
+
+  const periodOptions = [
+  { label: "7 dias", value: 7 },
+  { label: "4 semanas", value: 28 },
+];
+
 const bookings = computed(() => seriesFor(activeBookingValue));
 const completed = computed(() => seriesFor(completedBookingValue));
 const paid = computed(() => seriesFor(paidBookingValue));
@@ -362,17 +369,23 @@ const note = computed(() => {
           Dados por data da marcação · {{ comparisonLabel }}.
         </p>
       </div>
-      <label class="flex items-center gap-2 text-caption text-muted"
-        >Período
-        <select
-          v-model.number="days"
-          aria-label="Período da análise"
-          class="min-h-10 text-caption"
-        >
-          <option :value="7">7 dias</option>
-          <option :value="28">4 semanas</option>
-        </select>
-      </label>
+      <div class="flex items-center gap-2 text-caption text-muted">
+  <label for="analytics-period">
+    Período
+  </label>
+
+  <Select
+    v-model="days"
+    input-id="analytics-period"
+    :options="periodOptions"
+    option-label="label"
+    option-value="value"
+    aria-label="Período da análise"
+    append-to="body"
+    overlay-class="analytics-period-overlay"
+    class="analytics-period-select !min-h-10 !rounded-4xl"
+  />
+</div>
     </div>
     <div class="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <InsightCard
@@ -411,7 +424,7 @@ const note = computed(() => {
       />
     </div>
     <p
-      class="mt-4 flex items-start gap-2 rounded-xl border border-line bg-soft px-4 py-3 text-caption text-ink"
+      class="mt-4 flex items-start gap-2 rounded-4xl border border-line bg-soft px-4 py-3 text-caption text-ink"
     >
       <AppIcon
         name="info"
@@ -422,3 +435,48 @@ const note = computed(() => {
   </section>
   <slot :days="days" />
 </template>
+
+
+<style scoped>
+/* Select — modo claro */
+.analytics-period-select {
+  min-width: 130px;
+  border: 1px solid #b8c2cc !important;
+  border-radius: 2rem !important;
+  background: #ffffff !important;
+  color: #111827 !important;
+  box-shadow: none !important;
+}
+
+.analytics-period-select :deep(.p-select-label) {
+  color: #111827 !important;
+}
+
+.analytics-period-select :deep(.p-select-dropdown) {
+  color: #6b7280 !important;
+}
+
+/* Foco */
+.analytics-period-select.p-focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 1px var(--primary) !important;
+}
+
+/* Select — modo escuro */
+:global(:root[data-theme="dark"])
+  .analytics-period-select {
+  border-color: #52525b !important;
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+:global(:root[data-theme="dark"])
+  .analytics-period-select :deep(.p-select-label) {
+  color: #ffffff !important;
+}
+
+:global(:root[data-theme="dark"])
+  .analytics-period-select :deep(.p-select-dropdown) {
+  color: #d1d5db !important;
+}
+</style>

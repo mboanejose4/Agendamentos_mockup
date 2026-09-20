@@ -13,7 +13,7 @@ const options: { id: ListMode; label: string; icon: string }[] = [
 </script>
 <template>
   <div
-    class="flex items-center gap-1 rounded-md border border-line bg-surface p-1"
+    class="flex items-center gap-1 rounded-4xl border border-line bg-surface p-1"
     role="group"
     aria-label="Formato da listagem"
   >
@@ -22,7 +22,7 @@ const options: { id: ListMode; label: string; icon: string }[] = [
       :key="option.id"
       type="button"
       :class="[
-        'flex items-center gap-1.5 rounded px-2.5 py-1.5 text-caption',
+        'flex items-center gap-1.5 rounded-4xl px-2.5 py-1.5 text-caption',
         mode === option.id
           ? 'bg-soft font-semibold text-primary-text'
           : 'text-muted',

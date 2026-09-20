@@ -29,7 +29,7 @@ const {
       <article
         v-for="item in visibleNotifications"
         :key="item.id"
-        class="flex items-start gap-3 border-b border-line py-4 last:border-b-0"
+        class="flex items-start gap-3 border-b border-line rounded-4xl py-4 last:border-b-0"
         :class="{ 'bg-soft/40': !item.read }"
       >
         <span class="mt-0.5 shrink-0 text-muted"

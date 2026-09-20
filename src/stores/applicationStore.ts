@@ -31,6 +31,11 @@ import type {
   Weekday,
 } from "@/types/domain.ts";
 import { makeSeed, shiftDate } from "@/services/seed.ts";
+import {
+  canOpenView,
+  routeFromLocation,
+  writeViewRoute,
+} from "@/utils/navigation/viewRoutes.ts";
 
 import {
   readApplicationSnapshot,
@@ -91,6 +96,26 @@ function restore(): ApplicationState {
 
 export const state: ApplicationState = reactive(restore());
 
+const initialRoute = routeFromLocation();
+if (initialRoute) {
+  if (canOpenView(state.role, initialRoute)) state.view = initialRoute;
+  else if (state.role === "guest" && canOpenView("client", initialRoute)) {
+    state.returnView = initialRoute;
+    state.view = "auth";
+  } else writeViewRoute(state.view, true);
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("popstate", () => {
+    const route = routeFromLocation() || "explore";
+    if (canOpenView(state.role, route)) state.view = route;
+    else if (state.role === "guest" && canOpenView("client", route)) {
+      state.returnView = route;
+      state.view = "auth";
+    } else state.view = landing[state.role];
+  });
+}
+
 watch(
   () => [
     state.db,
@@ -130,6 +155,7 @@ export const staffMember = (id: string): StaffMember | undefined =>
 
 export function go(view: ViewName): void {
   state.view = view;
+  writeViewRoute(view);
   if (typeof window !== "undefined")
     window.scrollTo?.({ top: 0, behavior: "instant" });
 }

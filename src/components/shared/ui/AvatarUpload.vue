@@ -203,7 +203,7 @@ onBeforeUnmount(stopCamera);
 
     <div
       v-else
-      class="relative aspect-square w-full overflow-hidden rounded-xl border border-line bg-surface-muted"
+      class="relative aspect-square w-full overflow-hidden rounded-4xl border border-line bg-surface-muted"
     >
       <img
         v-if="shot"

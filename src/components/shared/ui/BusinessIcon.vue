@@ -15,7 +15,7 @@ withDefaults(
 
 <template>
   <span
-    class="inline-flex shrink-0 items-center justify-center overflow-hidden rounded-xl border border-line bg-surface p-1 text-primary-text"
+    class="inline-flex shrink-0 items-center justify-center overflow-hidden rounded-4xl border border-line bg-surface p-1 text-primary-text"
     :style="{ width: size + 'px', height: size + 'px' }"
   >
     <img

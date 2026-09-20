@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { nextTick, onBeforeUnmount, onMounted } from "vue";
 import AppSidebar from "@/components/shared/navigation/AppSidebar.vue";
+import GuestSidebar from "@/components/shared/navigation/GuestSidebar.vue";
 import AppTopbar from "@/components/shared/navigation/AppTopbar.vue";
 import AppFooter from "@/components/shared/navigation/AppFooter.vue";
 import WorkspaceSwitcher from "@/components/shared/navigation/WorkspaceSwitcher.vue";
@@ -25,6 +27,30 @@ const {
   selectStaff,
   signOut,
 } = useAppNavigation();
+
+async function navigateToLandingSection(section: string): Promise<void> {
+  mobileMenu.value = false;
+  if (state.view !== "explore") {
+    navigate("explore");
+    await nextTick();
+  }
+  document
+    .getElementById(section)
+    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function navigateToLandingHome(): void {
+  mobileMenu.value = false;
+  navigate("explore");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function closeMenuOnEscape(event: KeyboardEvent): void {
+  if (event.key === "Escape") mobileMenu.value = false;
+}
+
+onMounted(() => window.addEventListener("keydown", closeMenuOnEscape));
+onBeforeUnmount(() => window.removeEventListener("keydown", closeMenuOnEscape));
 </script>
 
 <template>
@@ -38,11 +64,20 @@ const {
 
     <!-- Véu por trás da gaveta de navegação, só enquanto a barra lateral não é fixa. -->
     <button
-      v-if="state.role !== 'guest' && mobileMenu"
-      class="fixed inset-0 z-60 h-full w-full border-0 bg-scrim desk:hidden"
+      v-if="mobileMenu"
+      class="fixed inset-0 z-60 h-full w-full border-0 bg-scrim"
+      :class="state.role === 'guest' ? 'xl:hidden' : 'desk:hidden'"
       aria-label="Fechar navegação"
       @click="mobileMenu = false"
     ></button>
+
+    <GuestSidebar
+      v-if="state.role === 'guest'"
+      :open="mobileMenu"
+      @close="mobileMenu = false"
+      @home="navigateToLandingHome"
+      @navigate-section="navigateToLandingSection"
+    />
 
     <AppSidebar
       v-if="state.role !== 'guest'"
@@ -76,12 +111,14 @@ const {
     >
       <AppTopbar
         :role="state.role"
+        :menu-open="mobileMenu"
         :current-label="currentLabel"
         :unread="unread"
         :user-name="user?.name || ''"
         :user-avatar="user?.avatar || ''"
         :company-name="companyName"
         @navigate="navigate"
+        @navigate-section="navigateToLandingSection"
         @open-menu="mobileMenu = true"
       />
 

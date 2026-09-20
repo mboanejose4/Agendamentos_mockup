@@ -47,11 +47,11 @@ const {
       <img
         :src="current.image"
         :alt="current.name"
-        class="size-full rounded-lg object-cover"
+        class="size-full rounded-4xl object-cover"
         @error="photoError"
       /><span
         :class="[
-          'absolute left-6 -bottom-5 inline-grid size-[46px] shrink-0 place-items-center rounded-xl border-4 border-background [box-sizing:content-box] max-sm:size-10 max-sm:rounded-[10px] max-[480px]:size-[38px]',
+          'absolute left-6 -bottom-5 inline-grid size-[46px] shrink-0 place-items-center rounded-4xl border-4 border-background [box-sizing:content-box] max-sm:size-10 max-sm:rounded-[10px] max-[480px]:size-[38px]',
           {
             mint: 'bg-soft text-primary-text',
             peach: 'bg-warning-soft text-warning',
@@ -110,7 +110,7 @@ const {
         <template v-if="detailTab === 'Serviços'"
           ><div
             v-if="promotions.length"
-            class="mb-[25px] flex items-center gap-3 rounded-md bg-surface-muted px-4 py-[13px] text-muted"
+            class="mb-[25px] flex items-center gap-3 rounded-4xl bg-surface-muted px-4 py-[13px] text-muted"
           >
             <AppIcon name="tag" :size="20" /><span class="flex-1"
               ><strong class="block text-caption"
@@ -141,7 +141,7 @@ const {
           >
             <span
               :class="[
-                'inline-grid size-[46px] shrink-0 place-items-center rounded-xl max-sm:hidden',
+                'inline-grid size-[46px] shrink-0 place-items-center rounded-4xl max-sm:hidden',
                 {
                   mint: 'bg-soft text-primary-text',
                   peach: 'bg-warning-soft text-warning',

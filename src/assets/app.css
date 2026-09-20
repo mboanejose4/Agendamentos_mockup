@@ -575,7 +575,7 @@
   /* Painéis analíticos: a mesma hierarquia visual em todos os perfis. */
   .insight-card,
   .insight-panel {
-    @apply min-w-0 rounded-panel border border-line bg-surface;
+    @apply min-w-0 rounded-4xl border border-line bg-surface;
     box-shadow: 0 8px 28px
       color-mix(in srgb, var(--shadow-color) 45%, transparent);
   }
@@ -584,11 +584,7 @@
     @apply relative flex min-h-[172px] flex-col overflow-hidden p-5 sm:p-6;
   }
 
-  .insight-card::before {
-    content: "";
-    @apply absolute inset-x-0 top-0 h-1;
-    background: var(--insight-accent, var(--chart-1));
-  }
+  
 
   .insight-card--primary {
     --insight-accent: var(--chart-1);
@@ -610,7 +606,7 @@
     @apply text-caption font-semibold text-muted;
   }
   .insight-card__icon {
-    @apply grid size-10 shrink-0 place-items-center rounded-xl;
+    @apply grid size-10 shrink-0 place-items-center rounded-4xl;
     color: var(--insight-accent, var(--chart-1));
     background: color-mix(
       in srgb,
