@@ -13,16 +13,20 @@ import BookingPaymentDialog from "@/components/client/BookingPaymentDialog.vue";
 
 import { provideBookingFlow } from "@/composables/bookings/bookingContext.ts";
 
+/* As mesmas etapas da página de marcação, mas dentro de um diálogo: quem
+   escolheu o estabelecimento na janela anterior continua ali mesmo, sem a
+   página mudar por baixo e sem a sensação de recomeçar. O composable é
+   instanciado aqui, no `mounted` deste painel, e lê o estabelecimento que o
+   diálogo já seleccionou. */
+const emit = defineEmits<{ back: []; close: [] }>();
+
 const {
   state,
-  go,
   money,
   dateLabel,
-  business,
   draft,
   step,
   error,
-  paymentMethod,
   created,
   current,
   selectedService,
@@ -33,50 +37,44 @@ const {
 </script>
 
 <template>
-  <div v-if="current" class="mx-auto max-w-[1050px]">
-    <!-- Botão voltar -->
+  <div v-if="current">
+    <!-- Voltar: ao passo anterior ou à lista de estabelecimentos -->
     <Button
       v-if="step < 4"
       text
       type="button"
-      class="text-button -mt-[5px] mb-[22px] !rounded-4xl"
-      @click="step > 1 ? step-- : go('business')"
+      class="text-button -mt-1 mb-4 !rounded-4xl"
+      @click="step > 1 ? step-- : emit('back')"
     >
       <AppIcon name="arrow-left" :size="17" />
-      Voltar
+      {{ step > 1 ? "Voltar" : "Escolher outro estabelecimento" }}
     </Button>
 
     <!-- Cabeçalho -->
-    <header class="mb-[30px] flex items-start justify-between gap-5">
-      <div class="min-w-0">
-        <span class="eyebrow">
-          {{ current.name }}
-        </span>
+    <header class="mb-5">
+      <span class="eyebrow">{{ current.name }}</span>
 
-        <h1>
-          {{
-            step === 4
-              ? "Tem um encontro marcado."
-              : draft.excludeBookingId
-                ? "Um novo momento para si."
-                : "Reserve um momento para si."
-          }}
-        </h1>
+      <h2 class="mb-1">
+        {{
+          step === 4
+            ? "Tem um encontro marcado."
+            : "Reserve um momento para si."
+        }}
+      </h2>
 
-        <p>
-          {{
-            step === 4
-              ? "Encontre todos os detalhes na sua área pessoal."
-              : "Cada detalhe, à sua medida."
-          }}
-        </p>
-      </div>
+      <p class="text-caption text-muted">
+        {{
+          step === 4
+            ? "Encontre todos os detalhes na sua área pessoal."
+            : "Cada detalhe, à sua medida."
+        }}
+      </p>
     </header>
 
-    <!-- Progresso da marcação -->
+    <!-- Progresso -->
     <div
       v-if="step < 4"
-      class="mt-[22px] mb-7 flex border-b border-line md:mt-[30px] md:mb-[35px]"
+      class="mb-6 flex border-b border-line"
       aria-label="Progresso da marcação"
     >
       <div
@@ -86,7 +84,7 @@ const {
           'Confirmação',
         ]"
         :key="label"
-        class="-mb-px flex flex-1 flex-col items-start gap-2 border-b-2 border-transparent pb-[13px] text-muted md:flex-row md:items-center md:gap-2.5 md:pr-2.5 md:pb-[17px]"
+        class="-mb-px flex flex-1 flex-col items-start gap-2 border-b-2 border-transparent pb-3 text-muted md:flex-row md:items-center md:gap-2.5 md:pr-2.5"
         :class="{
           'border-primary-text text-primary-text': step === index + 1,
         }"
@@ -96,44 +94,30 @@ const {
         >
           <AppIcon v-if="step > index + 1" name="check" :size="15" />
 
-          <template v-else>
-            {{ index + 1 }}
-          </template>
+          <template v-else>{{ index + 1 }}</template>
         </span>
 
-        <strong class="text-caption">
-          {{ label }}
-        </strong>
+        <strong class="text-caption">{{ label }}</strong>
       </div>
     </div>
 
-    <!-- Etapas da marcação -->
+    <!-- Etapas -->
     <div
       v-if="step < 4"
-      class="grid grid-cols-1 gap-[25px] lg:grid-cols-[minmax(0,1.8fr)_minmax(240px,1fr)] lg:gap-[45px]"
+      class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.8fr)_minmax(240px,1fr)] lg:gap-10"
     >
       <section class="min-w-0">
-        <!-- Passo 1: Serviço -->
         <BookingServiceStep v-if="step === 1" />
-
-        <!-- Passo 2: Data e horário -->
         <BookingTimeStep v-if="step === 2" />
-
-        <!-- Passo 3: Confirmação -->
         <BookingReviewStep v-if="step === 3" />
 
-        <!-- Mensagem de erro -->
-        <p v-if="error" class="error-message" role="alert">
-          {{ error }}
-        </p>
+        <p v-if="error" class="error-message" role="alert">{{ error }}</p>
 
-        <!-- Acções do formulário -->
         <div class="form-actions">
           <span class="mr-auto text-caption text-muted">
             Passo {{ step }} de 3
           </span>
 
-          <!-- Continuar -->
           <Button
             v-if="step < 3"
             type="button"
@@ -142,11 +126,9 @@ const {
             @click="next"
           >
             Continuar
-
             <AppIcon name="arrow-right" :size="17" />
           </Button>
 
-          <!-- Confirmar marcação -->
           <Button
             v-else
             type="button"
@@ -160,23 +142,21 @@ const {
                   ? "Confirmar alteração"
                   : "Confirmar marcação"
             }}
-
             <AppIcon name="check" :size="17" />
           </Button>
         </div>
       </section>
 
-      <!-- Resumo da marcação -->
       <BookingSummary />
     </div>
 
-    <!-- Marcação concluída -->
+    <!-- Concluída -->
     <section
       v-else
-      class="mx-auto mt-[10px] mb-[40px] max-w-[600px] rounded-4xl border border-line bg-surface px-5 py-8 text-center sm:px-8 md:mt-[40px] md:px-10 md:py-10"
+      class="mx-auto max-w-[600px] rounded-4xl border border-line bg-surface px-5 py-8 text-center sm:px-8"
     >
       <span
-        class="mx-auto mb-[25px] grid size-[88px] place-items-center rounded-full bg-surface-muted text-primary-text"
+        class="mx-auto mb-6 grid size-[88px] place-items-center rounded-full bg-surface-muted text-primary-text"
       >
         <AppIcon name="calendar-check" :size="40" />
       </span>
@@ -189,36 +169,27 @@ const {
         }}
       </span>
 
-      <h2 class="mt-5 mb-2 text-h1">
-        {{ selectedService?.name }}
-      </h2>
+      <h2 class="mt-5 mb-2 text-h1">{{ selectedService?.name }}</h2>
 
-      <p class="text-small">
-        {{ current.name }}
-      </p>
+      <p class="text-small">{{ current.name }}</p>
 
-      <!-- Detalhes da marcação -->
-      <div class="flex flex-wrap justify-center gap-[15px] py-[25px] md:gap-5">
+      <div class="flex flex-wrap justify-center gap-4 py-6">
         <span class="flex items-center gap-2 text-caption text-primary-text">
           <AppIcon name="calendar-days" :size="17" />
-
           {{ dateLabel(created?.date || draft.date) }}
         </span>
 
         <span class="flex items-center gap-2 text-caption text-primary-text">
           <AppIcon name="clock" :size="17" />
-
           {{ created?.time || draft.time }}
         </span>
 
         <span class="flex items-center gap-2 text-caption text-primary-text">
           <AppIcon name="receipt" :size="17" />
-
           {{ bookingReference(created?.id) }}
         </span>
       </div>
 
-      <!-- Estado do pagamento -->
       <p class="text-small text-muted">
         {{
           created?.paymentStatus === "paid"
@@ -227,12 +198,9 @@ const {
               ? "Pagamento online pendente."
               : "Pagamento no estabelecimento."
         }}
-
-        Total:
-        {{ money(created?.total || 0) }}
+        Total: {{ money(created?.total || 0) }}
       </p>
 
-      <!-- Acções finais -->
       <div class="form-actions justify-center">
         <Button
           type="button"
@@ -241,23 +209,20 @@ const {
           @click="downloadCalendar"
         >
           <AppIcon name="download" :size="17" />
-
           Adicionar ao calendário
         </Button>
 
         <Button
           type="button"
           class="btn btn-primary w-full !rounded-4xl md:w-auto"
-          @click="go('appointments')"
+          @click="emit('close')"
         >
           Ver marcações
-
           <AppIcon name="arrow-right" :size="17" />
         </Button>
       </div>
     </section>
 
-    <!-- Modal de pagamento -->
     <BookingPaymentDialog />
   </div>
 </template>

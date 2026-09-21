@@ -3,6 +3,7 @@ import AppIcon from "@/components/shared/ui/AppIcon.vue";
 import { resourceTypeName } from "@/utils/resourceTypes.ts";
 import { plural } from "@/utils/formatters.ts";
 import { useBusinessManagementContext } from "@/composables/businesses/businessContext.ts";
+import InputText from "primevue/inputtext";
 const {
   state,
   resources,
@@ -18,10 +19,10 @@ const {
       class="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
     >
       <label
-        class="flex w-full items-center gap-2.5 rounded-md border border-line bg-surface px-3 text-muted sm:max-w-[390px] sm:flex-1"
+        class="flex w-full items-center gap-2.5 rounded-4xl border border-line bg-surface px-3 text-muted sm:max-w-[390px] sm:flex-1"
       >
         <AppIcon name="search" :size="18" />
-        <input
+        <InputText
           v-model="query"
           placeholder="Pesquisar espaços e recursos"
           aria-label="Pesquisar espaços e recursos"

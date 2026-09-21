@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
 import { useAccountManagementContext } from "@/composables/account/accountContext.ts";
+import InputText from "primevue/inputtext";
+import Select from "primevue/select";
 const {
   state,
   money,
@@ -23,8 +25,8 @@ const {
       class="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
     >
       <label
-        class="flex min-w-0 items-center gap-2.5 rounded-md border border-line bg-surface px-3 text-muted sm:max-w-[390px] sm:flex-1"
-        ><AppIcon name="search" /><input
+        class="flex min-w-0 items-center gap-2.5 rounded-4xl border border-line bg-surface px-3 text-muted sm:max-w-[390px] sm:flex-1"
+        ><AppIcon name="search" /><InputText
           v-model="historySearch"
           placeholder="Pesquisar cliente ou serviço"
           aria-label="Pesquisar histórico"
@@ -41,16 +43,20 @@ const {
           type="date"
           :min="historyFrom || undefined"
       /></label>
-      <select
+      <Select
         v-model="historyStatus"
         aria-label="Estado"
         class="w-full sm:w-auto"
-      >
-        <option value="all">Todos os estados</option>
-        <option value="completed">Concluídos</option>
-        <option value="cancelled">Cancelados</option>
-        <option value="no_show">Não compareceu</option>
-      </select>
+        :options="[
+          { label: 'Todos os estados', value: 'all' },
+          { label: 'Concluídos', value: 'completed' },
+          { label: 'Cancelados', value: 'cancelled' },
+          { label: 'Não compareceu', value: 'no_show' },
+        ]"
+        option-label="label"
+        option-value="value"
+        append-to="self"
+      />
     </div>
     <div v-if="history.length" class="table-scroll">
       <table class="data-table">

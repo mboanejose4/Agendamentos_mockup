@@ -49,7 +49,7 @@ function photoError(event: Event) {
           >{{ company.name }}</span
         ></button
       ><span
-        class="pointer-events-none absolute top-[13px] left-[13px] flex items-center gap-[5px] rounded-full bg-white px-2 py-[5px] text-primary-text"
+        class="pointer-events-none absolute top-[13px] left-[13px] flex items-center gap-[5px] rounded-full bg-surface px-2 py-[5px] text-primary-text"
         ><AppIcon :name="categoryIcon" :size="13" />{{ company.category }}</span
       ><span
         v-if="company.package === 4"
@@ -57,8 +57,8 @@ function photoError(event: Event) {
         >Em destaque</span
       ><button
         :class="[
-          'absolute top-3 right-3 grid size-[32px] place-items-center rounded-full border border-white/25 bg-white text-white shadow-sm transition-colors',
-          'hover:bg-white/60',
+          'absolute top-3 right-3 grid size-[32px] place-items-center rounded-full border border-line bg-surface shadow-sm transition-colors',
+          'hover:bg-surface-muted',
           isFavorite ? 'favorite-active' : '',
         ]"
         type="button"

@@ -108,6 +108,7 @@ const selectedAgendaDate = computed<Date | null>({
           aria-label="Dia da agenda"
           class="agenda-date-picker min-w-0 flex-1"
           input-class="w-full rounded-4xl"
+          append-to="self"
         />
 
         <button
@@ -120,7 +121,11 @@ const selectedAgendaDate = computed<Date | null>({
           <AppIcon name="chevron-right" />
         </button>
 
-        <button type="button" class="btn btn-secondary" @click="agendaDate = today()">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          @click="agendaDate = today()"
+        >
           Hoje
         </button>
       </div>
@@ -133,6 +138,7 @@ const selectedAgendaDate = computed<Date | null>({
         aria-label="Estado do agendamento"
         class="agenda-status-select w-full rounded-4xl sm:w-56"
         placeholder="Selecione o estado"
+        append-to="self"
       />
 
       <button
@@ -167,7 +173,12 @@ const selectedAgendaDate = computed<Date | null>({
               {{ item.clientName }}
             </h2>
 
-            <span :class="['badge rounded-4xl', `badge-${statusClass(item.status)}`]">
+            <span
+              :class="[
+                'badge rounded-4xl',
+                `badge-${statusClass(item.status)}`,
+              ]"
+            >
               {{ statusNames[item.status] }}
             </span>
           </div>
@@ -176,7 +187,10 @@ const selectedAgendaDate = computed<Date | null>({
             {{ service(item.serviceId)?.name || "Serviço" }}
           </p>
 
-          <small v-if="item.partySize > 1" class="mt-1 block text-caption text-muted">
+          <small
+            v-if="item.partySize > 1"
+            class="mt-1 block text-caption text-muted"
+          >
             {{ plural(item.partySize, "pessoa", "pessoas") }}
           </small>
 
@@ -188,8 +202,14 @@ const selectedAgendaDate = computed<Date | null>({
             {{ item.notes }}
           </p>
 
-          <div class="mt-3 flex flex-wrap items-center gap-2 border-t border-line pt-3">
-            <button type="button" class="btn btn-secondary" @click="openBooking(item)">
+          <div
+            class="mt-3 flex flex-wrap items-center gap-2 border-t border-line pt-3"
+          >
+            <button
+              type="button"
+              class="btn btn-secondary"
+              @click="openBooking(item)"
+            >
               Detalhes
             </button>
 
@@ -233,7 +253,10 @@ const selectedAgendaDate = computed<Date | null>({
       </button>
     </div>
 
-    <section v-if="myBlocks.some((item) => item.date === agendaDate)" class="mt-8">
+    <section
+      v-if="myBlocks.some((item) => item.date === agendaDate)"
+      class="mt-8"
+    >
       <h2 class="mb-4 text-body-lg">Períodos indisponíveis</h2>
 
       <div
@@ -244,7 +267,9 @@ const selectedAgendaDate = computed<Date | null>({
         <AppIcon name="calendar-off" class="shrink-0 text-muted" />
 
         <div class="min-w-0">
-          <strong class="text-small text-ink"> {{ item.start }} – {{ item.end }} </strong>
+          <strong class="text-small text-ink">
+            {{ item.start }} – {{ item.end }}
+          </strong>
 
           <p class="text-caption text-muted">
             {{ item.reason || "Indisponível" }}

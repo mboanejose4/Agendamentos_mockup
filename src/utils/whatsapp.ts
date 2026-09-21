@@ -17,10 +17,10 @@ export function normalizePhone(raw: string, country = COUNTRY): string {
   return country + digits.replace(/^0+/, "");
 }
 
-/** Um número moçambicano tem nove dígitos depois do indicativo. */
+/** Um contacto móvel moçambicano válido é +258, 82–88 e mais sete dígitos. */
 export function isUsablePhone(raw: string): boolean {
   const digits = normalizePhone(raw);
-  return digits.length >= 11 && digits.length <= 15;
+  return /^2588[2-8]\d{7}$/.test(digits);
 }
 
 export function whatsappUrl(phone: string, text: string): string {

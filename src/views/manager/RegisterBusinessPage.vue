@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import CoverImageUpload from "@/components/shared/ui/CoverImageUpload.vue";
 import BrandingEditor from "@/components/shared/ui/BrandingEditor.vue";
+import PhoneInput from "@/components/shared/ui/PhoneInput.vue";
 import { defaultBrand } from "@/utils/theme.ts";
 import { onBeforeUnmount, reactive, ref, watch } from "vue";
 import { brandPreview } from "@/stores/brandPreview.ts";
@@ -12,6 +13,8 @@ import {
   saveRecord,
 } from "@/stores/applicationStore.ts";
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
+import InputText from "primevue/inputtext";
+import Select from "primevue/select";
 const error = ref("");
 const coverBusy = ref(false);
 const company = reactive({
@@ -87,8 +90,8 @@ function createCompany() {
     <form class="border-t border-line pt-6" @submit.prevent="createCompany">
       <div class="form-grid">
         <label class="field">
-          Nome do estabelecimento
-          <input
+          <span>Nome do estabelecimento</span>
+          <InputText
             v-model.trim="company.name"
             required
             maxlength="100"
@@ -96,8 +99,8 @@ function createCompany() {
           />
         </label>
         <label class="field">
-          Código da empresa
-          <input
+          <span>Código da empresa</span>
+          <InputText
             v-model.trim="company.code"
             maxlength="24"
             :required="company.package <= 2"
@@ -106,47 +109,58 @@ function createCompany() {
         </label>
         <label class="field">
           Pacote
-          <select v-model.number="company.package">
-            <option :value="1">01 · Reservas da própria empresa</option>
-            <option :value="2">02 · Profissionais independentes</option>
-            <option :value="3">03 · Exploração completa</option>
-            <option :value="4">04 · Destaque na plataforma</option>
-          </select>
+          <Select
+            v-model.number="company.package"
+            :options="[
+              { label: '01 · Reservas da própria empresa', value: 1 },
+              { label: '02 · Profissionais independentes', value: 2 },
+              { label: '03 · Exploração completa', value: 3 },
+              { label: '04 · Destaque na plataforma', value: 4 },
+            ]"
+            option-label="label"
+            option-value="value"
+            append-to="self"
+          />
         </label>
         <label class="field">
           Categoria
-          <select v-model="company.category">
-            <option>Beleza</option>
-            <option>Bem-estar</option>
-            <option>Saúde</option>
-            <option>Restauração</option>
-            <option>Outros serviços</option>
-          </select>
+          <Select
+            v-model="company.category"
+            :options="[
+              { label: 'Beleza', value: 'Beleza' },
+              { label: 'Bem-estar', value: 'Bem-estar' },
+              { label: 'Saúde', value: 'Saúde' },
+              { label: 'Restauração', value: 'Restauração' },
+              { label: 'Outros serviços', value: 'Outros serviços' },
+            ]"
+            option-label="label"
+            option-value="value"
+            append-to="self"
+          />
         </label>
         <label class="field">
-          Cidade
-          <input v-model.trim="company.city" required />
+          <span>Cidade</span>
+          <InputText v-model.trim="company.city" required />
         </label>
         <label class="field">
-          Endereço
-          <input
+          <span>Endereço</span>
+          <InputText
             v-model.trim="company.address"
             required
             autocomplete="street-address"
           />
         </label>
         <label class="field">
-          Contacto
-          <input
+          <span>Contacto</span>
+          <PhoneInput
             v-model.trim="company.phone"
-            type="tel"
             required
             autocomplete="tel"
           />
         </label>
         <label class="field">
-          E-mail
-          <input
+          <span>E-mail</span>
+          <InputText
             v-model.trim="company.email"
             type="email"
             required
@@ -154,16 +168,16 @@ function createCompany() {
           />
         </label>
         <label class="field">
-          Abertura
+          <span>Abertura</span>
           <input v-model="company.opens" type="time" required />
         </label>
         <label class="field">
-          Encerramento
+          <span>Encerramento</span>
           <input v-model="company.closes" type="time" required />
         </label>
       </div>
       <label class="field">
-        Sobre o estabelecimento
+        <span>Sobre o estabelecimento</span>
         <textarea
           v-model.trim="company.description"
           rows="3"

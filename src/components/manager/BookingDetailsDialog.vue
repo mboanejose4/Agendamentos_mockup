@@ -12,6 +12,7 @@ import {
   applyNoShowPenalty,
   respondBookingDelay,
 } from "@/stores/applicationStore.ts";
+import Select from "primevue/select";
 const {
   money,
   detailOpen,
@@ -145,7 +146,7 @@ function answerDelay(accept: boolean) {
         </div>
         <div
           v-if="selectedBooking.delayMinutes"
-          class="mb-5 rounded-lg bg-surface-muted p-3 text-caption"
+          class="mb-5 rounded-4xl bg-surface-muted p-3 text-caption"
         >
           Atraso comunicado: {{ selectedBooking.delayMinutes }} min ·
           {{
@@ -173,16 +174,19 @@ function answerDelay(accept: boolean) {
         >
           <label class="field min-w-[220px] flex-1"
             ><span>Adicionar serviço durante o atendimento</span>
-            <select v-model="extraServiceId">
-              <option value="">Seleccionar serviço</option>
-              <option
-                v-for="item in extraOptions"
-                :key="item.id"
-                :value="item.id"
-              >
-                {{ item.name }} · {{ money(item.price) }}
-              </option>
-            </select>
+            <Select
+              v-model="extraServiceId"
+              :options="[
+                { label: 'Seleccionar serviço', value: '' },
+                ...extraOptions.map((item) => ({
+                  label: `${item.name} · ${money(item.price)}`,
+                  value: item.id,
+                })),
+              ]"
+              option-label="label"
+              option-value="value"
+              append-to="self"
+            />
           </label>
           <button
             class="btn btn-secondary"
@@ -194,7 +198,7 @@ function answerDelay(accept: boolean) {
         </div>
         <div
           v-if="selectedBooking.status === 'no_show'"
-          class="mb-5 rounded-lg bg-surface-muted p-3 text-caption"
+          class="mb-5 rounded-4xl bg-surface-muted p-3 text-caption"
         >
           <span v-if="selectedBooking.noShowPenalty"
             >Penalização aplicada:

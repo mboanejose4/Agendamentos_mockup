@@ -23,9 +23,7 @@ const options: { id: ListMode; label: string; icon: string }[] = [
       type="button"
       :class="[
         'flex items-center gap-1.5 rounded-4xl px-2.5 py-1.5 text-caption',
-        mode === option.id
-          ? 'bg-soft font-semibold text-primary-text'
-          : 'text-muted',
+        mode === option.id ? 'is-selected font-semibold' : 'text-muted',
       ]"
       :aria-pressed="mode === option.id"
       @click="mode = option.id"

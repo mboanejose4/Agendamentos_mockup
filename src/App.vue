@@ -3,6 +3,8 @@ import { useBookingReminders } from "@/composables/useBookingReminders.ts";
 useBookingReminders();
 import { useAppearance } from "@/composables/useAppearance.ts";
 useAppearance();
+import { useFrontendValidation } from "@/composables/useFrontendValidation.ts";
+useFrontendValidation();
 import { computed, onBeforeUnmount, onMounted, watch } from "vue";
 import { state } from "@/stores/applicationStore.ts";
 import MainLayout from "@/layouts/MainLayout.vue";

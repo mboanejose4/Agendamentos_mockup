@@ -12,6 +12,7 @@ import {
   respondBookingDelay,
   markPaid,
 } from "@/stores/applicationStore.ts";
+import Select from "primevue/select";
 const {
   openShareBooking,
   money,
@@ -182,7 +183,7 @@ function collectPayment() {
       </div>
       <div
         v-if="selected.delayMinutes"
-        class="mt-5 rounded-lg bg-surface-muted p-3 text-caption"
+        class="mt-5 rounded-4xl bg-surface-muted p-3 text-caption"
       >
         Atraso comunicado: {{ selected.delayMinutes }} min ·
         {{
@@ -210,15 +211,18 @@ function collectPayment() {
       >
         <label class="field min-w-[180px]"
           ><span>Vou chegar atrasado</span>
-          <select v-model.number="delayMinutes">
-            <option
-              v-for="minutes in [5, 10, 15, 20, 30]"
-              :key="minutes"
-              :value="minutes"
-            >
-              {{ minutes }} minutos
-            </option>
-          </select>
+          <Select
+            v-model.number="delayMinutes"
+            :options="[
+              ...[5, 10, 15, 20, 30].map((minutes) => ({
+                label: `${minutes} minutos`,
+                value: minutes,
+              })),
+            ]"
+            option-label="label"
+            option-value="value"
+            append-to="self"
+          />
         </label>
         <button class="btn btn-secondary" @click="requestDelay">
           Avisar estabelecimento
@@ -230,16 +234,19 @@ function collectPayment() {
       >
         <label class="field min-w-[220px] flex-1"
           ><span>Adicionar serviço</span>
-          <select v-model="extraServiceId">
-            <option value="">Seleccionar serviço</option>
-            <option
-              v-for="item in extraOptions"
-              :key="item.id"
-              :value="item.id"
-            >
-              {{ item.name }} · {{ money(item.price) }}
-            </option>
-          </select>
+          <Select
+            v-model="extraServiceId"
+            :options="[
+              { label: 'Seleccionar serviço', value: '' },
+              ...extraOptions.map((item) => ({
+                label: `${item.name} · ${money(item.price)}`,
+                value: item.id,
+              })),
+            ]"
+            option-label="label"
+            option-value="value"
+            append-to="self"
+          />
         </label>
         <button
           class="btn btn-secondary"

@@ -24,36 +24,57 @@ const {
 <template>
   <div>
     <RoleDashboard role="client" />
-    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+    <div
+      class="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
+    >
       <div class="tabs" aria-label="Filtrar agendamentos">
-        <button :class="{ active: appointmentTab === 'upcoming' }" @click="appointmentTab = 'upcoming'">
-          Próximos <span>{{ upcoming.length }}</span></button><button :class="{ active: appointmentTab === 'history' }"
-          @click="appointmentTab = 'history'">
-          Histórico</button><button :class="{ active: appointmentTab === 'all' }" @click="appointmentTab = 'all'">
+        <button
+          :class="{ active: appointmentTab === 'upcoming' }"
+          @click="appointmentTab = 'upcoming'"
+        >
+          Próximos <span>{{ upcoming.length }}</span></button
+        ><button
+          :class="{ active: appointmentTab === 'history' }"
+          @click="appointmentTab = 'history'"
+        >
+          Histórico</button
+        ><button
+          :class="{ active: appointmentTab === 'all' }"
+          @click="appointmentTab = 'all'"
+        >
           Todos
         </button>
       </div>
-     <div
-  class="booking-search flex min-w-0 items-center gap-2.5 rounded-4xl border border-line bg-surface px-3 sm:max-w-[390px] sm:flex-1"
->
-  <AppIcon name="search" :size="18" class="shrink-0 text-muted" />
+      <div
+        class="booking-search flex min-w-0 items-center gap-2.5 rounded-4xl border border-line bg-surface px-3 sm:max-w-[390px] sm:flex-1"
+      >
+        <AppIcon name="search" :size="18" class="shrink-0 text-muted" />
 
-  <InputText
-    v-model="search"
-    type="search"
-    placeholder="Pesquisar agendamentos"
-    aria-label="Pesquisar agendamentos"
-    class="booking-search__input !min-w-0 !flex-1 !rounded-4xl !border-0 !bg-transparent !pl-0 !text-caption !shadow-none"
-  />
-</div>
+        <InputText
+          v-model="search"
+          type="search"
+          placeholder="Pesquisar agendamentos"
+          aria-label="Pesquisar agendamentos"
+          class="booking-search__input !min-w-0 !flex-1 !rounded-4xl !border-0 !bg-transparent !pl-0 !text-caption !shadow-none"
+        />
+      </div>
     </div>
     <div v-if="filteredAppointments.length" class="flex flex-col gap-4">
-      <article v-for="item in filteredAppointments" :key="item.id"
-        class="card rounded-4xl flex flex-col overflow-hidden sm:flex-row">
-        <img v-if="business(item.businessId)?.image" :src="business(item.businessId)?.image"
-          :alt="business(item.businessId)?.name" class="h-40 w-full shrink-0 object-cover sm:h-auto sm:w-48" />
-        <div v-else
-          class="flex h-40 w-full shrink-0 items-center justify-center bg-surface-muted text-muted sm:h-auto sm:w-48">
+      <article
+        v-for="item in filteredAppointments"
+        :key="item.id"
+        class="card rounded-4xl flex flex-col overflow-hidden sm:flex-row"
+      >
+        <img
+          v-if="business(item.businessId)?.image"
+          :src="business(item.businessId)?.image"
+          :alt="business(item.businessId)?.name"
+          class="h-40 w-full shrink-0 object-cover sm:h-auto sm:w-48"
+        />
+        <div
+          v-else
+          class="flex h-40 w-full shrink-0 items-center justify-center bg-surface-muted text-muted sm:h-auto sm:w-48"
+        >
           <AppIcon name="store" :size="28" />
         </div>
         <div class="min-w-0 flex-1 p-4 sm:p-5">
@@ -62,35 +83,42 @@ const {
               {{ business(item.businessId)?.name || "Estabelecimento" }}
             </span>
 
-            <span :class="[
-              'badge',
-              'rounded-4xl',
-              `badge-${statusClass(item.status)}`,
-            ]">
+            <span
+              :class="[
+                'badge',
+                'rounded-4xl',
+                `badge-${statusClass(item.status)}`,
+              ]"
+            >
               {{ statusNames[item.status] }}
             </span>
           </div>
           <h2 class="mb-1 text-body-lg">
             {{ service(item.serviceId)?.name || "Serviço" }}
           </h2>
-          <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-caption text-muted">
+          <div
+            class="flex flex-wrap items-center gap-x-4 gap-y-1 text-caption text-muted"
+          >
             <span class="flex items-center gap-1.5">
               <AppIcon name="calendar-days" :size="14" />
-              {{ dateLabel(item.date) }}
-            </span><span class="flex items-center gap-1.5">
+              {{ dateLabel(item.date) }} </span
+            ><span class="flex items-center gap-1.5">
               <AppIcon name="clock-3" :size="14" /> {{ item.time }} ·
-              {{ item.duration }} min
-            </span><span class="flex items-center gap-1.5">
+              {{ item.duration }} min </span
+            ><span class="flex items-center gap-1.5">
               <AppIcon name="user-round" :size="14" />
               {{
                 staffMember(item.staffId)?.name || "Equipa do estabelecimento"
               }}
             </span>
           </div>
-          <div class="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3">
+          <div
+            class="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3"
+          >
             <strong class="text-body-lg text-ink">{{
               money(item.total)
-            }}</strong><button class="btn btn-secondary" @click="openBooking(item)">
+            }}</strong
+            ><button class="btn btn-secondary" @click="openBooking(item)">
               Ver detalhes
               <AppIcon name="arrow-up-right" />
             </button>

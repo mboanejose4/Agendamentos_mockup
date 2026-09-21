@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 import { computed } from "vue";
 
@@ -67,16 +66,15 @@ function onServiceChange(): void {
         placeholder="Seleccione um serviço"
         filter
         fluid
+        required
         class="!w-full !rounded-4xl"
         @update:model-value="onServiceChange"
+        append-to="self"
       />
     </label>
 
     <!-- Descrição do serviço seleccionado -->
-    <p
-      v-if="selectedService"
-      class="mb-0 text-caption text-muted"
-    >
+    <p v-if="selectedService" class="mb-0 text-caption text-muted">
       {{ selectedService.description }}
     </p>
 
@@ -92,6 +90,7 @@ function onServiceChange(): void {
         show-buttons
         button-layout="horizontal"
         fluid
+        required
         input-class="!w-full !rounded-4xl"
         class="!w-full !rounded-4xl"
       >
@@ -106,10 +105,7 @@ function onServiceChange(): void {
     </label>
 
     <!-- Selecção de mesa, sala ou recurso -->
-    <label
-      v-if="selectedService?.resourceType"
-      class="field"
-    >
+    <label v-if="selectedService?.resourceType" class="field">
       <span>
         {{ isRestaurant ? "Mesa" : "Sala ou recurso" }}
       </span>
@@ -123,6 +119,7 @@ function onServiceChange(): void {
         show-clear
         fluid
         class="!w-full !rounded-4xl"
+        append-to="self"
       />
     </label>
   </div>

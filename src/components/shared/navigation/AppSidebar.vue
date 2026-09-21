@@ -7,6 +7,7 @@ import type { WorkspaceRole } from "@/utils/navigation/workspaceRoles.ts";
 import type { Business, Role, StaffMember, ViewName } from "@/types/domain.ts";
 import marcaFacilLogo from "@/assets/img/logo.png";
 import marcaFacilLogoDark from "@/assets/img/logo-dark.png";
+import Select from "primevue/select";
 
 withDefaults(
   defineProps<{
@@ -49,11 +50,11 @@ const homeView = (role: Role): ViewName =>
     Gaveta em telefones e tablets, coluna fixa em ecrãs largos não tácteis.
     A largura acompanha o ecrã para nunca tapar o conteúdo por completo.
   -->
-<aside
-  class="fixed top-3 bottom-3 left-3 z-70 flex w-[270px] max-w-[calc(86vw-24px)] flex-col overflow-y-auto overscroll-contain rounded-4xl border border-line bg-surface px-4 pt-5 pb-4 shadow-lg transition-transform duration-200 ease-out desk:w-sidebar desk:max-w-none desk:translate-x-0 desk:px-3.5 desk:pt-6"
-  :class="open ? 'translate-x-0' : '-translate-x-[calc(100%+12px)]'"
-  aria-label="Navegação principal"
->
+  <aside
+    class="fixed top-3 bottom-3 left-3 z-70 flex w-[270px] max-w-[calc(86vw-24px)] flex-col overflow-y-auto overscroll-contain rounded-4xl border border-line bg-surface px-4 pt-5 pb-4 elevated-edge transition-transform duration-200 ease-out desk:w-sidebar desk:max-w-none desk:translate-x-0 desk:px-3.5 desk:pt-6"
+    :class="open ? 'translate-x-0' : '-translate-x-[calc(100%+12px)]'"
+    aria-label="Navegação principal"
+  >
     <!-- Logótipo e fecho da gaveta -->
     <div class="mb-5 flex items-center justify-between gap-2 px-1">
       <button
@@ -104,40 +105,38 @@ const homeView = (role: Role): ViewName =>
         </label>
       </div>
 
-      <select
+      <Select
         id="company"
         class="min-h-10 w-full px-2.5 py-2 text-caption"
-        :value="businessId"
-        @change="
-          emit('select-business', ($event.target as HTMLInputElement).value)
-        "
-      >
-        <option
-          v-for="company in businesses"
-          :key="company.id"
-          :value="company.id"
-        >
-          {{ company.name }}
-        </option>
-      </select>
+        :model-value="businessId"
+        @update:model-value="emit('select-business', $event)"
+        :options="[
+          ...businesses.map((company) => ({
+            label: company.name,
+            value: company.id,
+          })),
+        ]"
+        option-label="label"
+        option-value="value"
+        append-to="self"
+      />
 
-      <select
+      <Select
         v-if="role === 'professional'"
         class="min-h-10 w-full px-2.5 py-2 text-caption"
-        :value="staffId"
         aria-label="Profissional"
-        @change="
-          emit('select-staff', ($event.target as HTMLInputElement).value)
-        "
-      >
-        <option
-          v-for="person in professionalList"
-          :key="person.id"
-          :value="person.id"
-        >
-          {{ person.name }}
-        </option>
-      </select>
+        :model-value="staffId"
+        @update:model-value="emit('select-staff', $event)"
+        :options="[
+          ...professionalList.map((person) => ({
+            label: person.name,
+            value: person.id,
+          })),
+        ]"
+        option-label="label"
+        option-value="value"
+        append-to="self"
+      />
     </div>
 
     <!-- Navegação -->

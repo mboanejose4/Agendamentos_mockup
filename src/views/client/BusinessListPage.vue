@@ -6,6 +6,7 @@ import BusinessGrid from "@/components/client/BusinessGrid.vue";
 import DiscoveryCategories from "@/components/client/DiscoveryCategories.vue";
 import DiscoverySearchBar from "@/components/client/DiscoverySearchBar.vue";
 import { provideBusinessDiscovery } from "@/composables/discovery/discoveryContext.ts";
+import Select from "primevue/select";
 
 /* Listagem completa: só estabelecimentos, pesquisa, categorias e filtros.
    Sem banner, sem mapa e sem as secções de apresentação — quem chega aqui já
@@ -60,16 +61,20 @@ const { go, sort, onlineOnly, maxPrice, filtersOpen, results } =
           }}
         </p>
         <div class="flex items-center gap-3">
-          <select
+          <Select
             v-model="sort"
             aria-label="Ordenar estabelecimentos"
             class="border-0 bg-transparent px-[3px] py-[7px] text-caption text-muted"
-          >
-            <option value="recommended">Melhor avaliação</option>
-            <option value="distance">Mais perto de mim</option>
-            <option value="price">Menor preço</option>
-            <option value="name">Nome</option></select
-          ><button
+            :options="[
+              { label: 'Melhor avaliação', value: 'recommended' },
+              { label: 'Mais perto de mim', value: 'distance' },
+              { label: 'Menor preço', value: 'price' },
+              { label: 'Nome', value: 'name' },
+            ]"
+            option-label="label"
+            option-value="value"
+            append-to="self"
+          /><button
             class="btn btn-secondary btn-compact"
             @click="filtersOpen = true"
           >

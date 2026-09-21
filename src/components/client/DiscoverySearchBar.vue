@@ -3,6 +3,8 @@
    listagem completa. */
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
 import { useBusinessDiscoveryContext } from "@/composables/discovery/discoveryContext.ts";
+import InputText from "primevue/inputtext";
+import Select from "primevue/select";
 const { search, city, cities } = useBusinessDiscoveryContext();
 </script>
 <template>
@@ -13,7 +15,7 @@ const { search, city, cities } = useBusinessDiscoveryContext();
     <div
       class="flex min-w-0 flex-1 items-center gap-3 pl-[15px] text-muted max-sm:gap-2 max-sm:pl-2"
     >
-      <AppIcon name="search" /><input
+      <AppIcon name="search" /><InputText
         v-model="search"
         placeholder="Serviço, empresa ou código"
         aria-label="Pesquisar serviços ou estabelecimentos"
@@ -31,16 +33,18 @@ const { search, city, cities } = useBusinessDiscoveryContext();
     <div
       class="hidden items-center gap-2 border-l border-line mx-[10px] my-1.5 pl-4 text-muted lg:flex"
     >
-      <AppIcon name="map-pin" :size="19" /><select
+      <AppIcon name="map-pin" :size="19" /><Select
         v-model="city"
         aria-label="Localização"
         class="max-w-[190px] min-h-[34px] outline-none focus:outline-none focus:ring-1 focus:ring-primary border-0 p-[5px] text-caption lg:max-w-[150px] xl:max-w-[190px]"
-      >
-        <option>Todas as localizações</option>
-        <option v-for="location in cities" :key="location">
-          {{ location }}
-        </option>
-      </select>
+        :options="[
+          { label: 'Todas as localizações', value: 'Todas as localizações' },
+          ...cities.map((location) => ({ label: location, value: location })),
+        ]"
+        option-label="label"
+        option-value="value"
+        append-to="self"
+      />
     </div>
     <button
       class="btn rounded-4xl btn-primary min-w-[115px] text-caption max-sm:min-w-[42px] max-sm:p-2.5"

@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import AppModal from "@/components/shared/ui/AppModal.vue";
 import BrandingEditor from "@/components/shared/ui/BrandingEditor.vue";
+import PhoneInput from "@/components/shared/ui/PhoneInput.vue";
 import { usePlatformManagementContext } from "@/composables/platform/platformContext.ts";
+import InputText from "primevue/inputtext";
+import Textarea from "primevue/textarea";
+import Select from "primevue/select";
 const {
   categories,
   companyOpen,
@@ -20,54 +24,59 @@ const {
     ><form @submit.prevent="saveCompany">
       <div class="form-grid">
         <label class="field form-grid-full"
-          >Nome do estabelecimento<input
+          ><span>Nome do estabelecimento</span
+          ><InputText
             v-model="companyForm.name"
             required
             maxlength="100" /></label
         ><label class="field"
-          >Sector<select v-model="companyForm.category">
-            <option v-for="category in categories" :key="category">
-              {{ category }}
-            </option>
-          </select></label
+          >Sector<Select
+            v-model="companyForm.category"
+            :options="[
+              ...categories.map((category) => ({
+                label: category,
+                value: category,
+              })),
+            ]"
+            option-label="label"
+            option-value="value"
+            append-to="self" /></label
         ><label class="field"
-          >Cidade<input v-model="companyForm.city" required /></label
+          ><span>Cidade</span
+          ><InputText v-model="companyForm.city" required /></label
         ><label class="field form-grid-full"
-          >Descrição<textarea
+          ><span>Descrição</span
+          ><Textarea
             v-model="companyForm.description"
             rows="2"
             maxlength="600"
-            required
-          ></textarea></label
+            required /></label
         ><label class="field form-grid-full"
-          >Endereço<input v-model="companyForm.address" required /></label
+          ><span>Endereço</span
+          ><InputText v-model="companyForm.address" required /></label
         ><label class="field"
-          >Email<input
+          ><span>Email</span
+          ><InputText
             v-model="companyForm.email"
             type="email"
             required /></label
         ><label class="field"
-          >Telefone<input
-            v-model="companyForm.phone"
-            type="tel"
-            required /></label
+          ><span>Telefone</span
+          ><PhoneInput v-model="companyForm.phone" required /></label
         ><label class="field form-grid-full"
-          >Fotografia (URL)<input
+          >Fotografia (URL)<InputText
             v-model="companyForm.image"
             type="url"
             placeholder="https://..." /></label
         ><label class="field"
-          >Abertura<input
-            v-model="companyForm.opens"
-            type="time"
-            required /></label
+          ><span>Abertura</span
+          ><input v-model="companyForm.opens" type="time" required /></label
         ><label class="field"
-          >Fecho<input
-            v-model="companyForm.closes"
-            type="time"
-            required /></label
+          ><span>Fecho</span
+          ><input v-model="companyForm.closes" type="time" required /></label
         ><label class="field"
-          >Antecedência para cancelar (horas)<input
+          ><span>Antecedência para cancelar (horas)</span
+          ><input
             v-model.number="companyForm.cancelHours"
             type="number"
             min="0"
@@ -114,18 +123,22 @@ const {
         <h3>Conta do gestor</h3>
         <div class="form-grid">
           <label class="field"
-            >Nome do gestor<input
+            ><span>Nome do gestor</span
+            ><InputText
               v-model="companyForm.managerName"
+              data-person-name
               :required="Boolean(companyForm.managerEmail)" /></label
           ><label class="field"
-            >Email do gestor<input
+            ><span>Email do gestor</span
+            ><InputText
               v-model="companyForm.managerEmail"
               type="email"
               :required="
                 Boolean(companyForm.managerName || companyForm.managerPassword)
               " /></label
           ><label class="field form-grid-full"
-            >Palavra-passe inicial<input
+            ><span>Palavra-passe inicial</span
+            ><input
               v-model="companyForm.managerPassword"
               type="password"
               autocomplete="new-password"

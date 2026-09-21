@@ -87,7 +87,7 @@ onBeforeUnmount(() => {
           :alt="'Imagem de capa de ' + name"
           class="h-[180px] w-full object-cover sm:h-[220px]"
         /><span
-          class="absolute right-3 bottom-3 flex items-center gap-2 rounded-4xl bg-scrim px-3.5 py-2.5 text-muted"
+          class="absolute right-3 bottom-3 flex items-center gap-2 rounded-4xl bg-scrim px-3.5 py-2.5 text-white"
           ><AppIcon name="eye" :size="18" />Ver em ecrã inteiro</span
         ></button
       ><button

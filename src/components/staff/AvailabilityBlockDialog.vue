@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppModal from "@/components/shared/ui/AppModal.vue";
 import { useAccountManagementContext } from "@/composables/account/accountContext.ts";
+import InputText from "primevue/inputtext";
 const { today, blockOpen, blockForm, blockError, saveBlock } =
   useAccountManagementContext();
 </script>
@@ -11,17 +12,21 @@ const { today, blockOpen, blockForm, blockError, saveBlock } =
     ><form @submit.prevent="saveBlock">
       <div class="form-grid">
         <label class="field form-grid-full"
-          >Data<input
+          ><span>Data</span
+          ><input
             v-model="blockForm.date"
             type="date"
             :min="today()"
             required /></label
         ><label class="field"
-          >Início<input v-model="blockForm.start" type="time" required /></label
+          ><span>Início</span
+          ><input v-model="blockForm.start" type="time" required /></label
         ><label class="field"
-          >Fim<input v-model="blockForm.end" type="time" required /></label
+          ><span>Fim</span
+          ><input v-model="blockForm.end" type="time" required /></label
         ><label class="field form-grid-full"
-          >Motivo<input
+          ><span>Motivo</span
+          ><InputText
             v-model="blockForm.reason"
             required
             placeholder="Ex.: Pausa, consulta, férias"

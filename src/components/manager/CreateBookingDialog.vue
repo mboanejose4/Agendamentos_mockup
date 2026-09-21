@@ -2,7 +2,10 @@
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
 import { plural } from "@/utils/formatters.ts";
 import AppModal from "@/components/shared/ui/AppModal.vue";
+import PhoneInput from "@/components/shared/ui/PhoneInput.vue";
 import { useBusinessManagementContext } from "@/composables/businesses/businessContext.ts";
+import Textarea from "primevue/textarea";
+import Select from "primevue/select";
 const {
   money,
   today,
@@ -37,17 +40,20 @@ const {
       <div class="form-grid">
         <label class="field form-grid-full"
           ><span>Cliente</span
-          ><select v-model="bookingForm.clientId" required>
-            <option disabled value="">Seleccionar cliente</option>
-            <option
-              v-for="item in reservableClients"
-              :key="item.id"
-              :value="item.id"
-            >
-              {{ item.name }}{{ item.phone ? " · " + item.phone : "" }}
-            </option>
-          </select></label
-        >
+          ><Select
+            v-model="bookingForm.clientId"
+            required
+            :options="[
+              { label: 'Seleccionar cliente', value: '' },
+              ...reservableClients.map((item) => ({
+                label: item.phone ? `${item.name} · ${item.phone}` : item.name,
+                value: item.id,
+              })),
+            ]"
+            option-label="label"
+            option-value="value"
+            append-to="self"
+        /></label>
         <p
           v-if="!reservableClients.length"
           class="form-grid-full text-caption text-muted"
@@ -57,31 +63,39 @@ const {
         </p>
         <label class="field form-grid-full"
           ><span>Serviço</span
-          ><select v-model="bookingForm.serviceId" required>
-            <option disabled value="">Seleccionar serviço</option>
-            <option
-              v-for="item in services.filter(
-                (item) => item.active || item.id === bookingForm.serviceId,
-              )"
-              :key="item.id"
-              :value="item.id"
-            >
-              {{ item.name }} · {{ money(item.price) }} ·
-              {{ item.duration }} min
-            </option>
-          </select></label
+          ><Select
+            v-model="bookingForm.serviceId"
+            required
+            :options="[
+              { label: 'Seleccionar serviço', value: '', disabled: true },
+              ...services
+                .filter(
+                  (item) => item.active || item.id === bookingForm.serviceId,
+                )
+                .map((item) => ({
+                  label: `${item.name} · ${money(item.price)} · ${item.duration} min`,
+                  value: item.id,
+                })),
+            ]"
+            option-label="label"
+            option-value="value"
+            option-disabled="disabled"
+            append-to="self" /></label
         ><label class="field"
           ><span>Profissional</span
-          ><select v-model="bookingForm.staffId" required>
-            <option disabled value="">Seleccionar profissional</option>
-            <option
-              v-for="person in bookingStaff"
-              :key="person.id"
-              :value="person.id"
-            >
-              {{ person.name }}
-            </option>
-          </select></label
+          ><Select
+            v-model="bookingForm.staffId"
+            required
+            :options="[
+              { label: 'Seleccionar profissional', value: '' },
+              ...bookingStaff.map((person) => ({
+                label: person.name,
+                value: person.id,
+              })),
+            ]"
+            option-label="label"
+            option-value="value"
+            append-to="self" /></label
         ><label class="field"
           ><span>Data</span
           ><input
@@ -95,19 +109,19 @@ const {
           ><span
             >Espaço ou recurso
             {{ bookingService?.resourceType ? "" : "(opcional)" }}</span
-          ><select
+          ><Select
             v-model="bookingForm.resourceId"
             :required="!!bookingService?.resourceType"
-          >
-            <option value="">Seleccionar recurso</option>
-            <option
-              v-for="item in bookingResources"
-              :key="item.id"
-              :value="item.id"
-            >
-              {{ item.name }} · {{ plural(item.capacity, "pessoa", "pessoas") }}
-            </option>
-          </select></label
+            :options="[
+              { label: 'Seleccionar recurso', value: '' },
+              ...bookingResources.map((item) => ({
+                label: `${item.name} · ${plural(item.capacity, 'pessoa', 'pessoas')}`,
+                value: item.id,
+              })),
+            ]"
+            option-label="label"
+            option-value="value"
+            append-to="self" /></label
         ><label
           v-if="bookingResources.length || company?.category === 'Restauração'"
           class="field"
@@ -122,7 +136,9 @@ const {
       </div>
       <fieldset class="mb-[18px]">
         <legend class="mb-3 block text-caption font-medium">
-          Horários disponíveis
+          Horários disponíveis<span class="required-marker" aria-hidden="true"
+            >*</span
+          >
         </legend>
         <div
           v-if="slots.length"
@@ -154,21 +170,17 @@ const {
       </fieldset>
       <label class="field"
         ><span>Telefone para confirmação por WhatsApp</span>
-        <input
-          v-model.trim="bookingForm.whatsapp"
-          type="tel"
-          placeholder="+258 84 000 0000"
-        />
+        <PhoneInput v-model.trim="bookingForm.whatsapp" />
         <small>Se vazio, será usado o telefone da ficha do cliente.</small>
       </label>
       <label class="field"
         ><span>Observações (opcional)</span
-        ><textarea
+        ><Textarea
           v-model="bookingForm.notes"
           rows="2"
           maxlength="500"
           placeholder="Preferências ou informações para a equipa"
-        ></textarea>
+        />
       </label>
       <div
         class="mb-5 flex items-center justify-between border-t border-line pt-4 text-small"

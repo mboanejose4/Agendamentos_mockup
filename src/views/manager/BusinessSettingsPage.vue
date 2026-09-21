@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { onBeforeUnmount, ref, watch } from "vue";
 import { brandPreview } from "@/stores/brandPreview.ts";
+import InputText from "primevue/inputtext";
+import Textarea from "primevue/textarea";
+import Select from "primevue/select";
 const coverBusy = ref(false);
 import CoverImageUpload from "@/components/shared/ui/CoverImageUpload.vue";
 import BrandingEditor from "@/components/shared/ui/BrandingEditor.vue";
+import PhoneInput from "@/components/shared/ui/PhoneInput.vue";
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
 import { useBusinessManagementContext } from "@/composables/businesses/businessContext.ts";
 const { form, settings, resetSettings, saveSettings } =
@@ -34,12 +38,12 @@ onBeforeUnmount(() => (brandPreview.value = null));
         <div class="form-grid">
           <label class="field">
             <span>Nome do estabelecimento</span>
-            <input v-model="settings.name" required maxlength="80" />
+            <InputText v-model="settings.name" required maxlength="80" />
           </label>
 
           <label class="field">
             <span>Código da empresa</span>
-            <input
+            <InputText
               v-model.trim="settings.code"
               maxlength="24"
               :required="(settings.package ?? 3) <= 2"
@@ -50,54 +54,62 @@ onBeforeUnmount(() => (brandPreview.value = null));
 
           <label class="field">
             <span>Pacote</span>
-            <select v-model.number="settings.package">
-              <option :value="1">01 · Reservas da própria empresa</option>
-              <option :value="2">02 · Profissionais independentes</option>
-              <option :value="3">03 · Exploração completa</option>
-              <option :value="4">04 · Destaque na plataforma</option>
-            </select>
+            <Select
+              v-model.number="settings.package"
+              :options="[
+                { label: '01 · Reservas da própria empresa', value: 1 },
+                { label: '02 · Profissionais independentes', value: 2 },
+                { label: '03 · Exploração completa', value: 3 },
+                { label: '04 · Destaque na plataforma', value: 4 },
+              ]"
+              option-label="label"
+              option-value="value"
+              append-to="self"
+            />
           </label>
 
           <label class="field">
             <span>Categoria</span>
-            <select v-model="settings.category">
-              <option>Beleza</option>
-              <option>Bem-estar</option>
-              <option>Saúde</option>
-              <option>Restauração</option>
-              <option>Consultoria</option>
-              <option>Desporto</option>
-              <option>Outros serviços</option>
-            </select>
+            <Select
+              v-model="settings.category"
+              :options="[
+                { label: 'Beleza', value: 'Beleza' },
+                { label: 'Bem-estar', value: 'Bem-estar' },
+                { label: 'Saúde', value: 'Saúde' },
+                { label: 'Restauração', value: 'Restauração' },
+                { label: 'Consultoria', value: 'Consultoria' },
+                { label: 'Desporto', value: 'Desporto' },
+                { label: 'Outros serviços', value: 'Outros serviços' },
+              ]"
+              option-label="label"
+              option-value="value"
+              append-to="self"
+            />
           </label>
 
           <label class="field form-grid-full">
             <span>Descrição</span>
-            <textarea
-              v-model="settings.description"
-              rows="3"
-              maxlength="600"
-            ></textarea>
+            <Textarea v-model="settings.description" rows="3" maxlength="600" />
           </label>
 
           <label class="field">
             <span>Cidade</span>
-            <input v-model="settings.city" required />
+            <InputText v-model="settings.city" required />
           </label>
 
           <label class="field">
             <span>Morada</span>
-            <input v-model="settings.address" required />
+            <InputText v-model="settings.address" required />
           </label>
 
           <label class="field">
             <span>Telefone</span>
-            <input v-model="settings.phone" type="tel" placeholder="+258" />
+            <PhoneInput v-model="settings.phone" />
           </label>
 
           <label class="field">
             <span>Email</span>
-            <input v-model="settings.email" type="email" />
+            <InputText v-model="settings.email" type="email" />
           </label>
 
           <CoverImageUpload

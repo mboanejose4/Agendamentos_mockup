@@ -95,6 +95,7 @@ import {
   Upload,
   ImagePlus,
   RotateCcw,
+  Database,
 } from "lucide-vue-next";
 const props = withDefaults(
   defineProps<{ name?: string; size?: number | string }>(),
@@ -194,6 +195,7 @@ const icons = {
   Upload,
   ImagePlus,
   RotateCcw,
+  Database,
 };
 const names: Record<string, Component> = Object.fromEntries(
   Object.entries(icons).map(([key, value]) => [key.toLowerCase(), value]),

@@ -2,6 +2,7 @@
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
 import AppModal from "@/components/shared/ui/AppModal.vue";
 import { usePlatformManagementContext } from "@/composables/platform/platformContext.ts";
+import Textarea from "primevue/textarea";
 const {
   state,
   business,
@@ -44,7 +45,7 @@ const {
         <article
           v-for="(message, index) in selectedTicket.messages || []"
           :key="index"
-          class="max-w-[88%] rounded-lg border border-line bg-surface-muted p-3.5"
+          class="max-w-[88%] rounded-4xl border border-line bg-surface-muted p-3.5"
           :class="{
             'ml-auto border-primary-text/30 bg-soft':
               message.userId === state.userId ||
@@ -66,13 +67,14 @@ const {
         @submit.prevent="sendReply"
       >
         <label class="field"
-          >A sua resposta<textarea
+          ><span>A sua resposta</span
+          ><Textarea
             v-model="reply"
             rows="3"
             maxlength="5000"
             required
             placeholder="Escreva a sua mensagem…"
-          ></textarea>
+          />
         </label>
         <div class="form-actions">
           <button

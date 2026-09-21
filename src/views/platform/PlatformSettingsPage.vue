@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
 import { usePlatformManagementContext } from "@/composables/platform/platformContext.ts";
+import Select from "primevue/select";
 const { settingsForm, settingsError, saveSettings } =
   usePlatformManagementContext();
 </script>
@@ -19,18 +20,21 @@ const { settingsForm, settingsError, saveSettings } =
         </div>
         <div class="flex flex-col gap-5">
           <label class="field"
-            >Intervalo entre horários<select
+            >Intervalo entre horários<Select
               v-model.number="settingsForm.slotMinutes"
-            >
-              <option :value="5">5 minutos</option>
-              <option :value="10">10 minutos</option>
-              <option :value="15">15 minutos</option>
-              <option :value="30">30 minutos</option>
-              <option :value="60">60 minutos</option>
-              <option :value="120">120 minutos</option>
-            </select></label
+              :options="[
+                { label: '5 minutos', value: 5 },
+                { label: '10 minutos', value: 10 },
+                { label: '15 minutos', value: 15 },
+                { label: '30 minutos', value: 30 },
+                { label: '60 minutos', value: 60 },
+                { label: '120 minutos', value: 120 },
+              ]"
+              option-label="label"
+              option-value="value"
+              append-to="self" /></label
           ><label class="field"
-            >Antecedência máxima de marcação
+            ><span>Antecedência máxima de marcação</span>
             <div class="flex items-center gap-2">
               <input
                 v-model.number="settingsForm.advanceDays"

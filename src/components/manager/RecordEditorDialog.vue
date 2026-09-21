@@ -2,7 +2,11 @@
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
 import { resourceTypes } from "@/utils/resourceTypes.ts";
 import AppModal from "@/components/shared/ui/AppModal.vue";
+import PhoneInput from "@/components/shared/ui/PhoneInput.vue";
 import { useBusinessManagementContext } from "@/composables/businesses/businessContext.ts";
+import InputText from "primevue/inputtext";
+import Textarea from "primevue/textarea";
+import Select from "primevue/select";
 const {
   services,
   team,
@@ -38,18 +42,17 @@ const {
         ><div class="form-grid">
           <label class="field form-grid-full"
             ><span>Nome do serviço</span
-            ><input
+            ><InputText
               v-model="form.name"
               required
               autofocus
               maxlength="80" /></label
           ><label class="field form-grid-full"
             ><span>Descrição</span
-            ><textarea
+            ><Textarea
               v-model="form.description"
               rows="3"
-              maxlength="400"
-            ></textarea></label
+              maxlength="400" /></label
           ><label class="field"
             ><span>Duração (minutos)</span
             ><input
@@ -69,17 +72,19 @@ const {
               required /></label
           ><label class="field form-grid-full"
             ><span>Tipo de recurso necessário</span
-            ><select v-model="form.resourceType">
-              <option value="">Sem recurso obrigatório</option>
-              <option
-                v-for="type in resourceTypes"
-                :key="type.id"
-                :value="type.id"
-              >
-                {{ type.name }}
-              </option>
-            </select></label
-          >
+            ><Select
+              v-model="form.resourceType"
+              :options="[
+                { label: 'Sem recurso obrigatório', value: '' },
+                ...resourceTypes.map((type) => ({
+                  label: type.name,
+                  value: type.id,
+                })),
+              ]"
+              option-label="label"
+              option-value="value"
+              append-to="self"
+          /></label>
         </div>
         <label class="check-field"
           ><input v-model="form.active" type="checkbox" /> Disponível para
@@ -90,18 +95,22 @@ const {
         ><div class="form-grid">
           <label class="field"
             ><span>Nome completo</span
-            ><input v-model="form.name" required autofocus /></label
+            ><InputText
+              v-model="form.name"
+              data-person-name
+              required
+              autofocus /></label
           ><label class="field"
             ><span>Especialidade ou função</span
-            ><input
+            ><InputText
               v-model="form.title"
               required
               placeholder="Ex.: Terapeuta, médico, anfitrião" /></label
           ><label class="field"
             ><span>Email</span
-            ><input v-model="form.email" type="email" /></label
+            ><InputText v-model="form.email" type="email" /></label
           ><label class="field"
-            ><span>Telefone</span><input v-model="form.phone" type="tel"
+            ><span>Telefone</span><PhoneInput v-model="form.phone"
           /></label>
         </div>
         <fieldset class="mb-[18px]">
@@ -180,23 +189,26 @@ const {
         ><div class="form-grid">
           <label class="field form-grid-full"
             ><span>Nome do recurso</span
-            ><input
+            ><InputText
               v-model="form.name"
               required
               autofocus
               placeholder="Ex.: Sala 2, Mesa da esplanada" /></label
           ><label class="field"
             ><span>Tipo</span
-            ><select v-model="form.type" required>
-              <option value="" disabled>Seleccione o tipo</option>
-              <option
-                v-for="type in resourceTypes"
-                :key="type.id"
-                :value="type.id"
-              >
-                {{ type.name }}
-              </option>
-            </select></label
+            ><Select
+              v-model="form.type"
+              required
+              :options="[
+                { label: 'Seleccione o tipo', value: '' },
+                ...resourceTypes.map((type) => ({
+                  label: type.name,
+                  value: type.id,
+                })),
+              ]"
+              option-label="label"
+              option-value="value"
+              append-to="self" /></label
           ><label class="field"
             ><span>Capacidade (pessoas)</span
             ><input
@@ -216,12 +228,15 @@ const {
         ><div class="form-grid">
           <label class="field form-grid-full"
             ><span>Nome completo</span
-            ><input v-model="form.name" required autofocus /></label
+            ><InputText
+              v-model="form.name"
+              data-person-name
+              required
+              autofocus /></label
           ><label class="field"
-            ><span>Telefone</span
-            ><input v-model="form.phone" type="tel" placeholder="+258" /></label
+            ><span>Telefone</span><PhoneInput v-model="form.phone" /></label
           ><label class="field"
-            ><span>Email</span><input v-model="form.email" type="email"
+            ><span>Email</span><InputText v-model="form.email" type="email"
           /></label>
         </div>
         <template v-if="form.id"
@@ -264,7 +279,7 @@ const {
         ><div class="form-grid">
           <label class="field"
             ><span>Código do cupão</span
-            ><input
+            ><InputText
               v-model="form.code"
               required
               autofocus
@@ -281,12 +296,18 @@ const {
               required /></label
           ><label class="field"
             ><span>Serviço</span
-            ><select v-model="form.serviceId">
-              <option value="">Todos os serviços</option>
-              <option v-for="item in services" :key="item.id" :value="item.id">
-                {{ item.name }}
-              </option>
-            </select></label
+            ><Select
+              v-model="form.serviceId"
+              :options="[
+                { label: 'Todos os serviços', value: '' },
+                ...services.map((item) => ({
+                  label: item.name,
+                  value: item.id,
+                })),
+              ]"
+              option-label="label"
+              option-value="value"
+              append-to="self" /></label
           ><label class="field"
             ><span>Válida até</span
             ><input v-model="form.expires" type="date" required
@@ -301,7 +322,7 @@ const {
         ><div class="form-grid">
           <label class="field form-grid-full"
             ><span>Motivo</span
-            ><input
+            ><InputText
               v-model="form.reason"
               required
               autofocus
@@ -311,16 +332,18 @@ const {
             ><input v-model="form.date" type="date" required /></label
           ><label class="field"
             ><span>Profissional</span
-            ><select v-model="form.staffId">
-              <option value="">Toda a equipa</option>
-              <option
-                v-for="person in team"
-                :key="person.id"
-                :value="person.id"
-              >
-                {{ person.name }}
-              </option>
-            </select></label
+            ><Select
+              v-model="form.staffId"
+              :options="[
+                { label: 'Toda a equipa', value: '' },
+                ...team.map((person) => ({
+                  label: person.name,
+                  value: person.id,
+                })),
+              ]"
+              option-label="label"
+              option-value="value"
+              append-to="self" /></label
           ><label class="field"
             ><span>Início</span
             ><input v-model="form.start" type="time" required /></label

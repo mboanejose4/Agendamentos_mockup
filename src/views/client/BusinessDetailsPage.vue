@@ -42,7 +42,7 @@ const {
       }}
     </button>
     <div
-      class="relative mb-[35px] h-[220px] rounded-lg bg-surface-muted max-sm:h-[190px]"
+      class="relative mb-[35px] h-[220px] rounded-4xl bg-surface-muted max-sm:h-[190px]"
     >
       <img
         :src="current.image"

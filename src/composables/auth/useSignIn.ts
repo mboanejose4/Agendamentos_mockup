@@ -12,15 +12,33 @@ export function useSignIn() {
   const showPassword = ref(false);
   const busy = ref(false);
   const error = ref("");
-  const account = reactive({ name: "", email: "", phone: "", password: "" });
+  const account = reactive({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
   async function submit() {
     error.value = "";
+
+    if (
+      mode.value === "register" &&
+      account.password !== account.confirmPassword
+    ) {
+      error.value = "As palavras-passe não coincidem.";
+      return;
+    }
+
     busy.value = true;
     try {
       const target = state.returnView || "appointments";
       const result = await (mode.value === "register"
         ? registerAccount(account)
-        : loginAccount(account));
+        : loginAccount({
+            identifier: account.email,
+            password: account.password,
+          }));
       if (!result.ok) {
         error.value = result.error;
         return;

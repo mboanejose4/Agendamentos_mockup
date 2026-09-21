@@ -79,6 +79,49 @@ export function usePlatformManagement() {
   const activeUsers = computed(() =>
     state.db.users.filter((item) => item.active),
   );
+
+  /* --- Indicadores das páginas da plataforma ---------------------------
+     Os cartões de cada página lêem daqui, para que o mesmo número não seja
+     recontado de maneiras diferentes em dois sítios. */
+  const suspendedBusinesses = computed(
+    () => businesses.value.length - activeBusinesses.value.length,
+  );
+  const reviewTotal = computed(() =>
+    businesses.value.reduce(
+      (sum, item) => sum + Number(item.reviewCount || 0),
+      0,
+    ),
+  );
+  /* Média ponderada pelo número de avaliações: um estabelecimento com duas
+     centenas de opiniões não pode pesar o mesmo que um com três. */
+  const averageRating = computed(() => {
+    if (!reviewTotal.value) return 0;
+    const weighted = businesses.value.reduce(
+      (sum, item) =>
+        sum + Number(item.rating || 0) * Number(item.reviewCount || 0),
+      0,
+    );
+    return weighted / reviewTotal.value;
+  });
+  const usersByRole = computed(() =>
+    state.db.users.reduce<Record<string, number>>((tally, item) => {
+      tally[item.role] = (tally[item.role] || 0) + 1;
+      return tally;
+    }, {}),
+  );
+  const suspendedUsers = computed(
+    () => state.db.users.length - activeUsers.value.length,
+  );
+  /* Contas com pelo menos uma marcação: distingue quem usa a plataforma de
+     quem apenas se registou. */
+  const engagedClients = computed(() => {
+    const withBookings = new Set(
+      state.db.bookings.map((item) => item.clientId).filter(Boolean),
+    );
+    return state.db.users.filter(
+      (item) => item.role === "client" && withBookings.has(item.id),
+    ).length;
+  });
   const dateTime = (value: IsoDateTime | undefined): string =>
     value
       ? new Date(value).toLocaleString("pt-PT", {
@@ -632,6 +675,26 @@ export function usePlatformManagement() {
   const openTickets = computed(() =>
     tickets.value.filter((item) => item.status !== "closed"),
   );
+  const ticketsByStatus = computed(() =>
+    tickets.value.reduce<Record<string, number>>((tally, item) => {
+      tally[item.status] = (tally[item.status] || 0) + 1;
+      return tally;
+    }, {}),
+  );
+  /* Por resolver e marcados como alta ou urgente: é a fila que dita o dia. */
+  const urgentTickets = computed(
+    () =>
+      openTickets.value.filter((item) =>
+        ["high", "urgent"].includes(item.priority),
+      ).length,
+  );
+  const resolutionRate = computed(() =>
+    tickets.value.length
+      ? Math.round(
+          ((ticketsByStatus.value.closed || 0) / tickets.value.length) * 100,
+        )
+      : 0,
+  );
   const ticketStatusNames: Record<TicketStatus, string> = {
     open: "Aberto",
     in_progress: "Em análise",
@@ -799,6 +862,12 @@ export function usePlatformManagement() {
     totalBookings,
     paidVolume,
     activeUsers,
+    suspendedBusinesses,
+    reviewTotal,
+    averageRating,
+    usersByRole,
+    suspendedUsers,
+    engagedClients,
     dateTime,
     initials,
     activityDays,
@@ -848,6 +917,9 @@ export function usePlatformManagement() {
     tickets,
     filteredTickets,
     openTickets,
+    ticketsByStatus,
+    urgentTickets,
+    resolutionRate,
     ticketStatusNames,
     ticketPriorityNames,
     ticketOpen,

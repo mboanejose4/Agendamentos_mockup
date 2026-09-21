@@ -16,7 +16,7 @@ const { category, categories } = useBusinessDiscoveryContext();
       :class="[
         'flex flex-col items-center gap-[11px] rounded-4xl border px-[7px] py-3 text-caption hover:bg-surface-muted max-sm:gap-2.5 max-sm:px-[3px] max-sm:py-2.5 max-sm:leading-[1.4]',
         category === item.name
-          ? 'border-primary-text bg-soft font-semibold text-primary-text'
+          ? 'is-selected font-semibold'
           : 'border-transparent text-muted',
       ]"
       :aria-pressed="category === item.name"

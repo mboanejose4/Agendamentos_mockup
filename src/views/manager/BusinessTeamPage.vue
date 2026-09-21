@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { plural } from "@/utils/formatters.ts";
 import BusinessHistoryDialog from "@/components/manager/BusinessHistoryDialog.vue";
 import type { StaffMember } from "@/types/domain.ts";
+import InputText from "primevue/inputtext";
 const historyOpen = ref(false),
   historySubject = ref<{
     type: "client" | "staff";
@@ -42,10 +43,10 @@ const mode = useListMode("team");
       class="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
     >
       <label
-        class="flex w-full items-center gap-2.5 rounded-md border border-line bg-surface px-3 text-muted sm:max-w-[390px] sm:flex-1"
+        class="flex w-full items-center gap-2.5 rounded-4xl border border-line bg-surface px-3 text-muted sm:max-w-[390px] sm:flex-1"
       >
         <AppIcon name="search" :size="18" />
-        <input
+        <InputText
           v-model="query"
           placeholder="Pesquisar na equipa"
           aria-label="Pesquisar na equipa"
@@ -83,9 +84,7 @@ const mode = useListMode("team");
               }}</small>
             </th>
             <td>
-              <span class="block text-caption">{{
-                person.email || "Sem email"
-              }}</span>
+              <span class="block text-caption">{{ person.email || "Sem email" }}</span>
               <span class="block text-caption text-muted">{{
                 person.phone || "Sem telefone"
               }}</span>
@@ -100,10 +99,7 @@ const mode = useListMode("team");
             <td class="tabular">{{ person.start }} – {{ person.end }}</td>
             <td>
               <span
-                :class="[
-                  'badge',
-                  person.active ? 'badge-success' : 'badge-neutral',
-                ]"
+                :class="['badge', person.active ? 'badge-success' : 'badge-neutral']"
                 >{{ person.active ? "Activo" : "Inactivo" }}</span
               >
             </td>
@@ -154,13 +150,9 @@ const mode = useListMode("team");
       >
         <div class="mb-3 flex items-center justify-between gap-3">
           <span class="avatar">{{ initials(person.name) }}</span>
-          <span
-            :class="[
-              'badge',
-              person.active ? 'badge-success' : 'badge-neutral',
-            ]"
-            >{{ person.active ? "Activo" : "Inactivo" }}</span
-          >
+          <span :class="['badge', person.active ? 'badge-success' : 'badge-neutral']">{{
+            person.active ? "Activo" : "Inactivo"
+          }}</span>
         </div>
         <h3>{{ person.name }}</h3>
         <p class="text-caption text-muted">
@@ -175,15 +167,10 @@ const mode = useListMode("team");
           <span>{{ person.phone || "Sem telefone" }}</span>
         </div>
         <div class="mt-3 flex flex-wrap gap-1.5">
-          <span
-            v-for="id in person.serviceIds"
-            :key="id"
-            class="badge badge-neutral"
-            >{{ serviceName(id) }}</span
-          >
-          <span
-            v-if="!person.serviceIds?.length"
-            class="text-caption text-muted"
+          <span v-for="id in person.serviceIds" :key="id" class="badge badge-neutral">{{
+            serviceName(id)
+          }}</span>
+          <span v-if="!person.serviceIds?.length" class="text-caption text-muted"
             >Sem serviços atribuídos</span
           >
         </div>
@@ -191,9 +178,7 @@ const mode = useListMode("team");
           <AppIcon name="clock-3" :size="15" />
           <span>{{ person.start }} – {{ person.end }}</span>
         </div>
-        <footer
-          class="mt-4 flex flex-wrap items-center gap-1 border-t border-line pt-4"
-        >
+        <footer class="mt-4 flex flex-wrap items-center gap-1 border-t border-line pt-4">
           <button
             type="button"
             class="icon-btn"
@@ -203,10 +188,7 @@ const mode = useListMode("team");
           >
             <AppIcon name="history" :size="18" />
           </button>
-          <button
-            class="btn btn-secondary"
-            @click="openEditor('staff', person)"
-          >
+          <button class="btn btn-secondary" @click="openEditor('staff', person)">
             <AppIcon name="pencil" :size="15" /> Editar
           </button>
           <button

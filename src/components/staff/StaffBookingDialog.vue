@@ -29,9 +29,7 @@ const selectedDate = computed<Date | null>({
   get() {
     if (!newBooking.date) return null;
 
-    const [year, month, day] = newBooking.date
-      .split("-")
-      .map(Number);
+    const [year, month, day] = newBooking.date.split("-").map(Number);
 
     if (!year || !month || !day) return null;
 
@@ -69,9 +67,7 @@ const minimumDate = computed<Date>(() => {
  * Devolve o serviço atualmente selecionado.
  */
 const selectedService = computed(() =>
-  assignedServices.value.find(
-    (item) => item.id === newBooking.serviceId,
-  ),
+  assignedServices.value.find((item) => item.id === newBooking.serviceId),
 );
 
 function handleServiceChange(): void {
@@ -85,19 +81,11 @@ function closeModal(): void {
 </script>
 
 <template>
-  <AppModal
-    v-model="newBookingOpen"
-    title="Nova marcação"
-  >
-    <form
-      class="new-booking-form"
-      @submit.prevent="saveNewBooking"
-    >
+  <AppModal v-model="newBookingOpen" title="Nova marcação">
+    <form class="new-booking-form" @submit.prevent="saveNewBooking">
       <!-- Cliente -->
       <div class="field">
-        <label for="new-booking-client">
-          Cliente
-        </label>
+        <label for="new-booking-client"> Cliente </label>
 
         <Select
           v-model="newBooking.clientId"
@@ -111,14 +99,12 @@ function closeModal(): void {
           append-to="self"
           class="booking-select w-full rounded-4xl"
           filter
+          required
         >
           <template #option="{ option }">
             <div class="client-option">
               <div class="client-avatar">
-                <AppIcon
-                  name="user"
-                  :size="17"
-                />
+                <AppIcon name="user" :size="17" />
               </div>
 
               <div class="min-w-0">
@@ -137,39 +123,27 @@ function closeModal(): void {
           </template>
 
           <template #value="{ value, placeholder }">
-            <span
-              v-if="value"
-              class="truncate"
-            >
+            <span v-if="value" class="truncate">
               {{
-                bookingClients.find(
-                  (person) => person.id === value,
-                )?.name || "Cliente"
+                bookingClients.find((person) => person.id === value)?.name ||
+                "Cliente"
               }}
             </span>
 
-            <span
-              v-else
-              class="text-muted"
-            >
+            <span v-else class="text-muted">
               {{ placeholder }}
             </span>
           </template>
         </Select>
 
-        <small
-          v-if="!bookingClients.length"
-          class="text-caption text-muted"
-        >
+        <small v-if="!bookingClients.length" class="text-caption text-muted">
           Ainda não há clientes nesta empresa.
         </small>
       </div>
 
       <!-- Serviço -->
       <div class="field">
-        <label for="new-booking-service">
-          Serviço
-        </label>
+        <label for="new-booking-service"> Serviço </label>
 
         <Select
           v-model="newBooking.serviceId"
@@ -181,6 +155,7 @@ function closeModal(): void {
           empty-message="Nenhum serviço disponível"
           append-to="self"
           class="booking-select w-full rounded-4xl"
+          required
           @change="handleServiceChange"
         >
           <template #option="{ option }">
@@ -218,19 +193,13 @@ function closeModal(): void {
               </strong>
             </div>
 
-            <span
-              v-else
-              class="text-muted"
-            >
+            <span v-else class="text-muted">
               {{ placeholder }}
             </span>
           </template>
         </Select>
 
-        <small
-          v-if="!assignedServices.length"
-          class="text-caption text-muted"
-        >
+        <small v-if="!assignedServices.length" class="text-caption text-muted">
           Não existem serviços associados a este profissional.
         </small>
       </div>
@@ -238,9 +207,7 @@ function closeModal(): void {
       <!-- Data -->
       <div class="form-grid">
         <div class="field">
-          <label for="new-booking-date">
-            Data
-          </label>
+          <label for="new-booking-date"> Data </label>
 
           <DatePicker
             v-model="selectedDate"
@@ -253,6 +220,7 @@ function closeModal(): void {
             input-class="w-full rounded-4xl"
             show-icon
             icon-display="input"
+            required
           />
         </div>
       </div>
@@ -260,13 +228,10 @@ function closeModal(): void {
       <!-- Horários -->
       <fieldset class="field">
         <legend class="mb-2">
-          Hora
+          Hora<span class="required-marker" aria-hidden="true">*</span>
         </legend>
 
-        <div
-          v-if="newBookingSlots.length"
-          class="flex flex-wrap gap-2"
-        >
+        <div v-if="newBookingSlots.length" class="flex flex-wrap gap-2">
           <button
             v-for="slot in newBookingSlots"
             :key="slot"
@@ -284,15 +249,8 @@ function closeModal(): void {
           </button>
         </div>
 
-        <div
-          v-else
-          class="empty-slots rounded-4xl"
-        >
-          <AppIcon
-            name="clock"
-            :size="18"
-            class="shrink-0"
-          />
+        <div v-else class="empty-slots rounded-4xl">
+          <AppIcon name="clock" :size="18" class="shrink-0" />
 
           <p class="text-caption">
             <template v-if="!newBooking.serviceId">
@@ -308,9 +266,7 @@ function closeModal(): void {
 
       <!-- Notas -->
       <div class="field">
-        <label for="new-booking-notes">
-          Notas
-        </label>
+        <label for="new-booking-notes"> Notas </label>
 
         <Textarea
           id="new-booking-notes"
@@ -328,11 +284,7 @@ function closeModal(): void {
         class="error-message flex items-start gap-2 rounded-4xl"
         role="alert"
       >
-        <AppIcon
-          name="circle-alert"
-          :size="18"
-          class="mt-0.5 shrink-0"
-        />
+        <AppIcon name="circle-alert" :size="18" class="mt-0.5 shrink-0" />
 
         <span>{{ newBookingError }}</span>
       </div>
@@ -340,9 +292,7 @@ function closeModal(): void {
       <!-- Ações -->
       <div class="form-actions">
         <div class="booking-total">
-          <span class="text-caption text-muted">
-            Total
-          </span>
+          <span class="text-caption text-muted"> Total </span>
 
           <strong class="text-body-lg text-ink">
             {{ money(newBookingTotal) }}
@@ -357,14 +307,8 @@ function closeModal(): void {
           Cancelar
         </button>
 
-        <button
-          type="submit"
-          class="btn btn-primary rounded-4xl"
-        >
-          <AppIcon
-            name="calendar-plus"
-            :size="18"
-          />
+        <button type="submit" class="btn btn-primary rounded-4xl">
+          <AppIcon name="calendar-plus" :size="18" />
 
           Criar e enviar
         </button>
@@ -520,9 +464,7 @@ function closeModal(): void {
 :deep(.booking-textarea.p-textarea:focus),
 :deep(.booking-datepicker .p-inputtext:focus) {
   border-color: var(--brand-500);
-  box-shadow:
-    0 0 0 3px
-    color-mix(in srgb, var(--brand-500) 18%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-500) 18%, transparent);
 }
 
 /* Horários */
@@ -547,16 +489,17 @@ function closeModal(): void {
 }
 
 .booking-time-default {
-  border-color: var(--line);
-  background: var(--surface);
-  color: var(--muted);
+  border-color: var(--border);
+  background: var(--field-bg);
+  color: var(--field-ink);
 }
 
+/* Seleccionado: fundo verde, texto branco — o mesmo de `.is-selected`. */
 .booking-time-active {
-  border-color: var(--brand-700);
-  background: var(--soft);
+  border-color: var(--selected-border);
+  background: var(--selected-bg);
   font-weight: 600;
-  color: var(--brand-700);
+  color: var(--selected-ink);
 }
 
 .empty-slots {

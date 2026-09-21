@@ -24,7 +24,9 @@ const tone = computed(() => {
 });
 </script>
 <template>
-  <div class="min-w-0 border-b border-line py-5 pr-5">
+  <div
+    class="elevated-edge min-w-0 rounded-4xl border border-line bg-surface p-5 sm:p-6"
+  >
     <span class="text-caption text-muted">{{ label }}</span>
     <strong
       class="my-2.5 block text-[clamp(24px,7vw,28px)] leading-tight break-words"

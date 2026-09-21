@@ -46,7 +46,6 @@ const open = defineModel<boolean>({ default: false });
       </button>
     </div>
 
-    
     <button
       v-if="currentRoleId !== 'guest'"
       class="mt-4 btn btn-secondary w-full"

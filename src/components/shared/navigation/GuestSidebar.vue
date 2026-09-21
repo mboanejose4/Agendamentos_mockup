@@ -47,7 +47,7 @@ const emit = defineEmits<{
         v-for="link in landingLinks"
         :key="link.section"
         :href="`#${link.section}`"
-        class="flex min-h-12 items-center rounded-lg px-3 text-small font-medium text-ink hover:bg-surface-muted hover:text-primary-text"
+        class="flex min-h-12 items-center rounded-4xl px-3 text-small font-medium text-ink hover:bg-surface-muted hover:text-primary-text"
         @click.prevent="emit('navigate-section', link.section)"
       >
         {{ link.label }}

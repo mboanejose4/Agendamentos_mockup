@@ -100,6 +100,20 @@
   --soft: color-mix(in srgb, var(--primary) 10%, var(--surface));
   --secondary-soft: color-mix(in srgb, var(--secondary) 8%, var(--surface));
 
+  /* --- Campos de formulario (nativos e PrimeVue) ------------------------
+     Um unico conjunto de tokens para caixas de texto, selects e areas de
+     texto, seja o controlo nativo ou o do PrimeVue. */
+  --field-bg: var(--surface);
+  --field-ink: var(--ink);
+  --field-border: var(--border-strong);
+  --field-placeholder: var(--muted);
+
+  /* --- Opcao seleccionada (horarios, datas, categorias, escolhas) --------
+     Fundo verde e texto branco: 4.92:1 sobre #008340. */
+  --selected-bg: var(--primary);
+  --selected-ink: #ffffff;
+  --selected-border: var(--primary);
+
   /* --- Estado ----------------------------------------------------------- */
   --success: #006937;
   --success-soft: #ebfaef;
@@ -121,6 +135,7 @@
   /* --- Profundidade ------------------------------------------------------ */
   --scrim: #02362799;
   --shadow-color: #0236271f;
+  --shadow-color-strong: #0236273d;
 
   /* --- Métricas de layout ------------------------------------------------ */
   --sidebar-width: 236px;
@@ -130,26 +145,41 @@
 }
 
 :root[data-theme="dark"] {
-  --background: var(--neutral-975);
-  --surface: var(--neutral-925);
-  --surface-muted: var(--neutral-850);
-  --ink: var(--neutral-100);
-  --muted: var(--neutral-400);
-  --border: var(--neutral-800);
-  --border-strong: var(--neutral-500);
+  /* Escuro da marca: verde profundo, nao cinzento neutro. */
+  --background: #04150d;
+  --surface: #0a2417;
+  --surface-muted: #10331f;
+  /* Todo o texto e branco no modo escuro; a hierarquia faz-se com opacidade,
+     nao com cinzentos. */
+  --ink: #ffffff;
+  --muted: color-mix(in srgb, #ffffff 74%, transparent);
+  --border: #1c4a31;
+  --border-strong: #2c6a47;
 
   --brand: var(--brand-400);
-  --primary: var(--brand-400);
-  --secondary: var(--brand-300);
-  --primary-text: var(--brand-300);
-  --secondary-text: var(--brand-200);
-  --on-primary: var(--neutral-1000);
-  --on-secondary: var(--neutral-1000);
+  /* Preenchimentos a brand-600: e o verde mais claro que ainda sustenta
+     texto branco (4.92:1). */
+  --primary: var(--brand-600);
+  --secondary: var(--brand-700);
+  --primary-text: #ffffff;
+  --secondary-text: #ffffff;
+  --on-primary: #ffffff;
+  --on-secondary: #ffffff;
   --on-danger: var(--neutral-1000);
 
-  --primary-hover: color-mix(in srgb, var(--primary) 84%, #ffffff);
+  --primary-hover: #007a3c;
   --soft: #14372a;
   --secondary-soft: #16302a;
+
+  /* Campos: fundo verde e texto branco (11:1). */
+  --field-bg: #0f3d28;
+  --field-ink: #ffffff;
+  --field-border: #2a6a47;
+  --field-placeholder: color-mix(in srgb, #ffffff 68%, transparent);
+
+  --selected-bg: var(--brand-600);
+  --selected-ink: #ffffff;
+  --selected-border: var(--brand-400);
 
   --success: #83d69b;
   --success-soft: #123324;
@@ -169,6 +199,7 @@
 
   --scrim: #030c07cc;
   --shadow-color: #00000066;
+  --shadow-color-strong: #000000a6;
 
   color-scheme: dark;
 }
@@ -253,11 +284,21 @@
   --text-overline--letter-spacing: 0.08em;
 
   /* Raios */
-  --radius-control: 8px;
-  --radius-card: 12px;
-  --radius-panel: 16px;
+  /* Um so arredondamento para superficies e controlos: rounded-4xl (2rem).
+     `--radius-field-tall` fica para as areas de texto, onde 2rem cortaria
+     as primeiras linhas. */
+  --radius-control: 2rem;
+  --radius-card: 2rem;
+  --radius-panel: 2rem;
+  --radius-field-tall: 1.25rem;
 
   /* Elevação */
+  /* Sombra de bordo: um contorno curto e escuro mais um halo largo, para que
+     a aresta do cartao se veja mesmo sobre um fundo quase da mesma cor. */
+  --shadow-edge:
+    0 1px 2px var(--shadow-color-strong),
+    0 6px 16px -4px var(--shadow-color-strong),
+    0 20px 44px -14px var(--shadow-color-strong);
   --shadow-soft: 0 3px 12px var(--shadow-color);
   --shadow-card: 0 8px 22px var(--shadow-color);
   --shadow-float: 0 8px 40px var(--shadow-color);
@@ -374,11 +415,15 @@
   input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
   select,
   textarea {
-    @apply min-h-11 rounded-control border border-line-strong bg-surface px-3 py-2.5 text-body;
+    @apply min-h-11 rounded-control border px-4 py-2.5 text-body;
+    background-color: var(--field-bg);
+    color: var(--field-ink);
+    border-color: var(--field-border);
   }
 
   textarea {
     @apply min-h-[90px] resize-y;
+    border-radius: var(--radius-field-tall);
   }
 
   /* Abaixo de sm, os campos ficam a 16px: com menos do que isso o Safari do
@@ -393,7 +438,8 @@
 
   input::placeholder,
   textarea::placeholder {
-    @apply text-muted opacity-100;
+    @apply opacity-100;
+    color: var(--field-placeholder);
   }
 
   input[type="checkbox"],
@@ -576,15 +622,12 @@
   .insight-card,
   .insight-panel {
     @apply min-w-0 rounded-4xl border border-line bg-surface;
-    box-shadow: 0 8px 28px
-      color-mix(in srgb, var(--shadow-color) 45%, transparent);
+    box-shadow: var(--shadow-edge);
   }
 
   .insight-card {
     @apply relative flex min-h-[172px] flex-col overflow-hidden p-5 sm:p-6;
   }
-
-  
 
   .insight-card--primary {
     --insight-accent: var(--chart-1);
@@ -745,6 +788,34 @@
     @apply font-normal text-muted;
   }
 
+  /* Identifica visualmente os campos obrigatórios que seguem a estrutura
+     partilhada `.field > span + controlo`, incluindo componentes PrimeVue. */
+  .field:has([required], [aria-required="true"]) > span:first-child::after {
+    margin-left: 0.2rem;
+    color: var(--danger);
+    content: "*";
+  }
+
+  /* Alguns campos usam um `label` associado por `for`, separado do controlo. */
+  .field:has([required], [aria-required="true"]) > label:first-child::after {
+    margin-left: 0.2rem;
+    color: var(--danger);
+    content: "*";
+  }
+
+  .required-marker {
+    margin-left: 0.2rem;
+    color: var(--danger);
+  }
+
+  /* Feedback comum para qualquer controlo que falhe as regras declaradas no
+     formulário. O estado só é mostrado depois da primeira interacção. */
+  :is(input, select, textarea)[aria-invalid="true"] {
+    border-color: var(--danger) !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 18%, transparent) !important;
+    outline: none;
+  }
+
   .check-field {
     @apply flex items-center gap-2.5 text-small;
   }
@@ -857,15 +928,44 @@
   /* --- Opções seleccionáveis (profissional, pagamento, espaço de trabalho) -- */
 
   .choice {
-    @apply flex w-full items-center gap-3 rounded-md border border-line bg-surface p-3.5 text-left;
+    @apply flex w-full items-center gap-3 rounded-4xl border p-3.5 text-left;
+    background-color: var(--field-bg);
+    color: var(--field-ink);
+    border-color: var(--field-border);
   }
 
   .choice:hover:not(:disabled) {
     @apply border-primary/40 bg-surface-muted;
   }
 
+  /* Opcao seleccionada, em qualquer tema: fundo verde, texto branco.
+     `.is-selected` e o nome generico — serve horarios, datas, categorias e
+     qualquer outra lista de escolha; `.choice-selected` fica como sinonimo
+     do markup que ja existia. */
+  .is-selected,
   .choice-selected {
-    @apply border-primary-text bg-soft;
+    background-color: var(--selected-bg) !important;
+    border-color: var(--selected-border) !important;
+    color: var(--selected-ink) !important;
+  }
+
+  /* O texto interno herda o branco em vez de ficar preso ao cinzento. */
+  .is-selected :is(small, span, strong, p, b, time),
+  .choice-selected :is(small, span, strong, p, b, time) {
+    color: inherit !important;
+    opacity: 0.92;
+  }
+
+  .is-selected strong,
+  .choice-selected strong {
+    opacity: 1;
+  }
+
+  /* --- Elevacao das arestas ---------------------------------------------
+     Cartoes de indicador, barra lateral e barra de topo: a aresta tem de se
+     ver mesmo quando o fundo e quase da mesma cor da superficie. */
+  .elevated-edge {
+    box-shadow: var(--shadow-edge);
   }
 }
 
@@ -1052,4 +1152,207 @@
 .p-datatable,
 .p-dataview {
   font-size: var(--text-caption);
+}
+
+/* Campos do PrimeVue ligados aos mesmos tokens dos campos nativos: uma caixa
+   de texto do PrimeVue e um `<input>` da aplicação têm de ser indistinguíveis
+   em qualquer dos temas. */
+:root {
+  --p-inputtext-background: var(--field-bg);
+  --p-inputtext-filled-background: var(--field-bg);
+  --p-inputtext-filled-focus-background: var(--field-bg);
+  --p-inputtext-hover-background: var(--field-bg);
+  --p-inputtext-focus-background: var(--field-bg);
+  --p-inputtext-color: var(--field-ink);
+  --p-inputtext-border-color: var(--field-border);
+  --p-inputtext-hover-border-color: var(--primary);
+  --p-inputtext-focus-border-color: var(--primary);
+  --p-inputtext-placeholder-color: var(--field-placeholder);
+  --p-inputtext-padding-x: 1rem;
+
+  --p-select-background: var(--field-bg);
+  --p-select-hover-background: var(--field-bg);
+  --p-select-focus-background: var(--field-bg);
+  --p-select-color: var(--field-ink);
+  --p-select-border-color: var(--field-border);
+  --p-select-hover-border-color: var(--primary);
+  --p-select-focus-border-color: var(--primary);
+  --p-select-placeholder-color: var(--field-placeholder);
+  --p-select-dropdown-color: var(--field-ink);
+  --p-select-overlay-background: var(--surface);
+  --p-select-overlay-color: var(--ink);
+  --p-select-option-color: var(--ink);
+  --p-select-option-selected-background: var(--selected-bg);
+  --p-select-option-selected-color: var(--selected-ink);
+  --p-select-option-selected-focus-background: var(--selected-bg);
+  --p-select-option-selected-focus-color: var(--selected-ink);
+
+  --p-multiselect-background: var(--field-bg);
+  --p-multiselect-color: var(--field-ink);
+  --p-multiselect-border-color: var(--field-border);
+  --p-multiselect-option-selected-background: var(--selected-bg);
+  --p-multiselect-option-selected-color: var(--selected-ink);
+
+  --p-textarea-background: var(--field-bg);
+  --p-textarea-color: var(--field-ink);
+  --p-textarea-border-color: var(--field-border);
+  --p-textarea-placeholder-color: var(--field-placeholder);
+
+  --p-datepicker-background: var(--field-bg);
+  --p-datepicker-color: var(--field-ink);
+  --p-datepicker-border-color: var(--field-border);
+  --p-datepicker-panel-background: var(--surface);
+  --p-datepicker-panel-color: var(--ink);
+  --p-datepicker-date-color: var(--ink);
+  --p-datepicker-date-selected-background: var(--selected-bg);
+  --p-datepicker-date-selected-color: var(--selected-ink);
+  --p-datepicker-today-background: var(--soft);
+  --p-datepicker-today-color: var(--primary-text);
+
+  --p-inputnumber-button-background: var(--field-bg);
+  --p-togglebutton-background: var(--field-bg);
+  --p-togglebutton-color: var(--field-ink);
+  --p-togglebutton-checked-background: var(--selected-bg);
+  --p-togglebutton-checked-color: var(--selected-ink);
+  --p-togglebutton-content-checked-background: var(--selected-bg);
+
+  --p-listbox-option-selected-background: var(--selected-bg);
+  --p-listbox-option-selected-color: var(--selected-ink);
+  --p-datatable-row-selected-background: var(--selected-bg);
+  --p-datatable-row-selected-color: var(--selected-ink);
+
+  --p-card-background: var(--surface);
+  --p-card-color: var(--ink);
+
+  /* Separadores: o verde da marca como texto activo nao chega aos 4.5:1 sobre
+     o fundo escuro. `--primary-text` ja resolve isso nos dois temas. */
+  --p-tabs-tab-active-color: var(--primary-text);
+  --p-tabs-tab-color: var(--muted);
+  --p-tabs-tab-hover-color: var(--ink);
+  --p-tabs-active-bar-background: var(--primary);
+  --p-tab-active-color: var(--primary-text);
+}
+
+@layer primevue {
+  /* Rede de segurança: os presets do PrimeVue mudam de nome entre versões, e um
+     token que desapareça deixaria o campo com o fundo do preset. Estas regras
+     garantem o essencial — fundo, texto e moldura — em qualquer caso. */
+  .p-inputtext,
+  .p-textarea,
+  .p-password-input,
+  .p-inputnumber-input,
+  .p-select,
+  .p-multiselect,
+  .p-datepicker-input,
+  .p-autocomplete-input,
+  .p-inputmask,
+  .p-chips {
+    background: var(--field-bg);
+    color: var(--field-ink);
+    border-color: var(--field-border);
+  }
+
+  .p-inputtext::placeholder,
+  .p-textarea::placeholder,
+  .p-datepicker-input::placeholder {
+    color: var(--field-placeholder);
+    opacity: 1;
+  }
+
+  .p-select-label,
+  .p-multiselect-label {
+    color: var(--field-ink);
+  }
+
+  .p-tab.p-tab-active {
+    color: var(--primary-text);
+  }
+
+  /* Painéis de opções: o painel arredondado e cada opção também, para que a
+     lista aberta leia como os botões e os campos do resto da aplicação. */
+  .p-select-overlay,
+  .p-multiselect-overlay,
+  .p-autocomplete-overlay,
+  .p-listbox {
+    overflow: hidden;
+    border-radius: 1.5rem;
+    background: var(--surface);
+    color: var(--ink);
+  }
+
+  .p-select-list,
+  .p-multiselect-list,
+  .p-listbox-list {
+    padding: 0.35rem;
+  }
+
+  .p-select-option,
+  .p-multiselect-option,
+  .p-autocomplete-option,
+  .p-listbox-option {
+    margin-block: 0.1rem;
+    border-radius: 2rem;
+    color: var(--ink);
+  }
+
+  /* O painel do calendário segue a mesma regra. */
+  .p-datepicker-panel {
+    overflow: hidden;
+    border-radius: 1.5rem;
+  }
+
+  /* Painéis ancorados ao próprio campo (`append-to="self"`).
+     Os diálogos da aplicação são `<dialog>` nativos abertos com `showModal()`:
+     vivem na camada de topo do browser, onde nada que esteja no `<body>` lhes
+     pode ficar por cima, por muito z-index que tenha. Ancorar o painel ao
+     campo resolve as duas coisas de uma vez — fica por cima e fica no sítio
+     certo mesmo com a página deslocada por baixo. */
+  .p-select,
+  .p-multiselect,
+  .p-datepicker,
+  .p-autocomplete {
+    position: relative;
+  }
+
+  .p-select > .p-select-overlay,
+  .p-multiselect > .p-multiselect-overlay,
+  .p-datepicker > .p-datepicker-panel,
+  .p-autocomplete > .p-autocomplete-overlay {
+    top: 100%;
+    left: 0;
+    min-width: 100%;
+    margin-top: 0.4rem;
+    box-shadow: var(--shadow-float);
+  }
+
+  .p-datepicker-day {
+    border-radius: 9999px;
+  }
+
+  .p-select-label.p-placeholder,
+  .p-multiselect-label.p-placeholder {
+    color: var(--field-placeholder);
+  }
+
+  /* Opções seleccionadas dentro dos painéis do PrimeVue. */
+  .p-select-option.p-select-option-selected,
+  .p-listbox-option.p-listbox-option-selected,
+  .p-multiselect-option.p-multiselect-option-selected,
+  .p-datepicker-day-selected,
+  .p-togglebutton.p-togglebutton-checked .p-togglebutton-content {
+    background: var(--selected-bg);
+    color: var(--selected-ink);
+  }
+
+  /* Modo escuro: nenhum texto fica cinzento.
+     As cores de estado (sucesso, aviso, perigo) mantêm o seu tom — são o sinal,
+     e em branco deixariam de se distinguir. */
+  :root[data-theme="dark"] {
+    --p-surface-0: var(--surface);
+    --p-surface-50: var(--surface-muted);
+  }
+
+  :root[data-theme="dark"] :is(.p-component, .p-button-label, .p-card-body) {
+    color: var(--ink);
+  }
 }

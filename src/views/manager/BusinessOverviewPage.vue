@@ -42,10 +42,10 @@ const {
         <button
           v-for="day in weekDays"
           :key="day.date"
-          class="flex flex-col items-center gap-1.5 rounded-md border border-line bg-surface px-1 py-3 text-caption"
+          class="flex flex-col items-center gap-1.5 rounded-4xl border border-line bg-surface px-1 py-3 text-caption"
           :class="
             day.date === today()
-              ? 'border-primary-text bg-soft text-primary-text'
+              ? 'is-selected'
               : 'text-muted hover:bg-surface-muted'
           "
           @click="
@@ -119,7 +119,7 @@ const {
         </div>
         <img
           v-if="company?.image"
-          class="mb-4 h-[160px] w-full rounded-lg bg-surface-muted object-cover"
+          class="mb-4 h-[160px] w-full rounded-4xl bg-surface-muted object-cover"
           :src="company.image"
           :alt="company.name"
         />

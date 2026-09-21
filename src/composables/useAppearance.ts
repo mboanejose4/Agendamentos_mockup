@@ -33,19 +33,20 @@ export function useAppearance() {
       "--secondary": brand.secondaryColor,
       "--on-primary": textOn(brand.primaryColor),
       "--on-secondary": textOn(brand.secondaryColor),
-      "--primary-text": accessibleAccent(
-        brand.primaryColor,
-        dark ? "#112018" : "#ffffff",
-      ),
-      "--secondary-text": accessibleAccent(
-        brand.secondaryColor,
-        dark ? "#112018" : "#ffffff",
-      ),
+      /* No tema escuro o texto de realce e branco — e a regra da plataforma,
+         e um verde da marca sobre o fundo escuro nao chegaria aos 4.5:1.
+         No claro mantem-se o tom da marca, escurecido ate ser legivel. */
+      "--primary-text": dark
+        ? "#ffffff"
+        : accessibleAccent(brand.primaryColor, "#ffffff"),
+      "--secondary-text": dark
+        ? "#ffffff"
+        : accessibleAccent(brand.secondaryColor, "#ffffff"),
     }))
       root.style.setProperty(key, value);
     document
       .querySelector('meta[name="theme-color"]')
-      ?.setAttribute("content", dark ? "#06120c" : "#f4faf7");
+      ?.setAttribute("content", dark ? "#04150d" : "#f4faf7");
   });
   return { activeBrand };
 }

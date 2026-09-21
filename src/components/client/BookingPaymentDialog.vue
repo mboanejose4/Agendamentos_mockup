@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 import { computed, reactive, watch } from "vue";
 
@@ -11,13 +10,8 @@ import Button from "primevue/button";
 
 import { useBookingFlowContext } from "@/composables/bookings/bookingContext.ts";
 
-const {
-  paymentOpen,
-  paymentMethod,
-  paymentState,
-  totalLabel,
-  finish,
-} = useBookingFlowContext();
+const { paymentOpen, paymentMethod, paymentState, totalLabel, finish } =
+  useBookingFlowContext();
 
 /* ==========================================
    MÉTODOS DE PAGAMENTO
@@ -76,12 +70,8 @@ function formatPhone(value: string): string {
 
   return (
     digits.slice(0, 2) +
-    (digits.length > 2
-      ? " " + digits.slice(2, 5)
-      : "") +
-    (digits.length > 5
-      ? " " + digits.slice(5)
-      : "")
+    (digits.length > 2 ? " " + digits.slice(2, 5) : "") +
+    (digits.length > 5 ? " " + digits.slice(5) : "")
   );
 }
 
@@ -106,16 +96,11 @@ const formattedPhone = computed<string>({
 ========================================== */
 
 const isPhoneValid = computed(() => {
-  return /^\d{2} \d{3} \d{4}$/.test(
-    details.phone,
-  );
+  return /^\d{2} \d{3} \d{4}$/.test(details.phone);
 });
 
 const isPaymentValid = computed(() => {
-  return (
-    ["mpesa", "emola"].includes(paymentMethod.value) &&
-    isPhoneValid.value
-  );
+  return ["mpesa", "emola"].includes(paymentMethod.value) && isPhoneValid.value;
 });
 
 /* ==========================================
@@ -141,10 +126,7 @@ function submitPayment(): void {
       <span
         class="grid size-14 shrink-0 place-items-center rounded-4xl bg-soft text-primary-text"
       >
-        <AppIcon
-          name="credit-card"
-          :size="28"
-        />
+        <AppIcon name="credit-card" :size="28" />
       </span>
 
       <span class="flex flex-col text-caption text-muted">
@@ -164,9 +146,7 @@ function submitPayment(): void {
     >
       <!-- CARTEIRA MÓVEL -->
       <div class="field">
-        <label for="payment-wallet">
-          Carteira móvel
-        </label>
+        <label for="payment-wallet"> Carteira móvel </label>
 
         <Select
           v-model="paymentMethod"
@@ -183,21 +163,14 @@ function submitPayment(): void {
         >
           <!-- OPÇÃO SELECCIONADA -->
           <template #value="slotProps">
-            <span
-              v-if="slotProps.value"
-              class="payment-selected-label"
-            >
+            <span v-if="slotProps.value" class="payment-selected-label">
               {{
-                paymentOptions.find(
-                  (item) => item.value === slotProps.value,
-                )?.label ?? "Seleccione a carteira móvel"
+                paymentOptions.find((item) => item.value === slotProps.value)
+                  ?.label ?? "Seleccione a carteira móvel"
               }}
             </span>
 
-            <span
-              v-else
-              class="payment-placeholder"
-            >
+            <span v-else class="payment-placeholder">
               Seleccione a carteira móvel
             </span>
           </template>
@@ -213,18 +186,11 @@ function submitPayment(): void {
 
       <!-- NÚMERO DE TELEFONE -->
       <div class="field">
-        <label for="payment-phone">
-          Número de telefone
-        </label>
+        <label for="payment-phone"> Número de telefone </label>
 
         <div class="payment-phone-group">
           <!-- INDICATIVO FIXO -->
-          <span
-            class="payment-phone-prefix"
-            aria-hidden="true"
-          >
-            +258
-          </span>
+          <span class="payment-phone-prefix" aria-hidden="true"> +258 </span>
 
           <!-- INPUT PRIMEVUE -->
           <InputText
@@ -237,8 +203,8 @@ function submitPayment(): void {
             placeholder="84 123 4567"
             maxlength="11"
             required
-            pattern="[0-9]{2} [0-9]{3} [0-9]{4}"
-            title="Introduza os 9 dígitos do número de telefone."
+            pattern="8[2-8] [0-9]{3} [0-9]{4}"
+            title="Introduza nove dígitos: 8, seguido de um dígito entre 2 e 8, e mais sete dígitos."
             aria-label="Número de telefone com indicativo +258"
             class="payment-phone-input"
           />
@@ -255,8 +221,7 @@ function submitPayment(): void {
         class="error-message rounded-4xl"
         role="alert"
       >
-        Pagamento recusado. Pode tentar novamente
-        ou pagar no estabelecimento.
+        Pagamento recusado. Pode tentar novamente ou pagar no estabelecimento.
       </p>
 
       <!-- BOTÕES -->
@@ -266,10 +231,7 @@ function submitPayment(): void {
           :disabled="!isPaymentValid"
           class="btn btn-primary !w-full !rounded-4xl"
         >
-          <AppIcon
-            name="check"
-            :size="17"
-          />
+          <AppIcon name="check" :size="17" />
 
           Pagar
         </Button>
@@ -308,18 +270,21 @@ function submitPayment(): void {
 }
 
 /* ==========================================
-   SELECT — MODO CLARO
+   SELECT
+   Cores pelos tokens partilhados (`--field-*`, `--surface`, `--ink`):
+   um so conjunto serve os dois temas, sem bloco de modo escuro a repetir
+   tudo com cinzentos proprios.
 ========================================== */
 
 .payment-modal .payment-select {
   width: 100%;
   min-height: 44px;
 
-  border: 1px solid #b8c2cc !important;
+  border: 1px solid var(--field-border) !important;
   border-radius: 2rem !important;
 
-  background: #ffffff !important;
-  color: #111827 !important;
+  background: var(--field-bg) !important;
+  color: var(--field-ink) !important;
 
   box-shadow: none !important;
 }
@@ -327,26 +292,25 @@ function submitPayment(): void {
 /* Texto do campo */
 .payment-modal .payment-select .p-select-label,
 .payment-modal .payment-selected-label {
-  color: #111827 !important;
+  color: var(--field-ink) !important;
 }
 
 /* Placeholder */
 .payment-modal .payment-placeholder,
 .payment-modal .p-select-label.p-placeholder {
-  color: #6b7280 !important;
+  color: var(--field-placeholder) !important;
 }
 
 /* Ícone da seta */
 .payment-modal .payment-select .p-select-dropdown {
-  color: #6b7280 !important;
+  color: var(--field-placeholder) !important;
 }
 
 /* Foco */
 .payment-modal .payment-select.p-focus {
   border-color: var(--brand-500, #019e51) !important;
 
-  box-shadow:
-    0 0 0 1px var(--brand-500, #019e51) !important;
+  box-shadow: 0 0 0 1px var(--brand-500, #019e51) !important;
 }
 
 /* ==========================================
@@ -361,14 +325,13 @@ function submitPayment(): void {
 .payment-modal .payment-options-panel {
   z-index: 100 !important;
 
-  border: 1px solid #b8c2cc !important;
+  border: 1px solid var(--border) !important;
   border-radius: 2rem !important;
 
-  background: #ffffff !important;
-  color: #111827 !important;
+  background: var(--surface) !important;
+  color: var(--ink) !important;
 
-  box-shadow:
-    0 8px 24px rgb(0 0 0 / 12%) !important;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 12%) !important;
 
   overflow: hidden;
 }
@@ -376,7 +339,7 @@ function submitPayment(): void {
 /* Lista de opções */
 .payment-modal .payment-options-panel .p-select-list {
   padding: 0.4rem;
-  background: #ffffff !important;
+  background: var(--surface) !important;
 }
 
 /* Cada opção */
@@ -387,7 +350,7 @@ function submitPayment(): void {
   border-radius: 1rem;
 
   background: transparent;
-  color: #111827 !important;
+  color: var(--field-ink) !important;
 }
 
 /* Texto da opção */
@@ -396,9 +359,7 @@ function submitPayment(): void {
 }
 
 /* Hover */
-.payment-modal
-  .payment-options-panel
-  .p-select-option:hover {
+.payment-modal .payment-options-panel .p-select-option:hover {
   background: #e8f5ed !important;
   color: #116b3c !important;
 }
@@ -424,7 +385,7 @@ function submitPayment(): void {
 
   overflow: hidden;
 
-  border: 1px solid #b8c2cc;
+  border: 1px solid var(--field-border);
   border-radius: 2rem;
 
   background: #ffffff;
@@ -444,9 +405,9 @@ function submitPayment(): void {
 
   padding: 0 1rem;
 
-  border-right: 1px solid #b8c2cc;
+  border-right: 1px solid var(--field-border);
 
-  color: #111827;
+  color: var(--field-ink);
   font-weight: 600;
   font-size: 0.875rem;
 }
@@ -462,7 +423,7 @@ function submitPayment(): void {
   border-radius: 0 !important;
 
   background: transparent !important;
-  color: #111827 !important;
+  color: var(--field-ink) !important;
 
   box-shadow: none !important;
   outline: none !important;
@@ -470,158 +431,13 @@ function submitPayment(): void {
 
 /* Placeholder */
 .payment-modal .payment-phone-input::placeholder {
-  color: #6b7280 !important;
+  color: var(--field-placeholder) !important;
 }
 
 /* Foco */
 .payment-modal .payment-phone-group:focus-within {
   border-color: var(--brand-500, #019e51);
 
-  box-shadow:
-    0 0 0 1px var(--brand-500, #019e51);
-}
-
-/* ==========================================
-   MODO ESCURO
-========================================== */
-
-/*
- * O selector considera o atributo data-theme
- * aplicado ao elemento HTML ou ao BODY.
- */
-
-html[data-theme="dark"] .payment-modal,
-body[data-theme="dark"] .payment-modal {
-  background: #111111 !important;
-  color: #ffffff !important;
-}
-
-/* Select */
-html[data-theme="dark"] .payment-modal .payment-select,
-body[data-theme="dark"] .payment-modal .payment-select {
-  background: #000000 !important;
-  border-color: #52525b !important;
-  color: #ffffff !important;
-}
-
-/* Texto seleccionado */
-html[data-theme="dark"]
-  .payment-modal .payment-select .p-select-label,
-body[data-theme="dark"]
-  .payment-modal .payment-select .p-select-label,
-html[data-theme="dark"]
-  .payment-modal .payment-selected-label,
-body[data-theme="dark"]
-  .payment-modal .payment-selected-label {
-  color: #ffffff !important;
-}
-
-/* Placeholder */
-html[data-theme="dark"]
-  .payment-modal .payment-placeholder,
-body[data-theme="dark"]
-  .payment-modal .payment-placeholder {
-  color: #9ca3af !important;
-}
-
-/* Seta */
-html[data-theme="dark"]
-  .payment-modal .payment-select .p-select-dropdown,
-body[data-theme="dark"]
-  .payment-modal .payment-select .p-select-dropdown {
-  color: #d1d5db !important;
-}
-
-/* Painel das opções */
-html[data-theme="dark"]
-  .payment-modal .payment-options-panel,
-body[data-theme="dark"]
-  .payment-modal .payment-options-panel {
-  background: #000000 !important;
-  border-color: #52525b !important;
-  color: #ffffff !important;
-}
-
-/* Lista */
-html[data-theme="dark"]
-  .payment-modal .payment-options-panel .p-select-list,
-body[data-theme="dark"]
-  .payment-modal .payment-options-panel .p-select-list {
-  background: #000000 !important;
-}
-
-/* Opções */
-html[data-theme="dark"]
-  .payment-modal .payment-options-panel .p-select-option,
-body[data-theme="dark"]
-  .payment-modal .payment-options-panel .p-select-option {
-  background: transparent;
-  color: #ffffff !important;
-}
-
-/* Hover */
-html[data-theme="dark"]
-  .payment-modal .payment-options-panel .p-select-option:hover,
-body[data-theme="dark"]
-  .payment-modal .payment-options-panel .p-select-option:hover {
-  background: #1a3325 !important;
-  color: #ffffff !important;
-}
-
-/* Opção seleccionada */
-html[data-theme="dark"]
-  .payment-modal
-  .payment-options-panel
-  .p-select-option.p-select-option-selected,
-body[data-theme="dark"]
-  .payment-modal
-  .payment-options-panel
-  .p-select-option.p-select-option-selected {
-  background: #174d30 !important;
-  color: #ffffff !important;
-}
-
-/* Grupo de telefone */
-html[data-theme="dark"] .payment-modal .payment-phone-group,
-body[data-theme="dark"] .payment-modal .payment-phone-group {
-  background: #000000 !important;
-  border-color: #52525b !important;
-}
-
-/* Indicativo */
-html[data-theme="dark"] .payment-modal .payment-phone-prefix,
-body[data-theme="dark"] .payment-modal .payment-phone-prefix {
-  color: #ffffff !important;
-  border-color: #52525b !important;
-}
-
-/* Input de telefone */
-html[data-theme="dark"] .payment-modal .payment-phone-input,
-body[data-theme="dark"] .payment-modal .payment-phone-input {
-  background: transparent !important;
-  color: #ffffff !important;
-}
-
-/* Placeholder do telefone */
-html[data-theme="dark"]
-  .payment-modal .payment-phone-input::placeholder,
-body[data-theme="dark"]
-  .payment-modal .payment-phone-input::placeholder {
-  color: #9ca3af !important;
-}
-
-/* Foco */
-html[data-theme="dark"]
-  .payment-modal .payment-select.p-focus,
-body[data-theme="dark"]
-  .payment-modal .payment-select.p-focus,
-html[data-theme="dark"]
-  .payment-modal .payment-phone-group:focus-within,
-body[data-theme="dark"]
-  .payment-modal .payment-phone-group:focus-within {
-  border-color: var(--brand-500, #019e51) !important;
-
-  box-shadow:
-    0 0 0 1px var(--brand-500, #019e51) !important;
+  box-shadow: 0 0 0 1px var(--brand-500, #019e51);
 }
 </style>

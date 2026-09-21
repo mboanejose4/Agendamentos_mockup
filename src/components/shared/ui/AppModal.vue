@@ -62,28 +62,28 @@ onBeforeUnmount(() => {
 <template>
   <Teleport to="body">
     <dialog
-  ref="dialog"
-  :class="[
-    'dialog rounded-4xl overflow-hidden border border-line bg-surface shadow-xl',
-    panelClass,
-  ]"
-  :style="
-    width
-      ? {
-          maxWidth: typeof width === 'number' ? `${width}px` : width,
+      ref="dialog"
+      :class="[
+        'dialog rounded-4xl border border-line bg-surface shadow-xl',
+        panelClass,
+      ]"
+      :style="
+        width
+          ? {
+              maxWidth: typeof width === 'number' ? `${width}px` : width,
+            }
+          : {}
+      "
+      :aria-labelledby="titleId"
+      @cancel.prevent="close"
+      @click="
+        (event: MouseEvent) => {
+          if (event.target === dialog) {
+            close();
+          }
         }
-      : {}
-  "
-  :aria-labelledby="titleId"
-  @cancel.prevent="close"
-  @click="
-    (event: MouseEvent) => {
-      if (event.target === dialog) {
-        close();
-      }
-    }
-  "
->
+      "
+    >
       <div class="dialog-inner">
         <header class="dialog-header">
           <h2 :id="titleId">

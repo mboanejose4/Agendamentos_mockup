@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import AppModal from "@/components/shared/ui/AppModal.vue";
 import { usePlatformManagementContext } from "@/composables/platform/platformContext.ts";
+import InputText from "primevue/inputtext";
+import Textarea from "primevue/textarea";
+import Select from "primevue/select";
 const {
   isPlatform,
   businesses,
@@ -15,33 +18,48 @@ const {
     ><form @submit.prevent="saveTicket">
       <div class="form-grid">
         <label class="field form-grid-full"
-          >Assunto<input
+          ><span>Assunto</span
+          ><InputText
             v-model="ticketForm.subject"
             placeholder="Qual é a situação?"
             required
             maxlength="160" /></label
         ><label v-if="isPlatform" class="field"
-          >Estabelecimento<select v-model="ticketForm.businessId" required>
-            <option value="" disabled>Seleccionar</option>
-            <option v-for="item in businesses" :key="item.id" :value="item.id">
-              {{ item.name }}
-            </option>
-          </select></label
+          ><span>Estabelecimento</span
+          ><Select
+            v-model="ticketForm.businessId"
+            required
+            :options="[
+              { label: 'Seleccionar', value: '' },
+              ...businesses.map((item) => ({
+                label: item.name,
+                value: item.id,
+              })),
+            ]"
+            option-label="label"
+            option-value="value"
+            append-to="self" /></label
         ><label class="field"
-          >Prioridade<select v-model="ticketForm.priority">
-            <option value="low">Baixa</option>
-            <option value="normal">Normal</option>
-            <option value="high">Alta</option>
-            <option value="urgent">Urgente</option>
-          </select></label
+          >Prioridade<Select
+            v-model="ticketForm.priority"
+            :options="[
+              { label: 'Baixa', value: 'low' },
+              { label: 'Normal', value: 'normal' },
+              { label: 'Alta', value: 'high' },
+              { label: 'Urgente', value: 'urgent' },
+            ]"
+            option-label="label"
+            option-value="value"
+            append-to="self" /></label
         ><label class="field form-grid-full"
-          >Descrição<textarea
+          ><span>Descrição</span
+          ><Textarea
             v-model="ticketForm.body"
             rows="5"
             required
             maxlength="5000"
             placeholder="Descreva a situação e o resultado esperado."
-          ></textarea>
+          />
         </label>
       </div>
       <p v-if="ticketError" class="error-message" role="alert">

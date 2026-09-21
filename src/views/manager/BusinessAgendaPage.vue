@@ -3,6 +3,7 @@ import AppIcon from "@/components/shared/ui/AppIcon.vue";
 import ViewModeToggle from "@/components/shared/ui/ViewModeToggle.vue";
 import { useListMode } from "@/composables/useListMode.ts";
 import { useBusinessManagementContext } from "@/composables/businesses/businessContext.ts";
+import Select from "primevue/select";
 const {
   state,
   money,
@@ -50,30 +51,33 @@ const mode = useListMode("agenda");
         </button>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <select
+        <Select
           v-model="staffFilter"
           aria-label="Filtrar profissional"
           class="w-full sm:w-auto"
-        >
-          <option value="">Toda a equipa</option>
-          <option v-for="person in team" :key="person.id" :value="person.id">
-            {{ person.name }}
-          </option>
-        </select>
-        <select
+          :options="[
+            { label: 'Toda a equipa', value: '' },
+            ...team.map((person) => ({ label: person.name, value: person.id })),
+          ]"
+          option-label="label"
+          option-value="value"
+          append-to="self"
+        />
+        <Select
           v-model="statusFilter"
           aria-label="Filtrar estado"
           class="w-full sm:w-auto"
-        >
-          <option value="">Todos os estados</option>
-          <option
-            v-for="(label, value) in statusNames"
-            :key="value"
-            :value="value"
-          >
-            {{ label }}
-          </option>
-        </select>
+          :options="[
+            { label: 'Todos os estados', value: '' },
+            ...Object.entries(statusNames).map(([value, label]) => ({
+              label,
+              value,
+            })),
+          ]"
+          option-label="label"
+          option-value="value"
+          append-to="self"
+        />
         <button
           class="icon-btn"
           title="Exportar agenda"

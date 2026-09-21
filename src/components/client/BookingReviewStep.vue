@@ -1,6 +1,6 @@
-
 <script setup lang="ts">
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
+import PhoneInput from "@/components/shared/ui/PhoneInput.vue";
 
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
@@ -72,9 +72,8 @@ const {
           {{
             isRestaurant
               ? draft.partySize
-              : state.db.staff.find(
-                  (person) => person.id === draft.staffId,
-                )?.name || "Primeiro disponível"
+              : state.db.staff.find((person) => person.id === draft.staffId)
+                  ?.name || "Primeiro disponível"
           }}
         </strong>
       </div>
@@ -100,31 +99,21 @@ const {
 
     <!-- Telefone -->
     <label class="field">
-      <span>
-        Telefone para confirmação, de preferência com WhatsApp
-      </span>
+      <span> Telefone para confirmação, de preferência com WhatsApp </span>
 
-      <InputText
+      <PhoneInput
         v-model.trim="draft.phone"
         name="phone"
-        type="tel"
-        inputmode="tel"
         autocomplete="tel"
-        placeholder="+258 84 000 0000"
         required
-        class="!w-full !rounded-4xl"
       />
 
-      <small class="text-muted">
-        A confirmação usa este contacto.
-      </small>
+      <small class="text-muted"> A confirmação usa este contacto. </small>
     </label>
 
     <!-- Cupão de desconto -->
     <div class="field">
-      <label for="booking-coupon">
-        Cupão de desconto
-      </label>
+      <label for="booking-coupon"> Cupão de desconto </label>
 
       <div class="flex min-w-0 items-center gap-2.5">
         <InputText
@@ -146,21 +135,12 @@ const {
     </div>
 
     <!-- Feedback do cupão -->
-    <p
-      v-if="couponError"
-      class="error-message"
-      role="alert"
-    >
+    <p v-if="couponError" class="error-message" role="alert">
       {{ couponError }}
     </p>
 
-    <p
-      v-else-if="appliedCoupon"
-      class="success-message"
-      role="status"
-    >
-      Cupão {{ appliedCoupon }} aplicado:
-      menos {{ money(totals.discount) }}.
+    <p v-else-if="appliedCoupon" class="success-message" role="status">
+      Cupão {{ appliedCoupon }} aplicado: menos {{ money(totals.discount) }}.
     </p>
 
     <!-- Método de pagamento -->
@@ -185,9 +165,7 @@ const {
         <AppIcon name="wallet" />
 
         <span class="min-w-0 flex-1">
-          <strong class="block text-caption">
-            No estabelecimento
-          </strong>
+          <strong class="block text-caption"> No estabelecimento </strong>
 
           <small class="mt-1 block text-caption text-muted">
             Pague no momento do atendimento.
@@ -218,9 +196,7 @@ const {
         <AppIcon name="credit-card" />
 
         <span class="min-w-0 flex-1">
-          <strong class="block text-caption">
-            Online
-          </strong>
+          <strong class="block text-caption"> Online </strong>
 
           <small class="mt-1 block text-caption text-muted">
             M-Pesa e e-Mola.
@@ -231,10 +207,7 @@ const {
 
     <!-- Política de cancelamento -->
     <p class="my-2 flex items-start gap-2 text-caption text-muted">
-      <AppIcon
-        name="calendar-clock"
-        :size="16"
-      />
+      <AppIcon name="calendar-clock" :size="16" />
 
       <span>
         Pode cancelar ou reagendar até

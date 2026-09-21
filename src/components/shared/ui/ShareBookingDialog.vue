@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
 import AppModal from "@/components/shared/ui/AppModal.vue";
+import PhoneInput from "@/components/shared/ui/PhoneInput.vue";
 
 import {
   business,
@@ -15,10 +15,7 @@ import {
   state,
 } from "@/stores/applicationStore.ts";
 
-import {
-  shareBookingId,
-  shareOpen,
-} from "@/stores/shareBookingStore.ts";
+import { shareBookingId, shareOpen } from "@/stores/shareBookingStore.ts";
 
 import {
   bookingLink,
@@ -29,28 +26,20 @@ import {
 } from "@/utils/whatsapp.ts";
 
 const booking = computed(() =>
-  state.db.bookings.find(
-    (item) => item.id === shareBookingId.value,
-  ),
+  state.db.bookings.find((item) => item.id === shareBookingId.value),
 );
 
 const company = computed(() =>
-  booking.value
-    ? business(booking.value.businessId)
-    : undefined,
+  booking.value ? business(booking.value.businessId) : undefined,
 );
 
 const item = computed(() =>
-  booking.value
-    ? service(booking.value.serviceId)
-    : undefined,
+  booking.value ? service(booking.value.serviceId) : undefined,
 );
 
 const client = computed(() =>
   booking.value
-    ? state.db.clients.find(
-        (entry) => entry.id === booking.value?.clientId,
-      )
+    ? state.db.clients.find((entry) => entry.id === booking.value?.clientId)
     : undefined,
 );
 
@@ -62,10 +51,7 @@ watch(
   () => {
     if (!shareOpen.value) return;
 
-    phone.value =
-      booking.value?.whatsapp ||
-      client.value?.phone ||
-      "";
+    phone.value = booking.value?.whatsapp || client.value?.phone || "";
 
     copied.value = false;
   },
@@ -73,32 +59,19 @@ watch(
 );
 
 const link = computed(() =>
-  booking.value
-    ? bookingLink(
-        bookingShareToken(booking.value.id),
-      )
-    : "",
+  booking.value ? bookingLink(bookingShareToken(booking.value.id)) : "",
 );
 
 const message = computed(() =>
   booking.value
-    ? bookingMessage(
-        booking.value,
-        company.value,
-        item.value,
-        link.value,
-      )
+    ? bookingMessage(booking.value, company.value, item.value, link.value)
     : "",
 );
 
-const valid = computed(() =>
-  isUsablePhone(phone.value),
-);
+const valid = computed(() => isUsablePhone(phone.value));
 
 const normalizedPhone = computed(() =>
-  valid.value
-    ? normalizePhone(phone.value)
-    : "",
+  valid.value ? normalizePhone(phone.value) : "",
 );
 
 function remember(): void {
@@ -138,9 +111,7 @@ async function copy(): Promise<void> {
     copied.value = true;
     notify("Ligação copiada.");
   } catch {
-    notify(
-      "Não foi possível copiar. Seleccione a ligação e copie à mão.",
-    );
+    notify("Não foi possível copiar. Seleccione a ligação e copie à mão.");
   }
 }
 
@@ -150,51 +121,18 @@ function closeModal(): void {
 </script>
 
 <template>
-  <AppModal
-    v-model="shareOpen"
-    title="Enviar a marcação ao cliente"
-  >
-    <form
-      v-if="booking"
-      class="share-booking-form"
-      @submit.prevent="send"
-    >
+  <AppModal v-model="shareOpen" title="Enviar a marcação ao cliente">
+    <form v-if="booking" class="share-booking-form" @submit.prevent="send">
       <!-- Contacto de WhatsApp -->
       <div class="field">
         <label for="share-booking-phone">
           Contacto de WhatsApp do cliente
         </label>
 
-        <div class="phone-input-wrapper">
-          <span class="phone-prefix">
-            <AppIcon
-              name="message-circle"
-              :size="18"
-            />
-          </span>
-
-          <InputText
-            id="share-booking-phone"
-            v-model="phone"
-            type="tel"
-            inputmode="tel"
-            autocomplete="tel"
-            placeholder="84 123 4567"
-            class="share-input w-full rounded-4xl"
-            :class="{
-              'share-input-valid': phone && valid,
-              'share-input-invalid': phone && !valid,
-            }"
-            required
-          />
-        </div>
+        <PhoneInput v-model="phone" required />
 
         <small class="field-help">
-          <AppIcon
-            name="info"
-            :size="14"
-            class="shrink-0"
-          />
+          <AppIcon name="info" :size="14" class="shrink-0" />
 
           <span>
             Sem indicativo assume-se Moçambique (+258).
@@ -202,22 +140,13 @@ function closeModal(): void {
             <template v-if="valid">
               Vai para
 
-              <strong>
-                +{{ normalizedPhone }}
-              </strong>.
+              <strong> +{{ normalizedPhone }} </strong>.
             </template>
           </span>
         </small>
 
-        <small
-          v-if="phone && !valid"
-          class="field-error"
-        >
-          <AppIcon
-            name="circle-alert"
-            :size="14"
-            class="shrink-0"
-          />
+        <small v-if="phone && !valid" class="field-error">
+          <AppIcon name="circle-alert" :size="14" class="shrink-0" />
 
           Introduza um contacto de WhatsApp válido.
         </small>
@@ -226,15 +155,10 @@ function closeModal(): void {
       <!-- Mensagem -->
       <div class="field">
         <div class="message-label">
-          <label for="share-booking-message">
-            Mensagem
-          </label>
+          <label for="share-booking-message"> Mensagem </label>
 
           <span class="message-status rounded-4xl">
-            <AppIcon
-              name="lock"
-              :size="12"
-            />
+            <AppIcon name="lock" :size="12" />
 
             Gerada automaticamente
           </span>
@@ -250,15 +174,11 @@ function closeModal(): void {
         />
 
         <small class="field-help">
-          <AppIcon
-            name="info"
-            :size="14"
-            class="shrink-0"
-          />
+          <AppIcon name="info" :size="14" class="shrink-0" />
 
           <span>
-            A mensagem abre no WhatsApp já preenchida. Pode alterá-la
-            antes de enviar.
+            A mensagem abre no WhatsApp já preenchida. Pode alterá-la antes de
+            enviar.
           </span>
         </small>
       </div>
@@ -279,16 +199,11 @@ function closeModal(): void {
           type="button"
           class="copy-link-button rounded-4xl"
           :aria-label="
-            copied
-              ? 'Ligação copiada'
-              : 'Copiar ligação da marcação'
+            copied ? 'Ligação copiada' : 'Copiar ligação da marcação'
           "
           @click="copy"
         >
-          <AppIcon
-            :name="copied ? 'check-check' : 'copy'"
-            :size="16"
-          />
+          <AppIcon :name="copied ? 'check-check' : 'copy'" :size="16" />
 
           <span>
             {{ copied ? "Copiada" : "Copiar" }}
@@ -311,10 +226,7 @@ function closeModal(): void {
           class="btn btn-primary rounded-4xl"
           :disabled="!valid"
         >
-          <AppIcon
-            name="send"
-            :size="18"
-          />
+          <AppIcon name="send" :size="18" />
 
           Abrir WhatsApp
         </button>
@@ -322,20 +234,11 @@ function closeModal(): void {
     </form>
 
     <!-- Marcação não encontrada -->
-    <div
-      v-else
-      class="empty-booking rounded-4xl"
-    >
-      <AppIcon
-        name="calendar-x"
-        :size="28"
-        class="shrink-0"
-      />
+    <div v-else class="empty-booking rounded-4xl">
+      <AppIcon name="calendar-x" :size="28" class="shrink-0" />
 
       <div>
-        <strong class="text-ink">
-          Marcação não encontrada
-        </strong>
+        <strong class="text-ink"> Marcação não encontrada </strong>
 
         <p class="mt-1 text-caption text-muted">
           Não foi possível carregar os dados desta marcação.
@@ -354,39 +257,24 @@ function closeModal(): void {
 </template>
 
 <style scoped>
+/* Os nomes `--booking-*` ficam (sao usados por toda a folha abaixo), mas
+   apontam agora para os tokens da aplicacao: um unico sitio decide as cores
+   dos campos nos dois temas, em vez de duas paletas paralelas aqui dentro. */
 .new-booking-form {
-  --booking-input-bg: #ffffff;
-  --booking-input-text: #17211d;
-  --booking-input-muted: #6b756f;
-  --booking-input-placeholder: #89938e;
-  --booking-input-border: #dce3df;
-  --booking-input-hover: #aab8b0;
-  --booking-input-focus: var(--brand-500, #019e51);
-  --booking-overlay-bg: #ffffff;
-  --booking-option-hover: #eef8f2;
-  --booking-option-active: #ddf5e7;
+  --booking-input-bg: var(--field-bg);
+  --booking-input-text: var(--field-ink);
+  --booking-input-muted: var(--muted);
+  --booking-input-placeholder: var(--field-placeholder);
+  --booking-input-border: var(--field-border);
+  --booking-input-hover: var(--primary);
+  --booking-input-focus: var(--primary);
+  --booking-overlay-bg: var(--surface);
+  --booking-option-hover: var(--surface-muted);
+  --booking-option-active: var(--selected-bg);
 
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  color-scheme: light;
-}
-
-/* Dark mode */
-:global(.dark) .new-booking-form,
-:global([data-theme="dark"]) .new-booking-form {
-  --booking-input-bg: #123d2d;
-  --booking-input-text: #ffffff;
-  --booking-input-muted: #d1e5da;
-  --booking-input-placeholder: #b5d2c2;
-  --booking-input-border: #2d684d;
-  --booking-input-hover: #47916d;
-  --booking-input-focus: #4ade80;
-  --booking-overlay-bg: #0e3325;
-  --booking-option-hover: #17533a;
-  --booking-option-active: #1c6848;
-
-  color-scheme: dark;
 }
 
 /* Permite apresentar os painéis dentro do modal */
@@ -417,13 +305,8 @@ function closeModal(): void {
 
 :deep(.booking-select.p-focus) {
   border-color: var(--booking-input-focus);
-  box-shadow:
-    0 0 0 3px
-    color-mix(
-      in srgb,
-      var(--booking-input-focus) 20%,
-      transparent
-    );
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--booking-input-focus) 20%, transparent);
 }
 
 :deep(.booking-select .p-select-label) {
@@ -515,12 +398,7 @@ function closeModal(): void {
   flex-shrink: 0;
   place-items: center;
   border-radius: 9999px;
-  background:
-    color-mix(
-      in srgb,
-      var(--booking-input-focus) 15%,
-      transparent
-    );
+  background: color-mix(in srgb, var(--booking-input-focus) 15%, transparent);
   color: var(--booking-input-focus);
 }
 
@@ -576,13 +454,8 @@ function closeModal(): void {
 :deep(.booking-datepicker .p-inputtext:focus) {
   border-color: var(--booking-input-focus);
   outline: none;
-  box-shadow:
-    0 0 0 3px
-    color-mix(
-      in srgb,
-      var(--booking-input-focus) 20%,
-      transparent
-    );
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--booking-input-focus) 20%, transparent);
 }
 
 :deep(.booking-datepicker .p-datepicker-input-icon-container) {
@@ -624,23 +497,18 @@ function closeModal(): void {
 :deep(.booking-textarea.p-textarea:focus) {
   border-color: var(--booking-input-focus);
   outline: none;
-  box-shadow:
-    0 0 0 3px
-    color-mix(
-      in srgb,
-      var(--booking-input-focus) 20%,
-      transparent
-    );
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--booking-input-focus) 20%, transparent);
 }
 
 /* Horários */
 .booking-time {
   min-width: 64px;
   padding: 0.55rem 1rem;
-  border: 1px solid #238356;
+  border: 1px solid var(--field-border);
   border-radius: 2rem;
-  background: #176b45;
-  color: #ffffff;
+  background: var(--field-bg);
+  color: var(--field-ink);
   font-size: var(--text-caption, 0.8rem);
   font-weight: 600;
   cursor: pointer;
@@ -651,55 +519,31 @@ function closeModal(): void {
     transform 160ms ease;
 }
 
+/* Por seleccionar: a mesma caixa dos restantes campos — no claro branca,
+   no escuro verde. Antes eram todos verdes cheios e pareciam seleccionados. */
 .booking-time-default {
-  border-color: #238356;
-  background: #176b45;
-  color: #ffffff;
+  border-color: var(--field-border);
+  background: var(--field-bg);
+  color: var(--field-ink);
 }
 
 .booking-time-default:hover {
-  border-color: #5bea9a;
-  background: #125839;
-  color: #ffffff;
+  border-color: var(--primary);
+  background: var(--soft);
   transform: translateY(-1px);
 }
 
+/* Seleccionado: verde com texto branco, como em todo o projecto. */
 .booking-time-active {
-  border-color: #70f0aa;
-  background: #0b452e;
-  color: #ffffff;
-  box-shadow:
-    0 0 0 3px
-    color-mix(
-      in srgb,
-      #4ade80 30%,
-      transparent
-    );
+  border-color: var(--selected-border);
+  background: var(--selected-bg);
+  color: var(--selected-ink);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 30%, transparent);
 }
 
 .booking-time:focus-visible {
-  outline: 2px solid #4ade80;
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
-}
-
-:global(.dark) .booking-time-default,
-:global([data-theme="dark"]) .booking-time-default {
-  border-color: #40946d;
-  background: #155b3d;
-  color: #ffffff;
-}
-
-:global(.dark) .booking-time-default:hover,
-:global([data-theme="dark"]) .booking-time-default:hover {
-  border-color: #70f0aa;
-  background: #1b704c;
-}
-
-:global(.dark) .booking-time-active,
-:global([data-theme="dark"]) .booking-time-active {
-  border-color: #70f0aa;
-  background: #082f20;
-  color: #ffffff;
 }
 
 /* Sem horários */
@@ -724,9 +568,7 @@ function closeModal(): void {
 /* Autofill */
 :deep(.booking-textarea:-webkit-autofill) {
   -webkit-text-fill-color: var(--booking-input-text);
-  box-shadow:
-    0 0 0 1000px
-    var(--booking-input-bg) inset;
+  box-shadow: 0 0 0 1000px var(--booking-input-bg) inset;
 }
 
 /* Mobile */

@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import AppModal from "@/components/shared/ui/AppModal.vue";
+import PhoneInput from "@/components/shared/ui/PhoneInput.vue";
 import { usePlatformManagementContext } from "@/composables/platform/platformContext.ts";
+import InputText from "primevue/inputtext";
+import Select from "primevue/select";
 const {
   state,
   roleNames,
@@ -21,41 +24,55 @@ const {
     ><form @submit.prevent="saveUser">
       <div class="form-grid">
         <label class="field form-grid-full"
-          >Nome completo<input
+          ><span>Nome completo</span
+          ><InputText
             v-model="userForm.name"
+            data-person-name
             required
             maxlength="100" /></label
         ><label class="field"
-          >Email<input v-model="userForm.email" type="email" required /></label
+          ><span>Email</span
+          ><InputText v-model="userForm.email" type="email" required /></label
         ><label class="field"
-          >Telemóvel<input
-            v-model="userForm.phone"
-            type="tel"
-            required /></label
+          ><span>Telemóvel</span
+          ><PhoneInput v-model="userForm.phone" required /></label
         ><label class="field"
-          >Perfil<select
+          >Perfil<Select
             v-model="userForm.role"
             :disabled="userForm.id === state.userId"
-          >
-            <option v-for="(name, role) in roleNames" :key="role" :value="role">
-              {{ name }}
-            </option>
-          </select></label
+            :options="[
+              ...Object.entries(roleNames).map(([role, name]) => ({
+                label: name,
+                value: role,
+              })),
+            ]"
+            option-label="label"
+            option-value="value"
+            append-to="self" /></label
         ><label
           v-if="['manager', 'professional'].includes(userForm.role)"
           class="field"
-          >Estabelecimento<select v-model="userForm.businessId" required>
-            <option value="" disabled>Seleccionar estabelecimento</option>
-            <option v-for="item in businesses" :key="item.id" :value="item.id">
-              {{ item.name }}
-            </option>
-          </select></label
+          ><span>Estabelecimento</span
+          ><Select
+            v-model="userForm.businessId"
+            required
+            :options="[
+              { label: 'Seleccionar estabelecimento', value: '' },
+              ...businesses.map((item) => ({
+                label: item.name,
+                value: item.id,
+              })),
+            ]"
+            option-label="label"
+            option-value="value"
+            append-to="self" /></label
         ><label class="field form-grid-full"
-          >{{
+          ><span>{{
             userForm.id
               ? "Nova palavra-passe (opcional)"
               : "Palavra-passe inicial"
-          }}<input
+          }}</span
+          ><input
             v-model="userForm.password"
             type="password"
             autocomplete="new-password"
@@ -64,7 +81,8 @@ const {
             placeholder="Pelo menos 8 caracteres" /></label
         ><template v-if="userForm.role === 'professional'"
           ><label class="field form-grid-full"
-            >Especialidade<input
+            ><span>Especialidade</span
+            ><InputText
               v-model="userForm.title"
               placeholder="Ex.: Terapeuta, médico, especialista"
               required

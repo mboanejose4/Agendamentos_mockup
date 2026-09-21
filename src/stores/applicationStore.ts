@@ -2,6 +2,7 @@
    Sem backend: tudo acontece aqui, sobre uma base de dados em memória que é
    guardada no armazenamento local do navegador. */
 import { money, dateLabel } from "@/utils/formatters.ts";
+import { isUsablePhone, normalizePhone } from "@/utils/whatsapp.ts";
 export { money, dateLabel };
 import { reactive, watch } from "vue";
 import type {
@@ -1243,18 +1244,29 @@ export async function registerAccount({
   const cleanEmail = String(email || "")
     .trim()
     .toLowerCase();
-  if (
-    !String(name || "").trim() ||
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)
-  )
-    return { ok: false, error: "Preencha o nome e um email válido." };
+  const cleanPhone = String(phone || "").trim();
+  if (!String(name || "").trim())
+    return { ok: false, error: "Preencha o nome." };
+  if (cleanEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail))
+    return { ok: false, error: "Introduza um email válido ou deixe-o vazio." };
+  if (!isUsablePhone(cleanPhone))
+    return { ok: false, error: "Introduza um contacto válido." };
   if (String(password || "").length < 8)
     return {
       ok: false,
       error: "A palavra-passe deve ter pelo menos 8 caracteres.",
     };
-  if (state.db.users.some((user) => user.email.toLowerCase() === cleanEmail))
+  if (
+    cleanEmail &&
+    state.db.users.some((user) => user.email.toLowerCase() === cleanEmail)
+  )
     return { ok: false, error: "Já existe uma conta com este email." };
+  if (
+    state.db.users.some(
+      (user) => normalizePhone(user.phone) === normalizePhone(cleanPhone),
+    )
+  )
+    return { ok: false, error: "Já existe uma conta com este contacto." };
   if (!globalThis.crypto?.subtle)
     return {
       ok: false,
@@ -1268,7 +1280,7 @@ export async function registerAccount({
     id: uid("u"),
     name: String(name).trim(),
     email: cleanEmail,
-    phone: String(phone || "").trim(),
+    phone: cleanPhone,
     role: "client",
     businessId: "",
     active: true,
@@ -1289,18 +1301,22 @@ export async function registerAccount({
 }
 
 export async function loginAccount({
-  email,
+  identifier,
   password,
 }: {
-  email: string;
+  identifier: string;
   password: string;
 }): Promise<OperationResult<User>> {
+  const cleanIdentifier = String(identifier || "")
+    .trim()
+    .toLowerCase();
+  const contactIdentifier = isUsablePhone(cleanIdentifier)
+    ? normalizePhone(cleanIdentifier)
+    : "";
   const user = state.db.users.find(
     (entry) =>
-      entry.email.toLowerCase() ===
-      String(email || "")
-        .trim()
-        .toLowerCase(),
+      entry.email.toLowerCase() === cleanIdentifier ||
+      (contactIdentifier && normalizePhone(entry.phone) === contactIdentifier),
   );
   if (
     !user?.active ||
@@ -1311,14 +1327,17 @@ export async function loginAccount({
     return {
       ok: false,
       error:
-        "Email ou palavra-passe incorrectos. Para contas de exemplo, use os perfis de demonstração.",
+        "Contacto, email ou palavra-passe incorrectos. Para contas de exemplo, use os perfis de demonstração.",
     };
   const digest = await passwordDigest(
     String(password || ""),
     user.passwordSalt,
   );
   if (digest !== user.passwordHash)
-    return { ok: false, error: "Email ou palavra-passe incorrectos." };
+    return {
+      ok: false,
+      error: "Contacto, email ou palavra-passe incorrectos.",
+    };
   enterAccount(user);
   audit("Sessão iniciada", user.businessId);
   return { ok: true, record: user };

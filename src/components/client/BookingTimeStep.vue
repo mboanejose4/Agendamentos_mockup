@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 import { computed } from "vue";
 
@@ -10,15 +9,8 @@ import AppIcon from "@/components/shared/ui/AppIcon.vue";
 
 import { useBookingFlowContext } from "@/composables/bookings/bookingContext.ts";
 
-const {
-  today,
-  draft,
-  selectedService,
-  people,
-  slots,
-  dates,
-  maxDate,
-} = useBookingFlowContext();
+const { today, draft, selectedService, people, slots, dates, maxDate } =
+  useBookingFlowContext();
 
 /*
  * Converte uma data no formato YYYY-MM-DD
@@ -136,11 +128,11 @@ const durationLabel = computed(() => {
 <template>
   <div class="flex flex-col">
     <!-- Cabeçalho e selecção da data -->
-    <div
-      class="mb-5 flex flex-wrap items-center justify-between gap-4"
-    >
+    <div class="mb-5 flex flex-wrap items-center justify-between gap-4">
       <h2 class="mb-0">
-        Qual é o melhor dia?
+        Qual é o melhor dia?<span class="required-marker" aria-hidden="true"
+          >*</span
+        >
       </h2>
 
       <!-- Calendário PrimeVue -->
@@ -157,6 +149,8 @@ const durationLabel = computed(() => {
         class="booking-datepicker !rounded-4xl"
         input-class="!rounded-4xl"
         panel-class="booking-calendar-panel"
+        append-to="self"
+        required
       />
     </div>
 
@@ -173,8 +167,8 @@ const durationLabel = computed(() => {
         class="booking-date-card flex min-w-0 flex-col items-center justify-center gap-2 !rounded-4xl !border !px-1 !py-[13px] !shadow-none"
         :class="
           draft.date === date
-            ? '!border-primary-text !bg-soft !text-primary-text'
-            : '!border-line !bg-surface !text-ink hover:!border-primary-text hover:!bg-soft'
+            ? 'is-selected'
+            : '!border-line !bg-surface !text-ink hover:!border-primary hover:!bg-soft'
         "
         @click="selectDate(date)"
       >
@@ -200,12 +194,8 @@ const durationLabel = computed(() => {
     />
 
     <!-- Cabeçalho dos horários -->
-    <div
-      class="mb-5 flex flex-wrap items-center justify-between gap-[15px]"
-    >
-      <h3 class="mb-0">
-        Horários disponíveis
-      </h3>
+    <div class="mb-5 flex flex-wrap items-center justify-between gap-[15px]">
+      <h3 class="mb-0">Horários disponíveis</h3>
 
       <span class="text-caption text-muted">
         {{ durationLabel }}
@@ -226,7 +216,7 @@ const durationLabel = computed(() => {
         class="booking-time-button min-h-[43px] !rounded-4xl !border !text-caption !shadow-none"
         :class="[
           draft.time === time
-            ? '!border-primary !bg-primary !text-on-primary booking-time-selected'
+            ? 'is-selected'
             : '!border-line !bg-surface !text-ink hover:!border-primary hover:!bg-soft',
         ]"
         @click="draft.time = time"
@@ -236,22 +226,13 @@ const durationLabel = computed(() => {
     </div>
 
     <!-- Sem horários disponíveis -->
-    <div
-      v-else
-      class="empty-state rounded-4xl"
-    >
-      <AppIcon
-        name="calendar-clock"
-        :size="32"
-      />
+    <div v-else class="empty-state rounded-4xl">
+      <AppIcon name="calendar-clock" :size="32" />
 
-      <h3>
-        Sem horários neste dia
-      </h3>
+      <h3>Sem horários neste dia</h3>
 
       <p>
-        Escolha outra data ou ajuste a preferência
-        de profissional ou recurso.
+        Escolha outra data ou ajuste a preferência de profissional ou recurso.
       </p>
     </div>
   </div>
@@ -289,16 +270,6 @@ const durationLabel = computed(() => {
     background-color 0.2s ease,
     border-color 0.2s ease,
     color 0.2s ease;
-}
-
-/*
- * Horário seleccionado no tema claro.
- */
-:global(:root:not([data-theme="dark"]))
-.booking-time-selected {
-  background-color: var(--brand-500) !important;
-  border-color: var(--white) !important;
-  color: var(--neutral-0) !important;
 }
 
 /*

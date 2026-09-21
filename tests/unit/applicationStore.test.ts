@@ -196,14 +196,20 @@ test("accounts can register and sign in with a salted hash, without storing plai
   assert.equal(
     (
       await loginAccount({
-        email: "test@example.com",
+        identifier: "test@example.com",
         password: "wrong-password",
       })
     ).ok,
     false,
   );
   assert.equal(
-    (await loginAccount({ email: "test@example.com", password })).ok,
+    (await loginAccount({ identifier: "test@example.com", password })).ok,
+    true,
+  );
+  assert.equal(state.userId, account.id);
+  logout();
+  assert.equal(
+    (await loginAccount({ identifier: "84 000 0001", password })).ok,
     true,
   );
   assert.equal(state.userId, account.id);
@@ -212,18 +218,40 @@ test("accounts can register and sign in with a salted hash, without storing plai
     true,
   );
   assert.equal(
-    (await loginAccount({ email: "test@example.com", password })).ok,
+    (await loginAccount({ identifier: "test@example.com", password })).ok,
     false,
   );
   assert.equal(
     (
       await loginAccount({
-        email: "test@example.com",
+        identifier: "+258 84 000 0001",
         password: "new-strong-secret",
       })
     ).ok,
     true,
   );
+});
+
+test("accounts can register without an email address", async () => {
+  const first = recordOf(
+    await registerAccount({
+      name: "Cliente sem email",
+      email: "",
+      phone: "+258 840000002",
+      password: "strong-secret-123",
+    }),
+  );
+
+  assert.equal(first.email, "");
+
+  const second = await registerAccount({
+    name: "Outro cliente sem email",
+    email: "",
+    phone: "+258 840000003",
+    password: "strong-secret-456",
+  });
+
+  assert.equal(second.ok, true);
 });
 
 test("reminders are generated once per upcoming booking time and respect notification settings", () => {

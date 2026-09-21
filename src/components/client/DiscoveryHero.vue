@@ -208,8 +208,9 @@ function scrollToResults(): void {
       >
         <h2 class="mb-2 text-body font-semibold text-white">Como funciona</h2>
         <p class="mb-4 max-w-[680px] text-caption text-white/80">
-          Encontre um estabelecimento, escolha um serviço e um horário disponível.
-          Antes de confirmar, veja o preço e as formas de pagamento aceites.
+          Encontre um estabelecimento, escolha um serviço e um horário
+          disponível. Antes de confirmar, veja o preço e as formas de pagamento
+          aceites.
         </p>
         <MobileCarousel
           tag="ol"

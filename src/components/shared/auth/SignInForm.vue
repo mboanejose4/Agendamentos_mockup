@@ -1,8 +1,8 @@
-
 <script setup lang="ts">
 import { computed } from "vue";
 
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
+import PhoneInput from "@/components/shared/ui/PhoneInput.vue";
 import { useSignIn } from "@/composables/auth/useSignIn.ts";
 
 // PrimeVue Free
@@ -13,15 +13,7 @@ import Tabs from "primevue/tabs";
 import TabList from "primevue/tablist";
 import Tab from "primevue/tab";
 
-const {
-  state,
-  go,
-  mode,
-  busy,
-  error,
-  account,
-  submit,
-} = useSignIn();
+const { state, go, mode, busy, error, account, submit } = useSignIn();
 
 /*
  * Mantém o modo de autenticação sincronizado
@@ -42,9 +34,7 @@ const activeTab = computed({
 const submitLabel = computed(() => {
   if (busy.value) return "Aguarde…";
 
-  return mode.value === "login"
-    ? "Entrar"
-    : "Criar conta";
+  return mode.value === "login" ? "Entrar" : "Criar conta";
 });
 
 /*
@@ -65,40 +55,24 @@ function registerBusiness(): void {
       class="mb-6 flex items-start gap-3 rounded-4xl bg-surface-muted p-4 text-primary-text"
       role="status"
     >
-      <AppIcon
-        name="building-2"
-        :size="20"
-      />
+      <AppIcon name="building-2" :size="20" />
 
       <p class="text-caption leading-[1.6]">
         <strong>Registar a sua empresa</strong>
 
         <br />
 
-        Primeiro, crie uma conta ou inicie sessão.
-        A seguir, preencha os dados do estabelecimento.
+        Primeiro, crie uma conta ou inicie sessão. A seguir, preencha os dados
+        do estabelecimento.
       </p>
     </div>
 
     <!-- Separadores de autenticação -->
-    <Tabs
-      v-model:value="activeTab"
-      class="auth-tabs mb-8"
-    >
+    <Tabs v-model:value="activeTab" class="auth-tabs mb-8">
       <TabList class="auth-tab-list">
-        <Tab
-          value="login"
-          class="auth-tab"
-        >
-          Iniciar sessão
-        </Tab>
+        <Tab value="login" class="auth-tab"> Iniciar sessão </Tab>
 
-        <Tab
-          value="register"
-          class="auth-tab"
-        >
-          Criar conta
-        </Tab>
+        <Tab value="register" class="auth-tab"> Criar conta </Tab>
       </TabList>
     </Tabs>
 
@@ -120,21 +94,16 @@ function registerBusiness(): void {
     </p>
 
     <!-- Formulário -->
-    <form
-      class="flex flex-col gap-5"
-      @submit.prevent="submit"
-    >
+    <form class="flex flex-col gap-5" @submit.prevent="submit">
       <!-- Nome completo -->
-      <label
-        v-if="mode === 'register'"
-        class="field"
-      >
+      <label v-if="mode === 'register'" class="field">
         <span>Nome completo</span>
 
         <InputText
           v-model.trim="account.name"
           name="name"
           autocomplete="name"
+          data-person-name
           required
           :maxlength="100"
           placeholder="O seu nome"
@@ -144,35 +113,37 @@ function registerBusiness(): void {
 
       <!-- E-mail -->
       <label class="field">
-        <span>E-mail</span>
+        <span>
+          {{ mode === "login" ? "Contacto ou email" : "E-mail" }}
+          <span v-if="mode === 'register'" class="text-muted">
+            (opcional)
+          </span>
+        </span>
 
         <InputText
           v-model.trim="account.email"
-          name="email"
-          type="email"
-          autocomplete="email"
-          required
-          placeholder="nome@exemplo.com"
+          :name="mode === 'login' ? 'username' : 'email'"
+          :type="mode === 'login' ? 'text' : 'email'"
+          :autocomplete="mode === 'login' ? 'username' : 'email'"
+          :required="mode === 'login'"
+          :placeholder="
+            mode === 'login'
+              ? '+258 84 000 0000 ou nome@exemplo.com'
+              : 'nome@exemplo.com'
+          "
           class="auth-input !w-full !rounded-4xl"
         />
       </label>
 
       <!-- Telemóvel -->
-      <label
-        v-if="mode === 'register'"
-        class="field"
-      >
+      <label v-if="mode === 'register'" class="field">
         <span>Telemóvel</span>
 
-        <InputText
+        <PhoneInput
           v-model.trim="account.phone"
           name="phone"
-          type="tel"
-          inputmode="tel"
           autocomplete="tel"
           required
-          placeholder="+258 84 000 0000"
-          class="auth-input !w-full !rounded-4xl"
         />
       </label>
 
@@ -189,9 +160,7 @@ function registerBusiness(): void {
           required
           :minlength="mode === 'register' ? 8 : 1"
           :autocomplete="
-            mode === 'register'
-              ? 'new-password'
-              : 'current-password'
+            mode === 'register' ? 'new-password' : 'current-password'
           "
           :placeholder="
             mode === 'register'
@@ -203,12 +172,41 @@ function registerBusiness(): void {
         />
       </label>
 
+      <!-- Confirmação da palavra-passe -->
+      <label v-if="mode === 'register'" class="field">
+        <span>Confirmar palavra-passe</span>
+
+        <Password
+          v-model="account.confirmPassword"
+          name="confirmPassword"
+          :feedback="false"
+          toggle-mask
+          fluid
+          required
+          :minlength="8"
+          autocomplete="new-password"
+          placeholder="Repita a palavra-passe"
+          :invalid="
+            Boolean(account.confirmPassword) &&
+            account.password !== account.confirmPassword
+          "
+          class="auth-password !w-full"
+          input-class="!w-full !rounded-4xl"
+        />
+
+        <small
+          v-if="
+            account.confirmPassword &&
+            account.password !== account.confirmPassword
+          "
+          class="text-danger"
+        >
+          As palavras-passe não coincidem.
+        </small>
+      </label>
+
       <!-- Mensagem de erro -->
-      <p
-        v-if="error"
-        class="error-message"
-        role="alert"
-      >
+      <p v-if="error" class="error-message" role="alert">
         {{ error }}
       </p>
 
@@ -227,11 +225,7 @@ function registerBusiness(): void {
 
         <span>{{ submitLabel }}</span>
 
-        <AppIcon
-          v-if="!busy"
-          name="arrow-right"
-          :size="17"
-        />
+        <AppIcon v-if="!busy" name="arrow-right" :size="17" />
       </Button>
     </form>
 
@@ -243,15 +237,11 @@ function registerBusiness(): void {
       class="text-button mt-5 !rounded-4xl"
       @click="registerBusiness"
     >
-      <AppIcon
-        name="building-2"
-        :size="17"
-      />
+      <AppIcon name="building-2" :size="17" />
 
       Quero registar a minha empresa
     </Button>
 
-   
     <!-- Voltar à exploração -->
     <Button
       type="button"
@@ -259,26 +249,23 @@ function registerBusiness(): void {
       class="text-button !rounded-4xl"
       @click="go('explore')"
     >
-      <AppIcon
-        name="arrow-left"
-        :size="16"
-      />
+      <AppIcon name="arrow-left" :size="16" />
 
       Continuar a explorar
     </Button>
   </section>
 </template>
 
-
 <style scoped>
-
+/* Os campos seguem os tokens partilhados (`--field-*`): claro a branco,
+   escuro a verde com texto branco, sem uma segunda paleta neste ficheiro. */
 .auth-input,
 .auth-password :deep(.p-password-input) {
   width: 100%;
   border-radius: var(--radius-4xl, 2rem) !important;
 
-  background-color: #ffffff !important;
-  color: #111827 !important;
+  background-color: var(--field-bg) !important;
+  color: var(--field-ink) !important;
 
   border: 1px solid;
   box-shadow: none;
@@ -287,7 +274,7 @@ function registerBusiness(): void {
 /* Placeholder */
 .auth-input::placeholder,
 .auth-password :deep(.p-password-input::placeholder) {
-  color: #6b7280;
+  color: var(--field-placeholder);
 }
 
 /* Foco */
@@ -306,32 +293,6 @@ function registerBusiness(): void {
 /* Ícone de mostrar/ocultar palavra-passe */
 .auth-password :deep(.p-password-toggle-mask-icon) {
   margin-right: 0.25rem;
-}
-
-/* ==========================================
-   2. INPUTS — MODO ESCURO
-========================================== */
-
-:global(:root[data-theme="dark"]) .auth-input,
-:global(:root[data-theme="dark"])
-  .auth-password :deep(.p-password-input) {
-  background-color: #000000 !important;
-  color: #ffffff !important;
-  border-color: var(--line) !important;
-}
-
-:global(:root[data-theme="dark"]) .auth-input::placeholder,
-:global(:root[data-theme="dark"])
-  .auth-password :deep(.p-password-input::placeholder) {
-  color: #9ca3af;
-}
-
-/* Foco no modo escuro */
-:global(:root[data-theme="dark"]) .auth-input:focus,
-:global(:root[data-theme="dark"])
-  .auth-password :deep(.p-password-input:focus) {
-  border-color: var(--brand-500) !important;
-  box-shadow: 0 0 0 1px var(--brand-500) !important;
 }
 
 .auth-tabs {
@@ -388,8 +349,8 @@ function registerBusiness(): void {
 }
 
 .auth-tabs :deep(.p-tab[aria-selected="true"]) {
-  background: var(--brand-500) !important;
-  color: #ffffff !important;
+  background: var(--selected-bg) !important;
+  color: var(--selected-ink) !important;
 
   border: none !important;
   border-bottom: 0 !important;
@@ -410,7 +371,6 @@ function registerBusiness(): void {
   display: none !important;
 }
 
-
 .auth-tabs :deep(.p-tab:hover:not([aria-selected="true"])) {
   background: var(--surface) !important;
   color: var(--ink) !important;
@@ -420,24 +380,18 @@ function registerBusiness(): void {
    recebe hover ou foco */
 .auth-tabs :deep(.p-tab[aria-selected="true"]:hover),
 .auth-tabs :deep(.p-tab[aria-selected="true"]:focus-visible) {
-  background: var(--brand-500) !important;
-  color: #ffffff !important;
+  background: var(--selected-bg) !important;
+  color: var(--selected-ink) !important;
   border-bottom: 0 !important;
 }
 
-:global(:root[data-theme="dark"])
-  .auth-tabs :deep(.p-tablist-tab-list) {
+:global(:root[data-theme="dark"]) .auth-tabs :deep(.p-tablist-tab-list) {
   background: var(--surface-muted) !important;
 }
 
 :global(:root[data-theme="dark"])
-  .auth-tabs :deep(.p-tab[aria-selected="true"]) {
-  background: var(--brand-500) !important;
-  color: #ffffff !important;
-}
-
-:global(:root[data-theme="dark"])
-  .auth-tabs :deep(.p-tab:hover:not([aria-selected="true"])) {
+  .auth-tabs
+  :deep(.p-tab:hover:not([aria-selected="true"])) {
   background: var(--surface) !important;
   color: var(--ink) !important;
 }

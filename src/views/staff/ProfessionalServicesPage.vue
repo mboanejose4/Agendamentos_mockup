@@ -2,20 +2,18 @@
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
 import { plural } from "@/utils/formatters.ts";
 import { useAccountManagementContext } from "@/composables/account/accountContext.ts";
-const {
-  state,
-  money,
-  business,
-  service,
-  professional,
-  assignedServices,
-} = useAccountManagementContext();
+const { state, money, business, service, professional, assignedServices } =
+  useAccountManagementContext();
 </script>
 <template>
   <div>
     <div class="mb-5 flex flex-wrap items-center gap-2.5">
       <span class="rounded-4xl badge badge-neutral">{{
-        plural(assignedServices.length, "serviço atribuído", "serviços atribuídos")
+        plural(
+          assignedServices.length,
+          "serviço atribuído",
+          "serviços atribuídos",
+        )
       }}</span
       ><span class="text-muted">{{ business(state.businessId)?.name }}</span>
     </div>
@@ -32,7 +30,7 @@ const {
           class="rounded-4xl inline-flex size-10 items-center justify-center bg-soft text-primary-text"
           ><AppIcon name="sparkles"
         /></span>
-        <div class="min-w-0 ">
+        <div class="min-w-0">
           <div class="flex items-center justify-between gap-3">
             <h2 class="mb-0 text-body-lg">{{ item.name }}</h2>
             <span
@@ -45,13 +43,16 @@ const {
             </span>
           </div>
           <p class="mt-1 text-caption text-muted">
-            {{ item.description || "Atendimento com marcação no estabelecimento." }}
+            {{
+              item.description || "Atendimento com marcação no estabelecimento."
+            }}
           </p>
           <div
             class="mt-3 flex items-center justify-between gap-3 text-caption text-muted"
           >
             <span class="flex items-center gap-1.5"
-              ><AppIcon name="clock-3" :size="14" /> {{ item.duration }} min</span
+              ><AppIcon name="clock-3" :size="14" />
+              {{ item.duration }} min</span
             ><strong class="text-body text-ink">{{ money(item.price) }}</strong>
           </div>
         </div>

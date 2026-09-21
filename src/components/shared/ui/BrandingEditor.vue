@@ -3,6 +3,7 @@ import { computed, ref } from "vue";
 import type { Branding } from "@/types/domain.ts";
 import { normalizeBrand, textOn, isHexColor } from "@/utils/theme.ts";
 import BusinessIcon from "@/components/shared/ui/BusinessIcon.vue";
+import InputText from "primevue/inputtext";
 const props = withDefaults(
   defineProps<{ modelValue?: Partial<Branding>; businessName?: string }>(),
   { businessName: "A sua empresa" },
@@ -66,7 +67,7 @@ async function upload(event: Event) {
     </p>
     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
       <label class="field"
-        >Cor primária
+        ><span>Cor primária</span>
         <div class="flex items-center gap-2.5">
           <input
             aria-label="Cor primária"
@@ -76,7 +77,7 @@ async function upload(event: Event) {
             @input="
               update('primaryColor', ($event.target as HTMLInputElement).value)
             "
-          /><input
+          /><InputText
             aria-label="Código da cor primária"
             class="min-w-0 flex-1"
             pattern="#[0-9a-fA-F]{6}"
@@ -88,7 +89,7 @@ async function upload(event: Event) {
             required
           /></div></label
       ><label class="field"
-        >Cor secundária
+        ><span>Cor secundária</span>
         <div class="flex items-center gap-2.5">
           <input
             aria-label="Cor secundária"
@@ -101,7 +102,7 @@ async function upload(event: Event) {
                 ($event.target as HTMLInputElement).value,
               )
             "
-          /><input
+          /><InputText
             aria-label="Código da cor secundária"
             class="min-w-0 flex-1"
             pattern="#[0-9a-fA-F]{6}"

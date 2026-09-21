@@ -24,10 +24,7 @@ function timeStringToDate(value: string): Date | null {
 
   const [hours, minutes] = value.split(":").map(Number);
 
-  if (
-    Number.isNaN(hours) ||
-    Number.isNaN(minutes)
-  ) {
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) {
     return null;
   }
 
@@ -73,18 +70,11 @@ function dayInputId(dayId: number): string {
 
 <template>
   <div class="schedule-page">
-    <div
-      class="grid grid-cols-1 gap-8 lg:grid-cols-[1.8fr_1fr] lg:gap-10"
-    >
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1.8fr_1fr] lg:gap-10">
       <!-- Horário regular -->
-      <form
-        class="schedule-form"
-        @submit.prevent="saveSchedule"
-      >
+      <form class="schedule-form" @submit.prevent="saveSchedule">
         <header class="mb-5">
-          <h2 class="mb-1 text-body-lg">
-            Horário regular
-          </h2>
+          <h2 class="mb-1 text-body-lg">Horário regular</h2>
 
           <p class="text-small text-muted">
             {{ business(state.businessId)?.name }}
@@ -104,9 +94,7 @@ function dayInputId(dayId: number): string {
               :for="dayInputId(day.id)"
               :class="[
                 'day-option rounded-4xl',
-                schedule.days.includes(day.id)
-                  ? 'day-option-selected'
-                  : '',
+                schedule.days.includes(day.id) ? 'day-option-selected' : '',
               ]"
             >
               <Checkbox
@@ -124,9 +112,7 @@ function dayInputId(dayId: number): string {
         <!-- Horas -->
         <div class="form-grid">
           <div class="field">
-            <label for="schedule-start">
-              Início do turno
-            </label>
+            <label for="schedule-start"> Início do turno </label>
 
             <DatePicker
               v-model="scheduleStart"
@@ -141,18 +127,13 @@ function dayInputId(dayId: number): string {
               icon-display="input"
             >
               <template #inputicon>
-                <AppIcon
-                  name="clock"
-                  :size="17"
-                />
+                <AppIcon name="clock" :size="17" />
               </template>
             </DatePicker>
           </div>
 
           <div class="field">
-            <label for="schedule-end">
-              Fim do turno
-            </label>
+            <label for="schedule-end"> Fim do turno </label>
 
             <DatePicker
               v-model="scheduleEnd"
@@ -167,10 +148,7 @@ function dayInputId(dayId: number): string {
               icon-display="input"
             >
               <template #inputicon>
-                <AppIcon
-                  name="clock"
-                  :size="17"
-                />
+                <AppIcon name="clock" :size="17" />
               </template>
             </DatePicker>
           </div>
@@ -182,20 +160,13 @@ function dayInputId(dayId: number): string {
           class="error-message flex items-start gap-2 rounded-4xl"
           role="alert"
         >
-          <AppIcon
-            name="circle-alert"
-            :size="18"
-            class="shrink-0"
-          />
+          <AppIcon name="circle-alert" :size="18" class="shrink-0" />
 
           <span>{{ scheduleError }}</span>
         </div>
 
         <div class="form-actions">
-          <button
-            class="btn btn-primary rounded-4xl"
-            type="submit"
-          >
+          <button class="btn btn-primary rounded-4xl" type="submit">
             <AppIcon name="check" />
             Guardar horário
           </button>
@@ -205,29 +176,21 @@ function dayInputId(dayId: number): string {
       <!-- Pausas e ausências -->
       <section class="blocks-section">
         <div class="mb-5 flex items-center justify-between gap-4">
-          <h2 class="mb-0 text-body-lg">
-            Pausas e ausências
-          </h2>
+          <h2 class="mb-0 text-body-lg">Pausas e ausências</h2>
 
           <span class="badge badge-neutral !rounded-4xl">
             {{ myBlocks.length }}
           </span>
         </div>
 
-        <div
-          v-if="myBlocks.length"
-          class="flex flex-col"
-        >
+        <div v-if="myBlocks.length" class="flex flex-col">
           <article
             v-for="item in myBlocks"
             :key="item.id"
             class="block-item flex flex-col gap-3 border-b border-line py-4 last:border-b-0 sm:flex-row sm:items-center"
           >
             <span class="block-icon">
-              <AppIcon
-                name="calendar-off"
-                :size="19"
-              />
+              <AppIcon name="calendar-off" :size="19" />
             </span>
 
             <div class="min-w-0 flex-1">
@@ -236,8 +199,7 @@ function dayInputId(dayId: number): string {
               </strong>
 
               <p class="mt-0.5 text-caption text-muted">
-                {{ dateLabel(item.date) }} ·
-                {{ item.start }} – {{ item.end }}
+                {{ dateLabel(item.date) }} · {{ item.start }} – {{ item.end }}
               </p>
 
               <small
@@ -275,17 +237,12 @@ function dayInputId(dayId: number): string {
           </article>
         </div>
 
-        <div
-          v-else
-          class="empty-state rounded-4xl"
-        >
+        <div v-else class="empty-state rounded-4xl">
           <AppIcon name="coffee" />
 
           <h3>Nenhuma ausência registada</h3>
 
-          <p>
-            O seu horário regular está disponível para marcações.
-          </p>
+          <p>O seu horário regular está disponível para marcações.</p>
         </div>
       </section>
     </div>
@@ -293,38 +250,20 @@ function dayInputId(dayId: number): string {
 </template>
 
 <style scoped>
+/* Os nomes `--schedule-*` apontam para os tokens da aplicacao: as cores dos
+   campos e da opcao seleccionada decidem-se num so sitio, nos dois temas. */
 .schedule-page {
-  --schedule-input-bg: #ffffff;
-  --schedule-input-text: #17211d;
-  --schedule-input-muted: #69756f;
-  --schedule-input-placeholder: #89938e;
-  --schedule-input-border: #dce3df;
-  --schedule-input-hover: #acbab2;
-  --schedule-input-focus: var(--brand-500, #019e51);
-  --schedule-option-bg: #ffffff;
-  --schedule-option-selected-bg: #e2f6eb;
-  --schedule-option-selected-text: #09653c;
-  --schedule-panel-bg: #ffffff;
-
-  color-scheme: light;
-}
-
-/* Modo escuro */
-:global(.dark) .schedule-page,
-:global([data-theme="dark"]) .schedule-page {
-  --schedule-input-bg: #123d2d;
-  --schedule-input-text: #ffffff;
-  --schedule-input-muted: #d1e5da;
-  --schedule-input-placeholder: #b5d2c2;
-  --schedule-input-border: #2d684d;
-  --schedule-input-hover: #47916d;
-  --schedule-input-focus: #4ade80;
-  --schedule-option-bg: #123d2d;
-  --schedule-option-selected-bg: #1b704c;
-  --schedule-option-selected-text: #ffffff;
-  --schedule-panel-bg: #0e3325;
-
-  color-scheme: dark;
+  --schedule-input-bg: var(--field-bg);
+  --schedule-input-text: var(--field-ink);
+  --schedule-input-muted: var(--muted);
+  --schedule-input-placeholder: var(--field-placeholder);
+  --schedule-input-border: var(--field-border);
+  --schedule-input-hover: var(--primary);
+  --schedule-input-focus: var(--primary);
+  --schedule-option-bg: var(--surface);
+  --schedule-option-selected-bg: var(--selected-bg);
+  --schedule-option-selected-text: var(--selected-ink);
+  --schedule-panel-bg: var(--surface);
 }
 
 .schedule-form {
@@ -368,13 +307,8 @@ function dayInputId(dayId: number): string {
   background: var(--schedule-option-selected-bg);
   color: var(--schedule-option-selected-text);
   font-weight: 600;
-  box-shadow:
-    0 0 0 2px
-    color-mix(
-      in srgb,
-      var(--schedule-input-focus) 18%,
-      transparent
-    );
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--schedule-input-focus) 18%, transparent);
 }
 
 :deep(.day-checkbox.p-checkbox) {
@@ -430,19 +364,11 @@ function dayInputId(dayId: number): string {
 :deep(.schedule-time-picker .p-inputtext:focus) {
   border-color: var(--schedule-input-focus);
   outline: none;
-  box-shadow:
-    0 0 0 3px
-    color-mix(
-      in srgb,
-      var(--schedule-input-focus) 20%,
-      transparent
-    );
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--schedule-input-focus) 20%, transparent);
 }
 
-:deep(
-  .schedule-time-picker
-  .p-datepicker-input-icon-container
-) {
+:deep(.schedule-time-picker .p-datepicker-input-icon-container) {
   right: 1rem;
   color: var(--schedule-input-text);
 }
@@ -489,12 +415,7 @@ function dayInputId(dayId: number): string {
   flex-shrink: 0;
   place-items: center;
   border-radius: 9999px;
-  background:
-    color-mix(
-      in srgb,
-      var(--schedule-input-focus) 13%,
-      transparent
-    );
+  background: color-mix(in srgb, var(--schedule-input-focus) 13%, transparent);
   color: var(--schedule-input-focus);
 }
 

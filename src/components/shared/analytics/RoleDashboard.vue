@@ -62,7 +62,7 @@ const seriesFor = (value: (booking: Booking) => number) =>
     value,
   );
 
-  const periodOptions = [
+const periodOptions = [
   { label: "7 dias", value: 7 },
   { label: "4 semanas", value: 28 },
 ];
@@ -370,22 +370,20 @@ const note = computed(() => {
         </p>
       </div>
       <div class="flex items-center gap-2 text-caption text-muted">
-  <label for="analytics-period">
-    Período
-  </label>
+        <label for="analytics-period"> Período </label>
 
-  <Select
-    v-model="days"
-    input-id="analytics-period"
-    :options="periodOptions"
-    option-label="label"
-    option-value="value"
-    aria-label="Período da análise"
-    append-to="body"
-    overlay-class="analytics-period-overlay"
-    class="analytics-period-select !min-h-10 !rounded-4xl"
-  />
-</div>
+        <Select
+          v-model="days"
+          input-id="analytics-period"
+          :options="periodOptions"
+          option-label="label"
+          option-value="value"
+          aria-label="Período da análise"
+          append-to="body"
+          overlay-class="analytics-period-overlay"
+          class="analytics-period-select !min-h-10 !rounded-4xl"
+        />
+      </div>
     </div>
     <div class="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <InsightCard
@@ -436,47 +434,29 @@ const note = computed(() => {
   <slot :days="days" />
 </template>
 
-
 <style scoped>
-/* Select — modo claro */
+/* Select do periodo: cores pelos tokens partilhados, iguais em ambos os
+   temas sem um bloco de modo escuro a repetir a folha com outros cinzentos. */
 .analytics-period-select {
   min-width: 130px;
-  border: 1px solid #b8c2cc !important;
+  border: 1px solid var(--field-border) !important;
   border-radius: 2rem !important;
-  background: #ffffff !important;
-  color: #111827 !important;
+  background: var(--field-bg) !important;
+  color: var(--field-ink) !important;
   box-shadow: none !important;
 }
 
 .analytics-period-select :deep(.p-select-label) {
-  color: #111827 !important;
+  color: var(--field-ink) !important;
 }
 
 .analytics-period-select :deep(.p-select-dropdown) {
-  color: #6b7280 !important;
+  color: var(--muted) !important;
 }
 
 /* Foco */
 .analytics-period-select.p-focus {
   border-color: var(--primary) !important;
   box-shadow: 0 0 0 1px var(--primary) !important;
-}
-
-/* Select — modo escuro */
-:global(:root[data-theme="dark"])
-  .analytics-period-select {
-  border-color: #52525b !important;
-  background: #000000 !important;
-  color: #ffffff !important;
-}
-
-:global(:root[data-theme="dark"])
-  .analytics-period-select :deep(.p-select-label) {
-  color: #ffffff !important;
-}
-
-:global(:root[data-theme="dark"])
-  .analytics-period-select :deep(.p-select-dropdown) {
-  color: #d1d5db !important;
 }
 </style>
