@@ -5,6 +5,7 @@ import BusinessDirectoryPage from "@/views/client/BusinessDirectoryPage.vue";
 import BusinessListPage from "@/views/client/BusinessListPage.vue";
 import SharedBookingPage from "@/views/client/SharedBookingPage.vue";
 import BusinessDetailsPage from "@/views/client/BusinessDetailsPage.vue";
+import AboutPage from "@/views/shared/AboutPage.vue";
 import BusinessManagement from "@/components/manager/BusinessManagement.vue";
 import AccountManagement from "@/components/shared/account/AccountManagement.vue";
 import PlatformManagement from "@/components/platform/PlatformManagement.vue";
@@ -17,6 +18,7 @@ const pages: Partial<Record<ViewName, Component>> = {
   onboard: RegisterBusinessPage,
   booking: CreateBookingPage,
   explore: BusinessDirectoryPage,
+  about: AboutPage,
   directory: BusinessListPage,
   shared: SharedBookingPage,
   favorites: BusinessDirectoryPage,

@@ -49,6 +49,7 @@ export interface GeoPoint {
    `state.view`, nos grupos de navegação e no registo de páginas. */
 export type ViewName =
   | "explore"
+  | "about"
   | "directory"
   | "shared"
   | "favorites"

@@ -1,14 +1,24 @@
 <script setup lang="ts">
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
-import { landingLinks } from "@/utils/navigation/landingLinks.ts";
+import {
+  landingLinks,
+  type LandingLink,
+} from "@/utils/navigation/landingLinks.ts";
 import marcaFacilLogo from "@/assets/img/logo.png";
+import type { ViewName } from "@/types/domain.ts";
 
 defineProps<{ open: boolean }>();
 const emit = defineEmits<{
   close: [];
   home: [];
+  navigate: [view: ViewName];
   "navigate-section": [section: string];
 }>();
+
+function activateLandingLink(link: LandingLink): void {
+  if (link.section) emit("navigate-section", link.section);
+  else if (link.view) emit("navigate", link.view);
+}
 </script>
 
 <template>
@@ -45,10 +55,10 @@ const emit = defineEmits<{
     <nav class="flex flex-col gap-1" aria-label="Secções da landing page">
       <a
         v-for="link in landingLinks"
-        :key="link.section"
-        :href="`#${link.section}`"
+        :key="link.section || link.view"
+        :href="link.section ? `#${link.section}` : `?page=${link.view}`"
         class="flex min-h-12 items-center rounded-4xl px-3 text-small font-medium text-ink hover:bg-surface-muted hover:text-primary-text"
-        @click.prevent="emit('navigate-section', link.section)"
+        @click.prevent="activateLandingLink(link)"
       >
         {{ link.label }}
       </a>

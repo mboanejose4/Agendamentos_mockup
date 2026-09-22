@@ -2,6 +2,7 @@ import type { Role, ViewName } from "@/types/domain.ts";
 
 const publicViews: readonly ViewName[] = [
   "explore",
+  "about",
   "directory",
   "business",
   "auth",

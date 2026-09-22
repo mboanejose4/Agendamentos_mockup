@@ -4,6 +4,7 @@ import AppSidebar from "@/components/shared/navigation/AppSidebar.vue";
 import GuestSidebar from "@/components/shared/navigation/GuestSidebar.vue";
 import AppTopbar from "@/components/shared/navigation/AppTopbar.vue";
 import AppFooter from "@/components/shared/navigation/AppFooter.vue";
+import LandingFooter from "@/components/shared/navigation/LandingFooter.vue";
 import WorkspaceSwitcher from "@/components/shared/navigation/WorkspaceSwitcher.vue";
 import ShareBookingDialog from "@/components/shared/ui/ShareBookingDialog.vue";
 import AppIcon from "@/components/shared/ui/AppIcon.vue";
@@ -76,6 +77,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", closeMenuOnEscape));
       :open="mobileMenu"
       @close="mobileMenu = false"
       @home="navigateToLandingHome"
+      @navigate="navigate"
       @navigate-section="navigateToLandingSection"
     />
 
@@ -141,6 +143,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", closeMenuOnEscape));
         :current-role="currentRole"
         @open-workspace="workspaceOpen = true"
       />
+      <LandingFooter v-else-if="['explore', 'about'].includes(state.view)" />
     </div>
 
     <button

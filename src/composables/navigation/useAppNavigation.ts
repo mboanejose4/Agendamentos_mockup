@@ -6,6 +6,7 @@ import type { Role, ViewName } from "@/types/domain.ts";
 
 /* Ecrãs que não aparecem na navegação lateral e precisam de um nome próprio. */
 const fallbackLabels: Partial<Record<ViewName, string>> = {
+  about: "Sobre",
   directory: "Estabelecimentos",
   business: "Estabelecimento",
   shared: "A sua marcação",

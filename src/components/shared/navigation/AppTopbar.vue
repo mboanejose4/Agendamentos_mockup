@@ -6,7 +6,10 @@ import { contentWidth } from "@/utils/layout.ts";
 import { initials } from "@/utils/formatters.ts";
 import type { Role, ViewName } from "@/types/domain.ts";
 import marcaFacilLogo from "@/assets/img/marcafacil-logo.png";
-import { landingLinks } from "@/utils/navigation/landingLinks.ts";
+import {
+  landingLinks,
+  type LandingLink,
+} from "@/utils/navigation/landingLinks.ts";
 
 withDefaults(
   defineProps<{
@@ -34,6 +37,11 @@ const scrolled = ref(false);
 
 function readScroll(): void {
   scrolled.value = window.scrollY > 8;
+}
+
+function activateLandingLink(link: LandingLink): void {
+  if (link.section) emit("navigate-section", link.section);
+  else if (link.view) emit("navigate", link.view);
 }
 
 onMounted(() => {
@@ -122,10 +130,10 @@ onBeforeUnmount(() => window.removeEventListener("scroll", readScroll));
         >
           <a
             v-for="link in landingLinks"
-            :key="link.section"
-            :href="`#${link.section}`"
+            :key="link.section || link.view"
+            :href="link.section ? `#${link.section}` : `?page=${link.view}`"
             class="whitespace-nowrap text-caption text-muted hover:text-primary-text"
-            @click.prevent="emit('navigate-section', link.section)"
+            @click.prevent="activateLandingLink(link)"
           >
             {{ link.label }}
           </a>
